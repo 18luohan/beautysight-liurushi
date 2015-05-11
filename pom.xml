@@ -35,6 +35,13 @@
     </properties>
 
     <dependencies>
+        <!-- Current APP Common Business Modules -->
+        <dependency>
+            <groupId>com.beautysight</groupId>
+            <artifactId>liurushi-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Servlet -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -110,15 +117,8 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.3.2.Final</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
             <version>5.1.3.Final</version>
         </dependency>
-        -->
 
         <!-- web view -->
         <dependency>
@@ -188,6 +188,12 @@
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
         </dependency>
+        <!-- Date and Time Utils -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.7</version>
+        </dependency>
         <!-- Jackson Utils -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -256,6 +262,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Current APP Common Business Modules -->
+            <dependency>
+                <groupId>com.beautysight</groupId>
+                <artifactId>liurushi-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- Servlet -->
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -402,6 +415,12 @@
                 <artifactId>commons-codec</artifactId>
                 <version>1.10</version>
             </dependency>
+            <!-- Date and Time Utils -->
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.7</version>
+            </dependency>
             <!-- Jackson Utils -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -486,6 +505,11 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.4</version>
                 </plugin>
             </plugins>
         </pluginManagement>

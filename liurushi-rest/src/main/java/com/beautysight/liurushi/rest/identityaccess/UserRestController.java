@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014, Shaimei Inc. All rights reserved.
+ * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
 package com.beautysight.liurushi.rest.identityaccess;
@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author chenlong
  * @since 1.0
  */
-@RestController("/users")
+@RestController
+@RequestMapping("/users")
 public class UserRestController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    - DispatcherServlet application context for PetClinic's web tier.
--->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/mvc
@@ -14,10 +10,6 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:annotation-config/>
-    <mvc:annotation-driven/>
-
-    <!-- POJOs annotated with @Controller and @RestController are auto-detected. -->
     <context:component-scan base-package="com.beautysight.liurushi.rest"/>
 
     <bean class="com.beautysight.liurushi.rest.common.GlobalHandlerExceptionResolver"/>
@@ -37,13 +29,23 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <!--
     <bean id="mappingJacksonHttpMessageConverter"
           class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
         <property name="supportedMediaTypes">
             <list>
                 <value>application/json;charset=UTF-8</value>
             </list>
+        </property>
+        <property name="objectMapper">
+            <bean class="com.beautysight.liurushi.common.utils.Jsons.CustomObjectMapper">
+                <!--
+                <property name="dateFormat">
+                        <bean class="java.text.SimpleDateFormat">
+                            <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"/>
+                        </bean>
+                </property>
+                -->
+            </bean>
         </property>
     </bean>
 
@@ -60,7 +62,6 @@
             <ref bean="mappingJacksonHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
-    -->
 
     <!-- velocity config -->
     <bean id="velocityConfig"

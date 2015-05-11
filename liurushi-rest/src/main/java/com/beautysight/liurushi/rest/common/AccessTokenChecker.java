@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014, Shaimei Inc. All rights reserved.
+ * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
 package com.beautysight.liurushi.rest.common;

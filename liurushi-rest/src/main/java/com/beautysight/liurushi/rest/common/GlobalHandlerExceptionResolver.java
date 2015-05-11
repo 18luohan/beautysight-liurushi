@@ -1,16 +1,22 @@
 /*
- * Copyright (C) 2014, Shaimei Inc. All rights reserved.
+ * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
 package com.beautysight.liurushi.rest.common;
 
+import com.beautysight.liurushi.common.ex.BusinessException;
+import com.beautysight.liurushi.common.ex.CommonErrorId;
+import com.beautysight.liurushi.common.ex.Error;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Here is Javadoc.
@@ -24,8 +30,36 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalHandlerExceptionResolver.class);
 
-    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    @Override
+    public ModelAndView resolveException(HttpServletRequest request,
+                                         HttpServletResponse response, Object handler, Exception ex) {
         LOGGER.error("Unexpected error!", ex);
-        return null;
+
+        return modelAndView(error(ex));
     }
+
+    private ModelAndView modelAndView(Error error) {
+        Map<String,Object> attributes = new HashMap<String,Object>();
+        attributes.put("id", error.getId());
+        attributes.put("message", error.getMessage());
+
+        MappingJackson2JsonView view = new MappingJackson2JsonView();
+        view.setAttributesMap(attributes);
+
+        ModelAndView mav = new ModelAndView();
+        mav.setView(view);
+        return mav;
+    }
+
+    private Error error(Throwable ex) {
+        Error.Id errorId;
+        if (ex instanceof BusinessException) {
+            errorId = ((BusinessException) ex).errorId();
+        } else {
+            errorId = CommonErrorId.internal_server_error;
+        }
+
+        return new Error(errorId, ex.getMessage());
+    }
+
 }
