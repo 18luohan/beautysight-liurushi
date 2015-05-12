@@ -27,7 +27,7 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestIdChecker.class);
 
-    private static final String REQUEST_ID_HEADER = "X-Request-ID";
+    private static final String REQUEST_ID = "X-Request-ID";
 
     /**
      * Intercept the execution of a handler. Called after HandlerMapping determined
@@ -41,13 +41,13 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Optional<String> requestId = Requests.getHeader(REQUEST_ID_HEADER, request);
+        Optional<String> requestId = Requests.getHeader(REQUEST_ID, request);
         Logs.debugWithoutPrefixRequestId(logger, "Receive request: {}, request id: {}",
-                request.getRequestURI(), requestId.get());
+                Requests.methodAndURI(request), requestId.get());
 
         if (!requestId.isPresent()) {
             Responses.setStatusAndWriteTo(response, CommonErrorId.bad_request,
-                    String.format("%s header required", REQUEST_ID_HEADER));
+                    String.format("%s header required", REQUEST_ID));
             return false;
         }
 

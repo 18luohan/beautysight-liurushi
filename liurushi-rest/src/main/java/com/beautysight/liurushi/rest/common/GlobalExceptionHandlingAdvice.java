@@ -5,16 +5,19 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.BusinessException;
+import com.beautysight.liurushi.common.ex.CommonErrorId;
+import com.beautysight.liurushi.common.ex.Error;
+import com.beautysight.liurushi.common.utils.Logs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Here is Javadoc.
@@ -27,34 +30,47 @@ import java.util.Date;
 @ControllerAdvice
 public class GlobalExceptionHandlingAdvice {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandlingAdvice.class);
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandlingAdvice.class);
 
-	@ExceptionHandler(BusinessException.class)
-	public void onBusinessException() {
+    // TODO 如果该类执行时抛出异常，由谁负责最终捕获？
 
-	}
+    @ExceptionHandler(BusinessException.class)
+    public void onBusinessException(BusinessException ex, HttpServletRequest request) {
+        handleException(ex, ex.errorId(), request);
+    }
 
-	@ExceptionHandler(Throwable.class)
-	public ModelAndView handleError(HttpServletRequest req, Exception exception)
-			throws Exception {
+    @ExceptionHandler({IllegalArgumentException.class})
+    public void onIllegalArgumentException(Throwable ex, HttpServletRequest request) {
+        handleException(ex, CommonErrorId.invalid_params, request);
+    }
 
-		// Rethrow annotated exceptions or they will be processed here instead.
-		if (AnnotationUtils.findAnnotation(exception.getClass(),
-				ResponseStatus.class) != null)
-			throw exception;
+    @ExceptionHandler(Throwable.class)
+    public ModelAndView handleOthers(Throwable ex, HttpServletRequest request) {
+        return handleException(ex, CommonErrorId.internal_server_error, request);
+    }
 
-		LOGGER.error("Request: " + req.getRequestURI() + " raised " + exception);
+    private ModelAndView handleException(Throwable ex, Error.Id errorId, HttpServletRequest request) {
+        logException(ex, request);
+        return modelAndView(ex, errorId);
+    }
 
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("exception", exception);
-		mav.addObject("url", req.getRequestURL());
-		mav.addObject("timestamp", new Date().toString());
-		mav.addObject("status", 500);
+    private void logException(Throwable ex, HttpServletRequest request) {
+        Logs.error(logger, ex, "Error while processing request: {}", Requests.methodAndURI(request));
+    }
 
-		mav.setViewName("support");
-		return mav;
-	}
+    private ModelAndView modelAndView(Throwable ex, Error.Id errorId) {
+        Error error = Error.of(errorId, ex.getMessage());
 
+        Map<String, Object> attributes = new HashMap<String, Object>();
+        attributes.put("id", error.getId());
+        attributes.put("message", error.getMessage());
 
+        MappingJackson2JsonView view = new MappingJackson2JsonView();
+        view.setAttributesMap(attributes);
+
+        ModelAndView mav = new ModelAndView();
+        mav.setView(view);
+        return mav;
+    }
 
 }

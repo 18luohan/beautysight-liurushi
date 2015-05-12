@@ -7,6 +7,7 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.BusinessException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.Error;
+import com.beautysight.liurushi.common.utils.Logs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -28,13 +29,14 @@ import java.util.Map;
  */
 public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalHandlerExceptionResolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(GlobalHandlerExceptionResolver.class);
+
+    // TODO 如果该类执行时抛出异常，由谁负责最终捕获？
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request,
                                          HttpServletResponse response, Object handler, Exception ex) {
-        LOGGER.error("Unexpected error!", ex);
-
+        Logs.error(logger, ex, "Error while processing request: {}", Requests.methodAndURI(request));
         return modelAndView(error(ex));
     }
 
@@ -59,7 +61,7 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver 
             errorId = CommonErrorId.internal_server_error;
         }
 
-        return new Error(errorId, ex.getMessage());
+        return Error.of(errorId, ex.getMessage());
     }
 
 }

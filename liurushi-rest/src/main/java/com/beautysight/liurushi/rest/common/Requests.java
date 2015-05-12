@@ -21,6 +21,10 @@ import java.net.URLDecoder;
  */
 public class Requests {
 
+    public static String methodAndURI(HttpServletRequest request) {
+        return String.format("%s %s", request.getMethod(), request.getRequestURI());
+    }
+
     public static Optional<String> getHeader(String headerName, HttpServletRequest request) {
         String val = request.getHeader(headerName);
         return Optional.fromNullable(

@@ -6,6 +6,7 @@ package com.beautysight.liurushi.common.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 /**
  * Here is Javadoc.
@@ -45,6 +46,11 @@ public class Logs {
      */
     public static void debugWithoutPrefixRequestId(Logger logger, String format, Object... args) {
         debug(logger, false, format, args);
+    }
+
+    public static void error(Logger logger, Throwable ex, String format, Object... args) {
+        String errorMsg = MessageFormatter.arrayFormat(prefixRequestIdTo(format), args).getMessage();
+        logger.error(errorMsg, ex);
     }
 
     private static void debug(Logger logger, boolean needPrefixRequestId, String format, Object... args) {
