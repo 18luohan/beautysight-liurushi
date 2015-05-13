@@ -4,7 +4,11 @@
 
 package com.beautysight.liurushi.common.domain;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Id;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Here is Javadoc.
@@ -17,5 +21,9 @@ import java.io.Serializable;
 public abstract class AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = -2361648049519441593L;
+
+    @Id
+    private ObjectId id;
+    private Date createdAt;
 
 }
