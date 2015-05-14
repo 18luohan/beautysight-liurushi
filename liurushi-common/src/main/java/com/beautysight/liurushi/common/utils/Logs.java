@@ -29,6 +29,7 @@ public class Logs {
     /**
      * Log the given message at the DEBUG level according to the specified format
      * and arguments. And this method prefixes the current request id to the resulted message.
+     *
      * @param logger
      * @param format
      * @param args
@@ -40,12 +41,17 @@ public class Logs {
     /**
      * Log the given message at the DEBUG level according to the specified format
      * and arguments. But this method don't prefix the current request id to the resulted message.
+     *
      * @param logger
      * @param format
      * @param args
      */
     public static void debugWithoutPrefixRequestId(Logger logger, String format, Object... args) {
         debug(logger, false, format, args);
+    }
+
+    public static void error(Logger logger, String format, Object... args) {
+        logger.error(format, args);
     }
 
     public static void error(Logger logger, Throwable ex, String format, Object... args) {

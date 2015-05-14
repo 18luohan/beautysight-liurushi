@@ -7,14 +7,14 @@ package com.beautysight.liurushi.common.ex;
 /**
  * Here is Javadoc.
  * <p/>
- * Created by chenlong on 2015-05-08.
+ * Created by chenlong on 2015-05-14.
  *
  * @author chenlong
  * @since 1.0
  */
-public class DuplicateEntityException extends ApplicationException {
+public class EntityNotFoundException extends ApplicationException {
 
-    public DuplicateEntityException(Error.Id errorId, String message) {
+    public EntityNotFoundException(Error.Id errorId, String message) {
         super(errorId, message);
     }
 

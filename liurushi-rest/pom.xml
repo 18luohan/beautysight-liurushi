@@ -14,6 +14,13 @@
     <artifactId>liurushi-rest</artifactId>
     <packaging>war</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.beautysight</groupId>
+            <artifactId>liurushi-identityaccess</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

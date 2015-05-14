@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.common.domain;
 
+import com.google.common.base.Preconditions;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Id;
 
@@ -24,6 +25,15 @@ public abstract class AbstractEntity implements Serializable {
 
     @Id
     private ObjectId id;
-    private Date createdAt;
+    private Date createdAt = new Date();
+
+    public ObjectId id() {
+        return id;
+    }
+
+    public String idAsString() {
+        Preconditions.checkState((id != null), "id is null");
+        return id.toString();
+    }
 
 }

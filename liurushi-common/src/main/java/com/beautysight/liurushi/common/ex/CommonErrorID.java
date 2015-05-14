@@ -17,8 +17,11 @@ public enum CommonErrorId implements Error.Id {
     bad_request,
     unauthorized,
     invalid_params,
+
     internal_server_error,
-    service_unavailable;
+    service_unavailable,
+
+    server_data_stale;
 
     @Override
     public String get() {

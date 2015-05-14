@@ -7,6 +7,8 @@ package com.beautysight.liurushi.common.utils;
 import com.beautysight.liurushi.common.ex.JsonHandlingException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -46,6 +48,7 @@ public class Jsons {
             customModule.addSerializer(Date.class, new CustomDateSerializer());
             this.registerModule(customModule);
 
+            this.configure(MapperFeature.AUTO_DETECT_FIELDS, true);
             this.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             //this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             /*this.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {

@@ -4,6 +4,12 @@
 
 package com.beautysight.liurushi.rest.identityaccess;
 
+import com.beautysight.liurushi.identityaccess.application.UserApplication;
+import com.beautysight.liurushi.identityaccess.application.command.LoginCommand;
+import com.beautysight.liurushi.identityaccess.application.command.SignUpCommand;
+import com.beautysight.liurushi.identityaccess.application.presentation.AccessTokenPresentation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +26,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserRestController {
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public String signUp() {
-        return "ok";
+    @Autowired
+    private UserApplication userApp;
+
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public AccessTokenPresentation signUp(@RequestBody SignUpCommand signUpCommand) {
+        return userApp.signUp(signUpCommand);
+    }
+
+    @RequestMapping(value = "/actions/login", method = RequestMethod.PUT)
+    public AccessTokenPresentation login(@RequestBody LoginCommand loginCommand) {
+        return userApp.login(loginCommand);
     }
 
 }

@@ -18,14 +18,14 @@ import com.beautysight.liurushi.identityaccess.domain.model.Resolution;
  */
 public class DeviceDTO {
 
-    private Device.Type type;
-    private String model;
-    private String os;
-    private String rom;
-    private int ppi;
-    private String imei;
-    private String imsi;
-    private Resolution resolution;
+    public Device.Type type;
+    public String model;
+    public String os;
+    public String rom;
+    public int ppi;
+    public String imei;
+    public String imsi;
+    public Resolution resolution;
 
     public void validate() {
         PreconditionUtils.checkRequired("device.type", type);
@@ -36,6 +36,10 @@ public class DeviceDTO {
         PreconditionUtils.checkRequired("device.imei", imei);
         PreconditionUtils.checkRequired("device.resolution", resolution);
         resolution.validate();
+    }
+
+    public Device toDevice() {
+        return new Device(type, model, os, rom, ppi, imei, imsi, resolution);
     }
 
 }

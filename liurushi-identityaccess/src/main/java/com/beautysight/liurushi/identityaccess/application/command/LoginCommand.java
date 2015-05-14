@@ -17,8 +17,8 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
  */
 public class LoginCommand implements Command {
 
-    private UserDTO user;
-    private DeviceDTO device;
+    public UserDTO user;
+    public DeviceDTO device;
 
     public void validate() {
         PreconditionUtils.checkRequired("user", user);

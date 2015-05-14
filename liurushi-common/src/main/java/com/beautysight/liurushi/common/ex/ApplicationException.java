@@ -12,16 +12,16 @@ package com.beautysight.liurushi.common.ex;
  * @author chenlong
  * @since 1.0
  */
-public class BusinessException extends RuntimeException {
+public class ApplicationException extends RuntimeException {
 
     private Error.Id errorId;
 
-    public BusinessException(Error.Id errorId, String message) {
+    public ApplicationException(Error.Id errorId, String message) {
         super(message);
         this.errorId = errorId;
     }
 
-    public BusinessException(Error.Id errorId, String message, Throwable cause) {
+    public ApplicationException(Error.Id errorId, String message, Throwable cause) {
         super(message, cause);
         this.errorId = errorId;
     }

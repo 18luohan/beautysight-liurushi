@@ -4,18 +4,20 @@
 
 package com.beautysight.liurushi.rest.common;
 
-import com.beautysight.liurushi.common.ex.BusinessException;
+import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.Error;
 import com.beautysight.liurushi.common.utils.Logs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,23 +36,24 @@ public class GlobalExceptionHandlingAdvice {
 
     // TODO 如果该类执行时抛出异常，由谁负责最终捕获？
 
-    @ExceptionHandler(BusinessException.class)
-    public void onBusinessException(BusinessException ex, HttpServletRequest request) {
-        handleException(ex, ex.errorId(), request);
+    @ExceptionHandler(ApplicationException.class)
+    public ModelAndView onBusinessException(ApplicationException ex, HttpServletRequest request, HttpServletResponse response) {
+        return handleException(ex, ex.errorId(), request, response);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
-    public void onIllegalArgumentException(Throwable ex, HttpServletRequest request) {
-        handleException(ex, CommonErrorId.invalid_params, request);
+    @ExceptionHandler({IllegalArgumentException.class, HttpMessageNotReadableException.class})
+    public ModelAndView onIllegalArgumentException(Throwable ex, HttpServletRequest request, HttpServletResponse response) {
+        return handleException(ex, CommonErrorId.invalid_params, request, response);
     }
 
     @ExceptionHandler(Throwable.class)
-    public ModelAndView handleOthers(Throwable ex, HttpServletRequest request) {
-        return handleException(ex, CommonErrorId.internal_server_error, request);
+    public ModelAndView handleOthers(Throwable ex, HttpServletRequest request, HttpServletResponse response) {
+        return handleException(ex, CommonErrorId.internal_server_error, request, response);
     }
 
-    private ModelAndView handleException(Throwable ex, Error.Id errorId, HttpServletRequest request) {
+    private ModelAndView handleException(Throwable ex, Error.Id errorId, HttpServletRequest request, HttpServletResponse response) {
         logException(ex, request);
+        Responses.setStatus(response, errorId);
         return modelAndView(ex, errorId);
     }
 

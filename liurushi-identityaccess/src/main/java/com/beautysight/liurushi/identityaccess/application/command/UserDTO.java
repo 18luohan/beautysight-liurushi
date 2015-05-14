@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.identityaccess.application.command;
 
 import com.beautysight.liurushi.identityaccess.domain.model.Gender;
+import com.beautysight.liurushi.identityaccess.domain.model.User;
 
 /**
  * Here is Javadoc.
@@ -21,5 +22,9 @@ public class UserDTO {
     public String mobilePhone;
     public String password;
     public String confirmPassword;
+
+    public User toUser() {
+        return new User(nickname, gender, mobilePhone, password);
+    }
 
 }

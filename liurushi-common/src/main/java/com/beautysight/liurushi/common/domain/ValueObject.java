@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.common.domain;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
 import java.io.Serializable;
 
 /**
@@ -14,5 +16,6 @@ import java.io.Serializable;
  * @author chenlong
  * @since 1.0
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public interface ValueObject extends Serializable {
 }

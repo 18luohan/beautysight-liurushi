@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.rest.common;
 
-import com.beautysight.liurushi.common.ex.BusinessException;
+import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.Error;
 import com.beautysight.liurushi.common.utils.Logs;
@@ -55,8 +55,8 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver 
 
     private Error error(Throwable ex) {
         Error.Id errorId;
-        if (ex instanceof BusinessException) {
-            errorId = ((BusinessException) ex).errorId();
+        if (ex instanceof ApplicationException) {
+            errorId = ((ApplicationException) ex).errorId();
         } else {
             errorId = CommonErrorId.internal_server_error;
         }

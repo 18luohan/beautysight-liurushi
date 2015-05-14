@@ -9,12 +9,13 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
+import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -28,18 +29,22 @@ import java.util.*;
  * @author chenlong
  * @since 1.0
  */
-public abstract class AbstractMongoRepository<T> implements PagingAndSortingRepository<T, ObjectId> {
+public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     @Autowired
     protected Datastore datastore;
 
     @Override
     public <S extends T> S save(S entity) {
-        Assert.notNull(entity, "Entity must not be null!");
-
-        Key<S> key = datastore.save(entity);
-        // TODO 检查id字段是否更新
+        Assert.notNull(entity, "The given entity must not be null!");
+        datastore.save(entity);
         return entity;
+    }
+
+    @Override
+    public void merge(T entity) {
+        Assert.notNull(entity, "The given entity must not be null!");
+        datastore.merge(entity);
     }
 
     @Override
@@ -129,7 +134,7 @@ public abstract class AbstractMongoRepository<T> implements PagingAndSortingRepo
     @Override
     public Iterable<T> findAll(Sort sort) {
         Assert.notNull(sort, "The given sort must not be null!");
-        return datastore.find(entityClass()).order(orderByFragment(sort)).asList();
+        return datastore.find(entityClass()).order(orderingClause(sort)).asList();
     }
 
     @Override
@@ -138,6 +143,7 @@ public abstract class AbstractMongoRepository<T> implements PagingAndSortingRepo
         Long count = count();
 
         List<T> list = datastore.createQuery(entityClass())
+                .order(orderingClause(pageable.getSort()))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .asList();
@@ -152,20 +158,46 @@ public abstract class AbstractMongoRepository<T> implements PagingAndSortingRepo
         }
     }
 
-    protected String orderByFragment(Sort sort) {
+    protected String orderingClause(Sort sort) {
+        Assert.notNull(sort, "The given sort must not be null");
+
         Iterator<Sort.Order> it = sort.iterator();
-        StringBuilder orderByFragment = new StringBuilder();
+        StringBuilder orderBy = new StringBuilder();
         while (it.hasNext()) {
             Sort.Order order = it.next();
             if (order.getDirection() == Sort.Direction.DESC) {
-                orderByFragment.append("-");
+                orderBy.append("-");
             }
-            orderByFragment.append(order.getProperty()).append(",");
+            orderBy.append(order.getProperty());
+            if (it.hasNext()) {
+                orderBy.append(", ");
+            }
         }
-        return orderByFragment.substring(0, (orderByFragment.length() - 1));
+
+        Assert.hasLength(orderBy.toString(), "Must specify at least one sorting field");
+        return orderBy.toString();
     }
 
     protected abstract Class<T> entityClass();
+
+    protected List<T> findBy(Conditions conditions) {
+        return newQuery(conditions).asList();
+    }
+
+    protected Query<T> newQuery(Conditions conditions) {
+        Assert.notNull(conditions, "The given conditions must not be null");
+        Query<T> query = datastore.createQuery(entityClass());
+        Iterator<Conditions.Condition> it = conditions.iterator();
+        while (it.hasNext()) {
+            Conditions.Condition condition = it.next();
+            query.field(condition.field).equal(condition.val);
+        }
+        return query;
+    }
+
+    protected UpdateOperations<T> newUpdateOps() {
+        return datastore.createUpdateOperations(entityClass());
+    }
 
     private static boolean isNullOrEmpty(Iterable<?> iterable) {
         if (iterable == null) {
@@ -203,6 +235,46 @@ public abstract class AbstractMongoRepository<T> implements PagingAndSortingRepo
 
     protected enum Op {
         DELETE, UPDATE
+    }
+
+    protected static class Conditions {
+
+        private final List<Condition> conditions;
+
+        private Conditions(String field, Object val) {
+            conditions = new ArrayList<Condition>(5);
+            conditions.add(new Condition(field, val));
+        }
+
+        public static Conditions of(String field, Object val) {
+            return new Conditions(field, val);
+        }
+
+        public Conditions and(String field, Object val) {
+            conditions.add(new Condition(field, val));
+            return this;
+        }
+
+        public Iterator<Condition> iterator() {
+            return conditions.iterator();
+        }
+
+        private static class Condition {
+            private String field;
+            private Object val;
+
+            private Condition(String field, Object val) {
+                Assert.hasText(field, "The given field must not be blank");
+                if (val instanceof String) {
+                    Assert.hasText((String) val, "The given val must not be blank");
+                } else {
+                    Assert.notNull(val, "The given val must not be null");
+                }
+                this.field = field;
+                this.val = val;
+            }
+        }
+
     }
 
 }

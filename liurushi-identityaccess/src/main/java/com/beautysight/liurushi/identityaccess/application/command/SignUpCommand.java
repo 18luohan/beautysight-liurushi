@@ -5,8 +5,9 @@
 package com.beautysight.liurushi.identityaccess.application.command;
 
 import com.beautysight.liurushi.common.application.Command;
+import com.beautysight.liurushi.common.ex.ParamValidationException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.google.common.base.Preconditions;
+import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 
 /**
  * Here is Javadoc.
@@ -18,8 +19,8 @@ import com.google.common.base.Preconditions;
  */
 public class SignUpCommand implements Command {
 
-    private UserDTO user;
-    private DeviceDTO device;
+    public UserDTO user;
+    public DeviceDTO device;
 
     public void validate() {
         PreconditionUtils.checkRequired("user", user);
@@ -33,8 +34,10 @@ public class SignUpCommand implements Command {
         PreconditionUtils.checkRequired("user.mobilePhone", user.mobilePhone);
         PreconditionUtils.checkRequired("user.password", user.password);
         PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
-        Preconditions.checkArgument(user.password.equals(user.confirmPassword),
-                "user password not equal to confirmPassword");
+        if (!user.password.equals(user.confirmPassword)) {
+            throw new ParamValidationException(UserErrorId.password_confirmpwd_not_equal,
+                    "user password not equal to confirmPassword");
+        }
     }
 
 }

@@ -8,6 +8,8 @@ import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.utils.Passwords;
 import org.mongodb.morphia.annotations.Entity;
 
+import java.util.Date;
+
 /**
  * Here is Javadoc.
  * <p/>
@@ -25,8 +27,10 @@ public class User extends AbstractEntity {
     private Gender gender;
     private String mobilePhone;
     private Password password;
+    private Date lastLogin;
 
-    public User() {}
+    private User() {
+    }
 
     public User(String nickname, Gender gender, String mobilePhone, String plainPwd) {
         this.nickname = nickname;
@@ -42,6 +46,9 @@ public class User extends AbstractEntity {
     private static class Password {
         private String cipherPwd;
         private String salt;
+
+        private Password() {
+        }
 
         private Password(String plainPwd) {
             this.salt = Passwords.nextSalt();
