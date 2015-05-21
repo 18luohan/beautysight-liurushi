@@ -48,11 +48,7 @@ public class Files {
     }
 
     public static BufferedImage from(String file) throws IOException {
-        return ImageIO.read(new File(pathOfFilePlacedInClassPath(file)));
-    }
-
-    private static String pathOfFilePlacedInClassPath(String file) {
-        return Files.class.getClassLoader().getResource(file).getPath();
+        return ImageIO.read(new File(pathOfFileInClassPath(file)));
     }
 
     public static File fileInSameDirWith(Class<?> clazz, String file) {
@@ -60,7 +56,7 @@ public class Files {
     }
 
     public static List<File> filesInSameDirWith(Class<?> clazz, String[] files) {
-        List<File> fileList = new ArrayList<File>(4);
+        List<File> fileList = new ArrayList<>(4);
 
         if (ObjectUtils.isEmpty(files)) {
             return fileList;
@@ -73,8 +69,12 @@ public class Files {
         return fileList;
     }
 
-    public static File filePlacedInClassPath(String file) {
-        return new File(pathOfFilePlacedInClassPath(file));
+    public static File fileInClassPath(String file) {
+        return new File(pathOfFileInClassPath(file));
+    }
+
+    private static String pathOfFileInClassPath(String file) {
+        return Files.class.getClassLoader().getResource(file).getPath();
     }
 
 }

@@ -6,6 +6,7 @@ package com.beautysight.liurushi.identityaccess.port.adapter.service;
 
 import com.beautysight.liurushi.identityaccess.domain.model.UploadOptions;
 import com.beautysight.liurushi.identityaccess.domain.model.UploadResult;
+import com.beautysight.liurushi.test.utils.Files;
 import com.qiniu.util.StringMap;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -42,12 +43,12 @@ public class QiniuStorageAuthServiceTest {
 
     @Test
     public void downloadToken() throws Exception {
-        String key = "FqdlHH3BabQMIHKxi9oMw5bdMNN3";
+        String key = "FgwkvStH0913xPKZiRgJxvG_9SXM";
         int expiry = 0;
-        String instructions = "/interlace/1";
-        String savedAsKey = "FqdlHH3BabQMIHKxi9oMw5bdMNN3saveas";
+        String instructions = "imageView2/1/w/400/h/400/q/40";
+        String savedAsKey = UUID.randomUUID().toString(); savedAsKey = null;
         String downloadUrl = storage.getDownloadUrl(key, expiry, instructions, savedAsKey);
-        System.out.println("url:" + downloadUrl);
+        System.out.println("savedAsKey:" + savedAsKey + ", url:" + downloadUrl);
         assertNotNull(downloadUrl);
     }
 
@@ -56,7 +57,7 @@ public class QiniuStorageAuthServiceTest {
         UploadOptions uploadPolicy = uploadPolicyForTest()
                 .checksum("pseudo-checksum-abcdefg-1000");
         String uploadToken = storage.getUploadToken(uploadPolicy);
-        UploadResult result = storage.upload(Files.toBytes("images/jessy.jpg"), uploadToken);
+        UploadResult result = storage.upload(Files.toBytes("images/felicity.jpg"), uploadToken);
         assertTrue(result.isSuccessful());
         assertTrue(StringUtils.isNotBlank(result.key));
         assertTrue(StringUtils.isNotBlank(result.hash));
