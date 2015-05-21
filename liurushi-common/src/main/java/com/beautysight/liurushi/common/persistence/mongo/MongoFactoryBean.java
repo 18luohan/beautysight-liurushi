@@ -5,13 +5,6 @@
 package com.beautysight.liurushi.common.persistence.mongo;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mongodb.*;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.config.AbstractFactoryBean;
-
 /**
  * Here is Javadoc.
  * <p/>

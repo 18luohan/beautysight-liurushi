@@ -3,7 +3,7 @@
  */
 package com.beautysight.liurushi.common.utils;
 
-import com.beautysight.liurushi.common.application.Presentation;
+import com.beautysight.liurushi.common.app.Presentation;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -46,6 +46,9 @@ public class JsonsTest {
         //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         //@JsonSerialize(using = CustomDateSerializer.class)
         private Date committedAt;
+
+        private Post() {
+        }
 
         private Post(int threadId, String author, Date aDate) {
             this.threadId = threadId;

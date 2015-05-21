@@ -46,7 +46,7 @@ public class AccessTokenChecker extends HandlerInterceptorAdapter {
     private AccessToken bearerAccessToken(HttpServletRequest request, HttpServletResponse response) {
         Optional<String> authorization = Requests.getHeader(AUTHORIZATION, request);
         Logs.debug(logger, "Authorize request: {}, authorization: {}",
-                Requests.methodAndURI(request), authorization.get());
+                Requests.methodAndURI(request), authorization.orNull());
 
         if (!authorization.isPresent()) {
             throw new BadRequestException(CommonErrorId.unauthorized,

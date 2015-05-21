@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.common.domain;
 
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Reference;
 
 /**
  * Here is Javadoc.
@@ -22,16 +23,25 @@ public class Product extends AbstractEntity {
     private String name;
     private Pricing pricing;
 
-    public Product(String slug, String sku, String name, int retail, int sale) {
+    @Reference("category_id")
+    private Category category;
+
+    private Product() {
+    }
+
+    public Product(String slug, String sku, String name, int retail, int sale, Category category) {
         this.slug = slug;
         this.sku = sku;
         this.name = name;
         this.pricing = new Pricing(retail, sale);
+        this.category = category;
     }
 
     private static class Pricing {
         private int retail;
         private int sale;
+
+        private Pricing() {}
 
         private Pricing(int retail, int sale) {
             this.retail = retail;

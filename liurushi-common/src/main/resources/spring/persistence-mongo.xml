@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-         http://www.springframework.org/schema/beans/spring-beans.xsd
-         http://www.springframework.org/schema/context
-         http://www.springframework.org/schema/context/spring-context.xsd
-         http://www.springframework.org/schema/jdbc
-         http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
-         http://www.springframework.org/schema/jee
-         http://www.springframework.org/schema/jee/spring-jee.xsd">
+         http://www.springframework.org/schema/beans/spring-beans.xsd" profile="default">
 
     <!--
     <bean id="mongoServerAddress" class="com.mongodb.ServerAddress">
@@ -33,17 +23,20 @@
     <bean id="morphia" class="com.beautysight.liurushi.common.persistence.mongo.MorphiaFactoryBean">
         <property name="singleton" value="true"/>
         <property name="ignoreInvalidClasses" value="true"/>
+        <property name="entityPackages" value="${entity.packages}"/>
+        <!--
         <property name="mapPackages">
             <list>
                 <value>com.beautysight.liurushi.identityaccess.domain.model</value>
             </list>
         </property>
+        -->
     </bean>
 
     <bean class="com.beautysight.liurushi.common.persistence.mongo.DataStoreFactoryBean">
         <property name="singleton" value="true"/>
         <property name="morphia" ref="morphia"/>
         <property name="mongo" ref="mongoClient"/>
-        <property name="dbName" value="shaimei"/>
+        <property name="dbName" value="${db.name}"/>
     </bean>
 </beans>

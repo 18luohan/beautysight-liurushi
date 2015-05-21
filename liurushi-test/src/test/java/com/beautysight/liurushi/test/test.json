@@ -1,0 +1,5 @@
+// # friends
+[
+  {name: 'Joe', age: 25, gender: 'male'},{name: 'Lily', age: 24, gender: 'female'},
+  {name: 'Jeniffer', age: 24, gender: 'female'}
+]

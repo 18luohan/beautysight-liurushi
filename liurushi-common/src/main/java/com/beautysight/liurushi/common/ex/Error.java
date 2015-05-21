@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.common.ex;
 
-import com.beautysight.liurushi.common.application.Presentation;
+import com.beautysight.liurushi.common.app.Presentation;
 
 /**
  * Here is Javadoc.

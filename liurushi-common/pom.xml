@@ -14,4 +14,11 @@
     <artifactId>liurushi-common</artifactId>
     <packaging>jar</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.beautysight</groupId>
+            <artifactId>liurushi-test</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

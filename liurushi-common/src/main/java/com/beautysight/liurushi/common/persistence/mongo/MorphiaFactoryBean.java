@@ -4,6 +4,9 @@
 
 package com.beautysight.liurushi.common.persistence.mongo;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.mongodb.morphia.Morphia;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.util.CollectionUtils;
@@ -53,6 +56,12 @@ public class MorphiaFactoryBean extends AbstractFactoryBean<Morphia> {
 
     public void setMapPackages(List<String> mapPackages) {
         this.mapPackages = mapPackages;
+    }
+
+    public void setEntityPackages(String entityPackages) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(entityPackages), "entityPackages is blank");
+        String[] packages = entityPackages.split(",");
+        this.mapPackages = Lists.newArrayList(packages);
     }
 
     public void setIgnoreInvalidClasses(boolean ignoreInvalidClasses) {

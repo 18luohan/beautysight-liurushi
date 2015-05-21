@@ -43,7 +43,7 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Optional<String> requestId = Requests.getHeader(REQUEST_ID, request);
         Logs.debugWithoutPrefixRequestId(logger, "Receive request: {}, request id: {}",
-                Requests.methodAndURI(request), requestId.get());
+                Requests.methodAndURI(request), requestId.orNull());
 
         if (!requestId.isPresent()) {
             Responses.setStatusAndWriteTo(response, CommonErrorId.bad_request,

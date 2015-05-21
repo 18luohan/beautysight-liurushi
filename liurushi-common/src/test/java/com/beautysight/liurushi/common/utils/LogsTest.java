@@ -6,7 +6,7 @@ package com.beautysight.liurushi.common.utils;
 import org.junit.Test;
 import org.slf4j.helpers.MessageFormatter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Here is Javadoc.

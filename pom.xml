@@ -13,13 +13,14 @@
     <modules>
         <module>liurushi-common</module>
         <module>liurushi-identityaccess</module>
+        <module>liurushi-community</module>
         <module>liurushi-rest</module>
         <module>liurushi-test</module>
     </modules>
 
     <properties>
         <!-- Generic properties -->
-        <java.version>1.6</java.version>
+        <java.version>1.7</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -32,17 +33,10 @@
 
         <slf4j.version>1.7.12</slf4j.version>
         <logback.version>1.1.3</logback.version>
-        <qiniu.version>7.0.99</qiniu.version>
+        <qiniu.version>7.0.3</qiniu.version>
     </properties>
 
     <dependencies>
-        <!-- Current App Business Modules -->
-        <dependency>
-            <groupId>com.beautysight</groupId>
-            <artifactId>liurushi-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- Servlet -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -96,19 +90,6 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring-framework.version}</version>
         </dependency>
-        <!-- Spring Data MongoDB -->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-mongodb</artifactId>
-            <version>${spring-data-mongodb.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>mongo-java-driver</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- Spring Validator Provider -->
         <dependency>
             <groupId>javax.validation</groupId>
@@ -133,6 +114,18 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>${mongodb-driver.version}</version>
+        </dependency>
+        <!-- Spring Data MongoDB -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>${spring-data-mongodb.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Morphia -->
@@ -243,26 +236,11 @@
             <artifactId>logback-access</artifactId>
             <version>${logback.version}</version>
         </dependency>
-
-        <!-- Test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Spring Test -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring-framework.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Current App Business Modules -->
+            <!-- This App Modules -->
             <dependency>
                 <groupId>com.beautysight</groupId>
                 <artifactId>liurushi-common</artifactId>
@@ -272,6 +250,12 @@
                 <groupId>com.beautysight</groupId>
                 <artifactId>liurushi-identityaccess</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beautysight</groupId>
+                <artifactId>liurushi-test</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Servlet -->
@@ -327,19 +311,6 @@
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring-framework.version}</version>
             </dependency>
-            <!-- Spring Data MongoDB -->
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-mongodb</artifactId>
-                <version>${spring-data-mongodb.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.mongodb</groupId>
-                        <artifactId>mongo-java-driver</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
             <!-- Spring Validator Provider -->
             <dependency>
                 <groupId>javax.validation</groupId>
@@ -365,8 +336,20 @@
                 <artifactId>mongo-java-driver</artifactId>
                 <version>${mongodb-driver.version}</version>
             </dependency>
+            <!-- Spring Data MongoDB -->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-mongodb</artifactId>
+                <version>${spring-data-mongodb.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.mongodb</groupId>
+                        <artifactId>mongo-java-driver</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-            <!-- Morphia -->
+            <!-- MongoDB Morphia -->
             <dependency>
                 <groupId>org.mongodb.morphia</groupId>
                 <artifactId>morphia</artifactId>
@@ -397,6 +380,13 @@
                 <groupId>org.mongodb.morphia</groupId>
                 <artifactId>morphia-logging-slf4j</artifactId>
                 <version>${morphia.version}</version>
+            </dependency>
+
+            <!-- MongoDB Jongo -->
+            <dependency>
+                <groupId>org.jongo</groupId>
+                <artifactId>jongo</artifactId>
+                <version>1.2</version>
             </dependency>
 
             <!-- Common Utils -->
@@ -486,19 +476,25 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
-                <scope>test</scope>
             </dependency>
             <!-- Spring Test -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${spring-framework.version}</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**/*.js</include>
+                </includes>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
