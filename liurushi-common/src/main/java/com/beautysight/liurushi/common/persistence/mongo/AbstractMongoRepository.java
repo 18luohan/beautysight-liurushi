@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.common.persistence.mongo;
 
+import com.beautysight.liurushi.common.ex.DuplicateEntityException;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
@@ -67,9 +69,10 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     @Override
     public boolean exists(ObjectId id) {
         Assert.notNull(id, "The given id must not be null!");
-        Key<?> key = datastore.exists(new Key(entityClass(), id));
-        // TODO 需要确认这样判断是否存在靠不靠谱？
-        return (key != null);
+//        Key<?> key = datastore.exists(new Key(entityClass(), id));
+//        // TODO 需要确认这样判断是否存在靠不靠谱？
+//        return (key != null);
+        return false;
     }
 
     /**
@@ -184,6 +187,20 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return newQuery(conditions).asList();
     }
 
+    protected Optional<T> findOneBy(Conditions conditions) {
+        Query<T> query = newQuery(conditions);
+        long count = query.countAll();
+        if (count > 1) {
+            throw new DuplicateEntityException(String.format(
+                    "Expected 1 %s, but actual %s, conditions: %s",
+                    entityClass().getSimpleName(), count, conditions));
+        }
+        if (count == 0) {
+            return Optional.absent();
+        }
+        return Optional.fromNullable(query.get());
+    }
+
     protected Query<T> newQuery(Conditions conditions) {
         Assert.notNull(conditions, "The given conditions must not be null");
         Query<T> query = datastore.createQuery(entityClass());
@@ -242,7 +259,7 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         private final List<Condition> conditions;
 
         private Conditions(String field, Object val) {
-            conditions = new ArrayList<Condition>(5);
+            conditions = new ArrayList<>(5);
             conditions.add(new Condition(field, val));
         }
 
@@ -257,6 +274,20 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
         public Iterator<Condition> iterator() {
             return conditions.iterator();
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder conditionStr = new StringBuilder("{");
+            for (Condition condition : conditions) {
+                conditionStr.append(condition.field)
+                        .append(":")
+                        .append(condition.val)
+                        .append(",");
+            }
+            return new StringBuilder("{")
+                    .append(conditionStr.substring(0, conditionStr.length()))
+                    .append("}").toString();
         }
 
         private static class Condition {

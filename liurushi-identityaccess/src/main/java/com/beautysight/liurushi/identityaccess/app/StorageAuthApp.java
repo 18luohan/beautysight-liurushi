@@ -4,11 +4,11 @@
 
 package com.beautysight.liurushi.identityaccess.app;
 
+import com.beautysight.liurushi.fundamental.storage.domain.StorageService;
 import com.beautysight.liurushi.identityaccess.app.command.GetDownloadUrlCommand;
 import com.beautysight.liurushi.identityaccess.app.command.GetUploadTokenCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.DownloadUrlPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UploadTokenPresentation;
-import com.beautysight.liurushi.identityaccess.domain.service.StorageAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class StorageAuthApp {
 
     @Autowired
-    private StorageAuthService authService;
+    private StorageService authService;
 
     public UploadTokenPresentation getUploadToken(GetUploadTokenCommand command) {
         return UploadTokenPresentation.from(authService.getUploadToken(command.toUploadOptions()));

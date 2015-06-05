@@ -4,8 +4,11 @@
 
 package com.beautysight.liurushi.common.persistence.mongo;
 
+import com.beautysight.liurushi.common.domain.Category;
 import com.beautysight.liurushi.common.domain.Product;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * Here is Javadoc.
@@ -17,6 +20,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ProductRepository extends AbstractMongoRepository<Product> {
+
+    public List<Product> findProductsBy(Category category) {
+        return findBy(Conditions.of("category_id", category.id()));
+    }
 
     @Override
     protected Class<Product> entityClass() {

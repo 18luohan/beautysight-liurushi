@@ -25,9 +25,13 @@
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/"/>
-            <mvc:exclude-mapping path="/users"/>
-            <mvc:exclude-mapping path="/users/actions/login"/>
+            <mvc:exclude-mapping path="/oauth/basic_token"/>
             <bean class="com.beautysight.liurushi.rest.common.AccessTokenChecker"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/"/>
+            <bean class="com.beautysight.liurushi.rest.permission.ApiPermissionInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 

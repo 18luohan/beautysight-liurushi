@@ -21,9 +21,17 @@ public class ApplicationException extends RuntimeException {
         this.errorId = errorId;
     }
 
+    public ApplicationException(Error.Id errorId, String msgFormat, Object... msgArgs) {
+        this(errorId, String.format(msgFormat, msgArgs));
+    }
+
     public ApplicationException(Error.Id errorId, String message, Throwable cause) {
         super(message, cause);
         this.errorId = errorId;
+    }
+
+    public ApplicationException(Error.Id errorId, Throwable cause, String msgFormat, Object... msgArgs) {
+        this(errorId, String.format(msgFormat, msgArgs), cause);
     }
 
     public Error.Id errorId() {

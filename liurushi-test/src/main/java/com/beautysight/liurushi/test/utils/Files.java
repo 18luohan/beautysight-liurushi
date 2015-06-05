@@ -52,7 +52,11 @@ public class Files {
     }
 
     public static File fileInSameDirWith(Class<?> clazz, String file) {
-        return new File(clazz.getResource(file).getPath());
+        String path = clazz.getResource("").getPath();
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        return new File(path + file);
     }
 
     public static List<File> filesInSameDirWith(Class<?> clazz, String[] files) {

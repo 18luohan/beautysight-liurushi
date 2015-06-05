@@ -5,13 +5,19 @@
 package com.beautysight.liurushi.common.utils;
 
 import com.beautysight.liurushi.common.ex.JsonHandlingException;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Date;
 
 /**
@@ -35,6 +41,38 @@ public class Jsons {
             return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             throw new JsonHandlingException(String.format("Convert %s obj to json string", obj.getClass()), e);
+        }
+    }
+
+    public static <T> T toObject(File srcJsonFile, Class<T> clazz) {
+        try {
+            return mapper.readValue(srcJsonFile, clazz);
+        } catch (JsonProcessingException e) {
+            throw new JsonHandlingException(String.format("Read json file [%s] as %s",
+                    srcJsonFile.getAbsolutePath(), clazz.getName()), e);
+        } catch (IOException e) {
+            throw new JsonHandlingException(String.format("Read json file: %s", srcJsonFile.getAbsolutePath()), e);
+        }
+    }
+
+    public static <T> T toObject(File srcJsonFile, TypeReference<T> typeReference) {
+        try {
+            return mapper.readValue(srcJsonFile, typeReference);
+        } catch (JsonProcessingException e) {
+            throw new JsonHandlingException(String.format("Read json file [%s] as %s",
+                    srcJsonFile.getAbsolutePath(), typeReference.getType()), e);
+        } catch (IOException e) {
+            throw new JsonHandlingException(String.format("Read json file: %s", srcJsonFile.getAbsolutePath()), e);
+        }
+    }
+
+    public static <T> T toObject(Reader reader, Class<T> type) {
+        try {
+            return mapper.readValue(reader, type);
+        } catch (JsonProcessingException e) {
+            throw new JsonHandlingException(String.format("Read from reader as %s", type.getName()), e);
+        } catch (IOException e) {
+            throw new JsonHandlingException(String.format("Read from reader as %s", type.getName()), e);
         }
     }
 

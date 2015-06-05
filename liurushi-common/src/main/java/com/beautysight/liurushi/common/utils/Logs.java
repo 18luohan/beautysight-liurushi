@@ -18,8 +18,25 @@ import org.slf4j.helpers.MessageFormatter;
  */
 public class Logs {
 
-    public static String prefixRequestIdTo(String log) {
-        return String.format("[%s] %s", RequestKeyInfoHolder.getCurrentRequestId(), log);
+    private static final Logger logger = LoggerFactory.getLogger(Logs.class);
+
+    private static final ThreadLocal<String> localTraceId = new ThreadLocal<>();
+
+    public static void setTraceId(String traceId) {
+        localTraceId.set(traceId);
+        debugWithoutPrefixTraceId(logger, "Set traceId for current thread: {}", traceId);
+    }
+    public static void clearTraceId() {
+        // TODO 是否真的有必要使用同步？
+        synchronized (localTraceId) {
+            String traceId = localTraceId.get();
+            localTraceId.remove();
+            debugWithoutPrefixTraceId(logger, "Cleared traceId from current thread: {}", traceId);
+        }
+    }
+
+    public static String prefixTraceIdTo(String log) {
+        return String.format("[traceId:%s] %s", localTraceId.get(), log);
     }
 
     public static Logger getLogger(Class<?> clazz) {
@@ -46,8 +63,14 @@ public class Logs {
      * @param format
      * @param args
      */
-    public static void debugWithoutPrefixRequestId(Logger logger, String format, Object... args) {
+    public static void debugWithoutPrefixTraceId(Logger logger, String format, Object... args) {
         debug(logger, false, format, args);
+    }
+
+    public static void warn(Logger logger, String format, Object... args) {
+        if (logger.isWarnEnabled()) {
+            logger.warn(prefixTraceIdTo(format), args);
+        }
     }
 
     public static void error(Logger logger, String format, Object... args) {
@@ -55,7 +78,7 @@ public class Logs {
     }
 
     public static void error(Logger logger, Throwable ex, String format, Object... args) {
-        String errorMsg = MessageFormatter.arrayFormat(prefixRequestIdTo(format), args).getMessage();
+        String errorMsg = MessageFormatter.arrayFormat(prefixTraceIdTo(format), args).getMessage();
         logger.error(errorMsg, ex);
     }
 
@@ -65,7 +88,7 @@ public class Logs {
         }
 
         if (needPrefixRequestId) {
-            logger.debug(prefixRequestIdTo(format), args);
+            logger.debug(prefixTraceIdTo(format), args);
         } else {
             logger.debug(format, args);
         }

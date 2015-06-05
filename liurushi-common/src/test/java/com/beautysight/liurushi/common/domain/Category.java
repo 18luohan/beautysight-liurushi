@@ -14,7 +14,7 @@ import org.mongodb.morphia.annotations.Entity;
  * @author chenlong
  * @since 1.0
  */
-@Entity("categories")
+@Entity(value = "categories", noClassnameStored = true)
 public class Category extends AbstractEntity {
     private String name;
     private String description;

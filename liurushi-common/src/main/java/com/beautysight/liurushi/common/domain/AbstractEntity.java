@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.common.domain;
 
+import com.beautysight.liurushi.common.shared.CommonModel;
 import com.google.common.base.Preconditions;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Id;
@@ -19,13 +20,13 @@ import java.util.Date;
  * @author chenlong
  * @since 1.0
  */
-public abstract class AbstractEntity implements Serializable {
+public abstract class AbstractEntity extends CommonModel implements Serializable {
 
     private static final long serialVersionUID = -2361648049519441593L;
 
     @Id
     private ObjectId id;
-    private Date createdAt = new Date();
+    protected Date createdAt = new Date();
 
     public ObjectId id() {
         return id;

@@ -6,7 +6,6 @@ package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.utils.Logs;
-import com.beautysight.liurushi.common.utils.RequestKeyInfoHolder;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,7 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Optional<String> requestId = Requests.getHeader(REQUEST_ID, request);
-        Logs.debugWithoutPrefixRequestId(logger, "Receive request: {}, request id: {}",
+        Logs.debugWithoutPrefixTraceId(logger, "Receive request: {}, request id: {}",
                 Requests.methodAndURI(request), requestId.orNull());
 
         if (!requestId.isPresent()) {
@@ -51,7 +50,7 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
             return false;
         }
 
-        RequestKeyInfoHolder.setCurrentRequestId(requestId.get());
+        Logs.setTraceId(requestId.get());
         return true;
     }
 
@@ -81,6 +80,6 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
         // 注意，如果preHandle方法返回false或抛出异常，该方法就不会执行
         // TODO 如果HandlerInterceptor中抛出异常，该由谁来负责捕获处理这些异常？
         // TODO 如果Controller(对spring来说就是handler)中抛出异常，该在哪里执行清理操作？
-        RequestKeyInfoHolder.clear();
+        Logs.clearTraceId();
     }
 }

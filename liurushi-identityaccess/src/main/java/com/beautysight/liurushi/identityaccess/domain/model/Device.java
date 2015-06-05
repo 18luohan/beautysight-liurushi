@@ -6,7 +6,6 @@ package com.beautysight.liurushi.identityaccess.domain.model;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.google.common.collect.Lists;
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
@@ -32,8 +31,8 @@ public class Device extends AbstractEntity {
     private String imsi;
     private Resolution resolution;
 
-    @Reference
-    private List<ObjectId> userIds;
+    @Reference(value = "userIds", lazy = true, idOnly = true)
+    private List<User> users;
 
     private Device(){
     }
@@ -53,10 +52,14 @@ public class Device extends AbstractEntity {
      * 为当前设备添加使用者
      */
     public void addUser(User aUser) {
-        if (userIds == null) {
-            userIds = Lists.newArrayList();
+        if (users == null) {
+            users = Lists.newArrayList();
         }
-        userIds.add(aUser.id());
+        users.add(aUser);
+    }
+
+    public String imei() {
+        return this.imei;
     }
 
     public enum Type {

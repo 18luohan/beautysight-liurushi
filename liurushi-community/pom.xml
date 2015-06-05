@@ -20,8 +20,16 @@
             <artifactId>liurushi-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.beautysight</groupId>
+            <artifactId>liurushi-identityaccess</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.qiniu</groupId>
             <artifactId>qiniu-java-sdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.beautysight</groupId>
+            <artifactId>liurushi-test</artifactId>
         </dependency>
     </dependencies>
 

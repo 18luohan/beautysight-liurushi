@@ -5,10 +5,15 @@
 package com.beautysight.liurushi.identityaccess.domain.model;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
+import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.Passwords;
+import com.beautysight.liurushi.common.utils.PreconditionUtils;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Here is Javadoc.
@@ -28,19 +33,90 @@ public class User extends AbstractEntity {
     private String mobilePhone;
     private Password password;
     private Date lastLogin;
+    private Avatar avatar;
+    private List<Avatar> avatars = new ArrayList<>();
 
     private User() {
     }
 
-    public User(String nickname, Gender gender, String mobilePhone, String plainPwd) {
+    public User(String nickname, Gender gender, String mobilePhone, String plainPwd, Avatar avatar) {
         this.nickname = nickname;
         this.gender = gender;
         this.mobilePhone = mobilePhone;
         this.password = new Password(plainPwd);
+        this.avatars.add(avatar);
     }
 
     public boolean isGivenPwdCorrect(String plainPwd) {
         return this.password.isGivenPwdCorrect(plainPwd);
+    }
+
+    public String mobilePhone() {
+        return this.mobilePhone;
+    }
+
+    public void setLastLoginToNow() {
+        this.lastLogin = new Date();
+    }
+
+    public Date lastLogin() {
+        return this.lastLogin;
+    }
+
+    public void addAvatar(Avatar avatar) {
+
+    }
+
+    public Avatar avatar() {
+        // TODO 应该返回何种大小的图像
+        return this.avatars.get(0);
+    }
+
+    public UserLite toUserLite() {
+        UserLite userLite = new UserLite();
+        userLite.id = this.id();
+        userLite.nickname = this.nickname;
+        userLite.avatars = this.avatars;
+        return userLite;
+    }
+
+    public static class UserLite extends ValueObject {
+        private ObjectId id;
+        private String nickname;
+        private Avatar avatar;
+        private List<Avatar> avatars;
+
+        public ObjectId id() {
+            return this.id;
+        }
+
+        public Avatar avatar() {
+            return this.avatar;
+        }
+
+        public List<Avatar> avatars() {
+            return this.avatars;
+        }
+    }
+
+    public static class Avatar extends ValueObject {
+        private String key;
+        private String hash;
+        private int size;
+
+        public String key() {
+            return this.key;
+        }
+
+        public void validate() {
+            PreconditionUtils.checkRequired("Avatar.key", key);
+            PreconditionUtils.checkRequired("Avatar.hash", hash);
+            PreconditionUtils.checkGreaterThanZero("Avatar.size", size);
+        }
+    }
+
+    public enum Type {
+        visitor, member
     }
 
     private static class Password {

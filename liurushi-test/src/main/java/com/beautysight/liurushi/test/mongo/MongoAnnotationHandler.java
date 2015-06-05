@@ -92,24 +92,32 @@ public abstract class MongoAnnotationHandler<A extends Annotation> {
         Class<?> clazz = testContext.getTestClass();
         Method method = testContext.getTestMethod();
 
-        String defaultScript = clazz.getSimpleName();
         if (!annotation.classLevel) {
-            defaultScript += "." + method.getName();
+            String secondDefaultScript = clazz.getSimpleName() + "." + method.getName()
+                    + scriptSuffix(annotation.instance);
+            File secondScriptFile = Files.fileInSameDirWith(clazz, secondDefaultScript);
+            if (secondScriptFile.exists()) {
+                if (logger.isInfoEnabled()) {
+                    logger.info(String.format("Detected default mongo script \"%s\" for test %s [%s]",
+                            secondScriptFile.getPath(), annotation.elementType, annotation.elementName));
+                }
+                return secondScriptFile;
+            }
         }
-        defaultScript += scriptSuffix(annotation.instance);
 
-        File scriptFile = Files.fileInSameDirWith(clazz, defaultScript);
-        if (scriptFile.exists()) {
+        String firstDefaultScript = clazz.getSimpleName() + scriptSuffix(annotation.instance);
+        File firstScriptFile = Files.fileInSameDirWith(clazz, firstDefaultScript);
+        if (firstScriptFile.exists()) {
             if (logger.isInfoEnabled()) {
                 logger.info(String.format("Detected default mongo script \"%s\" for test %s [%s]",
-                        scriptFile.getPath(), annotation.elementType, annotation.elementName));
+                        firstScriptFile.getPath(), annotation.elementType, annotation.elementName));
             }
-            return scriptFile;
+            return firstScriptFile;
         } else {
             String msg = String.format("Could not detect default mongo script for test %s [%s]: "
                             + "%s does not exist. Either declare scripts via @%s or make the "
                             + "default mongo script available.", annotation.elementType, annotation.elementName,
-                    scriptFile.getPath(), annotation.getClass().getSimpleName());
+                    firstScriptFile.getPath(), annotation.getClass().getSimpleName());
             logger.error(msg);
             throw new IllegalStateException(msg);
         }

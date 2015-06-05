@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/oauth")
 public class StorageAuthRest {
 
     @Autowired

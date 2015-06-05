@@ -20,8 +20,8 @@
             <artifactId>liurushi-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.qiniu</groupId>
-            <artifactId>qiniu-java-sdk</artifactId>
+            <groupId>com.beautysight</groupId>
+            <artifactId>liurushi-fundamental-service</artifactId>
         </dependency>
         <dependency>
             <groupId>com.beautysight</groupId>

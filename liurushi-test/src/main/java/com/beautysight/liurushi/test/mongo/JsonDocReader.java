@@ -53,6 +53,7 @@ public class JsonDocReader {
                     } else if (previousBuilder.isWorkFinished()) {
                         jsonDocs.add(previousBuilder.build());
                         previousBuilder = JsonDoc.builder();
+                        previousBuilder.collectionName(collectionName(line));
                     } else {
                         previousBuilder = JsonDoc.builder().collectionName(collectionName(line));
                     }

@@ -16,6 +16,7 @@
         <module>liurushi-community</module>
         <module>liurushi-rest</module>
         <module>liurushi-test</module>
+        <module>liurushi-fundamental-service</module>
     </modules>
 
     <properties>
@@ -27,8 +28,12 @@
         <servlet-api.version>3.1.0</servlet-api.version>
         <spring-framework.version>4.1.6.RELEASE</spring-framework.version>
         <spring-data-mongodb.version>1.7.0.RELEASE</spring-data-mongodb.version>
+        <!--
         <mongodb-driver.version>2.13.0</mongodb-driver.version>
         <morphia.version>0.111</morphia.version>
+        -->
+        <mongodb-driver.version>3.0.2</mongodb-driver.version>
+        <morphia.version>1.0.0</morphia.version>
         <jackson.version>2.5.3</jackson.version>
 
         <slf4j.version>1.7.12</slf4j.version>
@@ -113,7 +118,6 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>${mongodb-driver.version}</version>
         </dependency>
         <!-- Spring Data MongoDB -->
         <dependency>
@@ -132,7 +136,6 @@
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia</artifactId>
-            <version>${morphia.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mongodb</groupId>
@@ -140,25 +143,23 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia-util</artifactId>
-            <version>${morphia.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia-validation</artifactId>
-            <version>${morphia.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia-entityscanner-plug</artifactId>
-            <version>${morphia.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia-logging-slf4j</artifactId>
-            <version>${morphia.version}</version>
         </dependency>
 
         <!-- Common Utils -->
@@ -249,6 +250,16 @@
             <dependency>
                 <groupId>com.beautysight</groupId>
                 <artifactId>liurushi-identityaccess</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beautysight</groupId>
+                <artifactId>liurushi-community</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beautysight</groupId>
+                <artifactId>liurushi-fundamental-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -361,11 +372,13 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!--
             <dependency>
                 <groupId>org.mongodb.morphia</groupId>
                 <artifactId>morphia-util</artifactId>
                 <version>${morphia.version}</version>
             </dependency>
+            -->
             <dependency>
                 <groupId>org.mongodb.morphia</groupId>
                 <artifactId>morphia-validation</artifactId>
@@ -491,7 +504,7 @@
             <testResource>
                 <directory>src/test/java</directory>
                 <includes>
-                    <include>**/*.js</include>
+                    <include>**/*</include>
                 </includes>
             </testResource>
         </testResources>

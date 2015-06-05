@@ -6,8 +6,7 @@ package com.beautysight.liurushi.identityaccess.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.utils.Jsons;
-import com.beautysight.liurushi.identityaccess.common.Environment;
-import com.beautysight.liurushi.identityaccess.domain.model.UploadOptions;
+import com.beautysight.liurushi.fundamental.storage.domain.UploadOptions;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
@@ -28,7 +27,7 @@ public class GetUploadTokenCommand implements Command {
     public String checksum;
 
     public UploadOptions toUploadOptions() {
-        UploadOptions options = UploadOptions.newInstance().scope(Environment.bucket, key)
+        UploadOptions options = UploadOptions.newInstance().key(key)
                 .saveKey(keyExpr).checksum(checksum);
         if (!CollectionUtils.isEmpty(returnBody)) {
             options.returnBody(Jsons.toJsonString(returnBody));

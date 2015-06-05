@@ -4,18 +4,14 @@
 
 package com.beautysight.liurushi.common.domain;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.beautysight.liurushi.common.shared.CommonModel;
 
 import java.io.Serializable;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-08.
- *
+ * A tag interface that represents value object.
  * @author chenlong
  * @since 1.0
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public interface ValueObject extends Serializable {
+public abstract class ValueObject extends CommonModel implements JsonAnyFieldVisible, Serializable {
 }

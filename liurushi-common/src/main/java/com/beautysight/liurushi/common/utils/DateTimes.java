@@ -4,6 +4,10 @@
 
 package com.beautysight.liurushi.common.utils;
 
+import org.joda.time.DateTime;
+
+import java.util.Date;
+
 /**
  * Here is Javadoc.
  * <p/>
@@ -14,6 +18,10 @@ package com.beautysight.liurushi.common.utils;
  */
 public class DateTimes {
 
-
+    public static boolean beforeOrEqualNow(Date basicDate, int secondOffset) {
+        DateTime thisTime = new DateTime(basicDate).plus(secondOffset);
+        DateTime now = new DateTime();
+        return (thisTime.compareTo(now) <= 0);
+    }
 
 }

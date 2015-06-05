@@ -23,7 +23,7 @@ public class Product extends AbstractEntity {
     private String name;
     private Pricing pricing;
 
-    @Reference("category_id")
+    @Reference(value = "category_id", idOnly = true, lazy = false)
     private Category category;
 
     private Product() {

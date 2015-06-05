@@ -22,9 +22,10 @@ public class UserDTO {
     public String mobilePhone;
     public String password;
     public String confirmPassword;
+    public User.Avatar avatar;
 
     public User toUser() {
-        return new User(nickname, gender, mobilePhone, password);
+        return new User(nickname, gender, mobilePhone, password, avatar);
     }
 
 }

@@ -6,6 +6,9 @@ package com.beautysight.liurushi.common.utils;
 
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 /**
  * Here is Javadoc.
@@ -21,6 +24,10 @@ public class PreconditionUtils {
         Preconditions.checkArgument(StringUtils.isNotBlank(val), "%s required", field);
     }
 
+    public static void checkRequired(String field, List<?> val) {
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(val), "%s must not be null or empty", field);
+    }
+
     public static void checkRequired(String field, Object val) {
         Preconditions.checkArgument((val != null), "%s required", field);
     }
@@ -31,6 +38,14 @@ public class PreconditionUtils {
 
     public static void checkGreaterThan(int bound, String field, int val) {
         Preconditions.checkArgument((val > bound), "%s must be greater than %s", field, bound);
+    }
+
+    public static void checkGreaterThanOrEqZero(String field, int val) {
+        checkGreaterThanOrEq(0, field, val);
+    }
+
+    public static void checkGreaterThanOrEq(int bound, String field, int val) {
+        Preconditions.checkArgument((val >= bound), "%s must be greater than or eq %s", field, bound);
     }
 
 }

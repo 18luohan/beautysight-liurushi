@@ -7,6 +7,7 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.Error;
 import com.beautysight.liurushi.common.utils.Logs;
+import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,11 @@ public class ErrorIdToHttpStatusMapping {
         MAPPING.put(CommonErrorId.bad_request, HttpStatus.BAD_REQUEST);
         MAPPING.put(CommonErrorId.invalid_params, HttpStatus.UNPROCESSABLE_ENTITY);
         MAPPING.put(CommonErrorId.unauthorized, HttpStatus.UNAUTHORIZED);
+        MAPPING.put(CommonErrorId.no_permission_for_this_api, HttpStatus.FORBIDDEN);
+        MAPPING.put(CommonErrorId.business_constraint_violated, HttpStatus.UNPROCESSABLE_ENTITY);
+
+        MAPPING.put(AuthErrorId.invalid_access_token, HttpStatus.UNAUTHORIZED);
+        MAPPING.put(AuthErrorId.expired_access_token, HttpStatus.UNAUTHORIZED);
 
         MAPPING.put(UserErrorId.password_confirmpwd_not_equal, HttpStatus.UNPROCESSABLE_ENTITY);
         MAPPING.put(UserErrorId.user_already_exist, HttpStatus.CONFLICT);

@@ -17,6 +17,8 @@ public enum CommonErrorId implements Error.Id {
     bad_request,
     unauthorized,
     invalid_params,
+    no_permission_for_this_api,
+    business_constraint_violated,
 
     internal_server_error,
     service_unavailable,

@@ -4,17 +4,16 @@
 
 package com.beautysight.liurushi.identityaccess.domain.service;
 
-import com.beautysight.liurushi.common.ex.NoUniqueEntityException;
+import com.beautysight.liurushi.common.ex.DuplicateEntityException;
+import com.beautysight.liurushi.common.ex.EntityNotFoundException;
+import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.repo.DeviceRepository;
-import com.beautysight.liurushi.identityaccess.domain.repo.UserRepository;
+import com.beautysight.liurushi.identityaccess.domain.repo.DeviceRepo;
+import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 /**
  * Here is Javadoc.
@@ -28,38 +27,51 @@ import java.util.List;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepo userRepo;
     @Autowired
-    private DeviceRepository deviceRepository;
+    private DeviceRepo deviceRepo;
+//    @Autowired
+//    private StorageService storageService;
 
-    public Optional<User> userWithMobilePhone(String mobilePhone) {
-        List<User> users = userRepository.withMobilePhone(mobilePhone);
-        if (CollectionUtils.isEmpty(users)) {
-            return Optional.absent();
+    public User signUp(User newUser) {
+        Optional<User> theUser = userRepo.withMobilePhone(newUser.mobilePhone());
+        if (theUser.isPresent()) {
+            throw new DuplicateEntityException(UserErrorId.user_already_exist,
+                    "user already exist with mobilePhone: " + newUser.mobilePhone());
         }
 
-        if (users.size() > 1) {
-            throw new NoUniqueEntityException("Found multiple users with mobilePhone: " + mobilePhone);
-        }
-
-        return Optional.of(users.get(0));
+        newUser.setLastLoginToNow();
+        return userRepo.save(newUser);
     }
 
-    public Optional<Device> deviceWithImei(String imei) {
-        List<Device> devices = deviceRepository.withImei(imei);
-        if (CollectionUtils.isEmpty(devices)) {
-            return Optional.absent();
+    public User login(User loggingInUser, String plainPwd) {
+        Optional<User> theUser = userRepo.withMobilePhone(loggingInUser.mobilePhone());
+        if (!theUser.isPresent() || !theUser.get().isGivenPwdCorrect(plainPwd)) {
+            throw new EntityNotFoundException(UserErrorId.user_not_exist_or_pwd_incorrect,
+                    "user not exist or pwd incorrect");
         }
 
-        if (devices.size() > 1) {
-            throw new NoUniqueEntityException("Found multiple devices with imei: " + imei);
-        }
-
-        return Optional.of(devices.get(0));
+        loggingInUser.setLastLoginToNow();
+        userRepo.save(loggingInUser);
+        return theUser.get();
     }
 
-    public void saveOrUpdateDevice(Device device, User user) {
+    public Device saveOrAddUserToDevice(Device device, User user) {
+        Optional<Device> theDevice = deviceRepo.withImei(device.imei());
+        if (theDevice.isPresent()) {
+            deviceRepo.addDeviceUser(device.imei(), user);
+            return theDevice.get();
+        }
         device.addUser(user);
+        return deviceRepo.save(device);
     }
+
+//    public void avatarDownloadUrl(User.UserLite userLite, int size) {
+//        User.Avatar avatar = userLite.avatar();
+//    }
+//
+//    private void produceAvatarThumbnail(String originalAvatarKey, int thumbnailSize) {
+//        storageService.getDownloadUrl()
+//    }
 
 }

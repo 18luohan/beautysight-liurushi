@@ -8,6 +8,8 @@ import com.beautysight.liurushi.common.domain.Product;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import com.beautysight.liurushi.test.mongo.Cleanup;
 import com.beautysight.liurushi.test.mongo.Prepare;
+import com.beautysight.liurushi.test.utils.Reflections;
+import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,6 +20,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Here is Javadoc.
@@ -45,6 +48,15 @@ public class AbstractMongoRepositoryTest extends SpringBasedAppTest {
     }
 
     @Test
+    public void findOne() {
+        ObjectId id = new ObjectId("556c4d735b661b594805d7c9");
+        Product product = productRepo.findOne(id);
+        Iterable<Product> products = productRepo.findAll();
+        assertNotNull(product);
+        assertTrue(products.iterator().hasNext());
+    }
+
+    @Test
     @Prepare()
     @Cleanup()
     public void find() {
@@ -55,6 +67,20 @@ public class AbstractMongoRepositoryTest extends SpringBasedAppTest {
             Product product = products.next();
             assertNotNull(product);
         }
+    }
+
+    @Test
+    @Cleanup
+    public void findByCategory() {
+        Category category = new Category("Portable Computer", "No description");
+        category = categoryRepo.save(category);
+        Product newProduct = new Product("mac-pro-15-1008", "1008", "mac pro", 15000, 13800, category);
+        productRepo.save(newProduct);
+
+        List<Product> products = productRepo.findProductsBy(category);
+        assertNotNull(products);
+        assertEquals(1, products.size());
+        assertEquals(category.id(), Reflections.getField(products.get(0), "category", Category.class).id());
     }
 
     @Test

@@ -14,6 +14,10 @@ package com.beautysight.liurushi.common.ex;
  */
 public class DuplicateEntityException extends ApplicationException {
 
+    public DuplicateEntityException(String message) {
+        this(CommonErrorId.server_data_stale, message);
+    }
+
     public DuplicateEntityException(Error.Id errorId, String message) {
         super(errorId, message);
     }

@@ -4,8 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.domain.model;
 
-import com.beautysight.liurushi.common.domain.ValueObject;
-import com.beautysight.liurushi.common.utils.PreconditionUtils;
+import com.beautysight.liurushi.common.domain.Dimensions;
 
 /**
  * Here is Javadoc.
@@ -15,14 +14,5 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
  * @author chenlong
  * @since 1.0
  */
-public class Resolution implements ValueObject {
-
-    private int width;
-    private int height;
-
-    public void validate() {
-        PreconditionUtils.checkGreaterThanZero("resolution.width", width);
-        PreconditionUtils.checkGreaterThanZero("resolution.height", height);
-    }
-
+public class Resolution extends Dimensions {
 }
