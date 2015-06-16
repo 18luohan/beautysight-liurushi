@@ -66,7 +66,7 @@ public class AccessTokenService {
         throw new EntityNotFoundException("Expect basic token present, but actual absent");
     }
 
-    public Optional<UserClient> authenticate(String accessToken, AccessToken.Type type) {
+    public UserClient authenticate(String accessToken, AccessToken.Type type) {
         Optional<AccessToken> theToken = accessTokenRepo.accessTokenOf(accessToken, type);
         if (!theToken.isPresent()) {
             throw new AuthException(AuthErrorId.invalid_access_token, "Invalid %s token: %s", type, accessToken);
@@ -88,11 +88,11 @@ public class AccessTokenService {
                     type, theToken.get().accessToken());
         }
 
-        if (theToken.get().user() == null) {
-            return Optional.absent();
+        if (theToken.get().isBasic()) {
+            return UserClient.newVisitor(theToken.get().device());
         }
 
-        return Optional.of(new UserClient(theToken.get().user(), theToken.get().device(), type));
+        return new UserClient(theToken.get().user(), theToken.get().device(), type);
     }
 
 }

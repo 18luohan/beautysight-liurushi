@@ -32,9 +32,4 @@ public abstract class AbstractEntity extends CommonModel implements Serializable
         return id;
     }
 
-    public String idAsString() {
-        Preconditions.checkState((id != null), "id is null");
-        return id.toString();
-    }
-
 }

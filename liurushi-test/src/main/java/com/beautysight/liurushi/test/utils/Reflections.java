@@ -27,7 +27,7 @@ public class Reflections {
         ReflectionUtils.setField(field, target, value);
     }
 
-    public static <T> T getField(Object target, String name, Class<T>... clazz) {
+    public static <T> T getField(Object target, String name) {
         Field field = ReflectionUtils.findField(target.getClass(), name);
         ReflectionUtils.makeAccessible(field);
         return (T) ReflectionUtils.getField(field, target);

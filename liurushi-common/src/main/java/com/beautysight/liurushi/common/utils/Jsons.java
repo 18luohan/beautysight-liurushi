@@ -44,6 +44,17 @@ public class Jsons {
         }
     }
 
+    public static <T> T toObject(String jsonString, Class<T> clazz) {
+        try {
+            return mapper.readValue(jsonString, clazz);
+        } catch (JsonProcessingException e) {
+            throw new JsonHandlingException(String.format("Read json file [%s] as %s",
+                    jsonString, clazz.getName()), e);
+        } catch (IOException e) {
+            throw new JsonHandlingException(String.format("Read json file: %s", jsonString), e);
+        }
+    }
+
     public static <T> T toObject(File srcJsonFile, Class<T> clazz) {
         try {
             return mapper.readValue(srcJsonFile, clazz);

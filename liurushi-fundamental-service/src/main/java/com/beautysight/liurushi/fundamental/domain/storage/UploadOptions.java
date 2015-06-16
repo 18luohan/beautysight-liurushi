@@ -2,7 +2,7 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.fundamental.storage.domain;
+package com.beautysight.liurushi.fundamental.domain.storage;
 
 import com.qiniu.util.StringMap;
 import org.apache.commons.lang3.StringUtils;

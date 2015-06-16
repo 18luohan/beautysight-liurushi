@@ -6,6 +6,7 @@ package com.beautysight.liurushi.rest.permission;
 
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.utils.Logs;
+import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.common.Requests;
 import com.beautysight.liurushi.rest.common.Responses;
 import org.slf4j.Logger;
@@ -41,6 +42,10 @@ public class ApiPermissionInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean hasPermission(HttpServletRequest request, Object handler) {
+        if (RequestContext.isThisUserAMember()) {
+            return true;
+        }
+
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             VisitorApiPermission annotation = handlerMethod.getMethodAnnotation(VisitorApiPermission.class);

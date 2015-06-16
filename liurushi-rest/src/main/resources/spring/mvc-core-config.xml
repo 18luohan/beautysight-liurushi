@@ -31,6 +31,7 @@
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/"/>
+            <mvc:exclude-mapping path="/oauth/basic_token"/>
             <bean class="com.beautysight.liurushi.rest.permission.ApiPermissionInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>

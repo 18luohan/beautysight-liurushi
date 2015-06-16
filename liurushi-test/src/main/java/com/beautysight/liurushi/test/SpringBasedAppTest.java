@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:spring/*.xml")
-@ActiveProfiles("unit-test")
+//@ActiveProfiles("unit-test")
 @TestExecutionListeners(value = { MongoScriptsTestExecutionListener.class },
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public abstract class SpringBasedAppTest {

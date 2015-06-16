@@ -28,6 +28,10 @@ public class EntityNotFoundException extends ApplicationException {
         super(CommonErrorId.server_data_stale, String.format(MSG_TEMPLATE, entityClass.getSimpleName()));
     }
 
+    public EntityNotFoundException(Expected expected) {
+        super(CommonErrorId.server_data_stale, String.format(MSG_TEMPLATE, expected));
+    }
+
     public EntityNotFoundException(Error.Id errorId, String message) {
         super(errorId, message);
     }

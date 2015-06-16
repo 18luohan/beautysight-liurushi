@@ -80,7 +80,7 @@ public class AbstractMongoRepositoryTest extends SpringBasedAppTest {
         List<Product> products = productRepo.findProductsBy(category);
         assertNotNull(products);
         assertEquals(1, products.size());
-        assertEquals(category.id(), Reflections.getField(products.get(0), "category", Category.class).id());
+        assertEquals(category.id(), Reflections.<Category>getField(products.get(0), "category").id());
     }
 
     @Test

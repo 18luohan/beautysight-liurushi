@@ -15,10 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-07.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -31,6 +27,8 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
     /**
      * Intercept the execution of a handler. Called after HandlerMapping determined
      * an appropriate handler object, but before HandlerAdapter invokes the handler.
+     * <p/>
+     * 如果该方法中抛出异常，就会被各种自定义的Exception Handler捕获并处理。
      *
      * @param request
      * @param response
@@ -67,6 +65,10 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
      * for proper resource cleanup.
      * <p>Note: Will only be called if this interceptor's {@code preHandle}
      * method has successfully completed and returned {@code true}!
+     * <p/>
+     * 注意，这个方法中抛出的异常并不会被各种自定义的ExceptionHandler捕获处理；
+     * Spring MVC Dispatcher 虽然可以捕获到这些异常，但是并未做特别的处理，仅仅将异常记录到日志中。
+     * 但如果是preHandle方法中抛出的异常，就会交给自定义的ExceptionHandler处理，处于什么样的考量要这样设计呢？
      *
      * @param request
      * @param response
@@ -78,7 +80,6 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         super.afterCompletion(request, response, handler, ex);
         // 注意，如果preHandle方法返回false或抛出异常，该方法就不会执行
-        // TODO 如果HandlerInterceptor中抛出异常，该由谁来负责捕获处理这些异常？
         // TODO 如果Controller(对spring来说就是handler)中抛出异常，该在哪里执行清理操作？
         Logs.clearTraceId();
     }

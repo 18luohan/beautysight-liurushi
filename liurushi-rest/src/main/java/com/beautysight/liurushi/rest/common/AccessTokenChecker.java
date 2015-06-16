@@ -57,16 +57,15 @@ public class AccessTokenChecker extends HandlerInterceptorAdapter {
                 return false;
             }
 
-            Optional<UserClient> userClient = authApp.authenticate(accessToken);
-            if (userClient.isPresent()) {
-                RequestContext.putThisUserClient(userClient.get());
-            }
+            RequestContext.putThisUserClient(authApp.authenticate(accessToken));
         } catch (ApplicationException ex) {
             Logs.error(logger, ex, "Error while auth");
             Responses.setStatusAndWriteTo(response, ex.errorId(), ex.getMessage());
+            return false;
         } catch (Exception ex) {
             Logs.error(logger, ex, "Error while auth");
             Responses.setStatusAndWriteTo(response, CommonErrorId.unauthorized, ex.getMessage());
+            return false;
         }
 
         return true;

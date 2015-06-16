@@ -27,9 +27,23 @@ public class UserClient extends ValueObject {
     }
 
     public UserClient(User user, Device device, AccessToken.Type tokenType) {
-        this.user = user.toUserLite();
+        if (user != null) {
+            this.user = user.toUserLite();
+        }
         this.deviceId = device.id();
         this.userType = determineUserType(tokenType);
+    }
+
+    public UserClient(User user, Device device, User.Type userType) {
+        if (user != null) {
+            this.user = user.toUserLite();
+        }
+        this.deviceId = device.id();
+        this.userType = userType;
+    }
+
+    public static UserClient newVisitor(Device device) {
+        return new UserClient(null, device, User.Type.visitor);
     }
 
     public ObjectId userId() {

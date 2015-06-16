@@ -6,7 +6,7 @@ package com.beautysight.liurushi.identityaccess.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.utils.Jsons;
-import com.beautysight.liurushi.fundamental.storage.domain.UploadOptions;
+import com.beautysight.liurushi.fundamental.domain.storage.UploadOptions;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;

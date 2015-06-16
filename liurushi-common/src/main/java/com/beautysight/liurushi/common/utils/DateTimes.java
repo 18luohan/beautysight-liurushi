@@ -19,7 +19,7 @@ import java.util.Date;
 public class DateTimes {
 
     public static boolean beforeOrEqualNow(Date basicDate, int secondOffset) {
-        DateTime thisTime = new DateTime(basicDate).plus(secondOffset);
+        DateTime thisTime = new DateTime(basicDate).plusSeconds(secondOffset);
         DateTime now = new DateTime();
         return (thisTime.compareTo(now) <= 0);
     }

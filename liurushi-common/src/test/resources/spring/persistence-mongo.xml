@@ -11,14 +11,6 @@
 
     <context:component-scan base-package="com.beautysight.liurushi.common.persistence"/>
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="order" value="1"/>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <property name="location">
-            <value>classpath:spring/mongo.properties</value>
-        </property>
-    </bean>
-
     <bean id="mongoClient" class="org.springframework.data.mongodb.core.MongoClientFactoryBean"/>
 
     <bean id="morphia" class="com.beautysight.liurushi.common.persistence.mongo.MorphiaFactoryBean">

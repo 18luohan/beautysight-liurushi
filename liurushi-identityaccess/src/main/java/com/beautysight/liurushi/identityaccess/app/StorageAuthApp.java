@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.app;
 
-import com.beautysight.liurushi.fundamental.storage.domain.StorageService;
+import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.app.command.GetDownloadUrlCommand;
 import com.beautysight.liurushi.identityaccess.app.command.GetUploadTokenCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.DownloadUrlPresentation;

@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.utils.Logs;
+import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.identityaccess.domain.model.UserClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,10 @@ public class RequestContext {
 
     public static UserClient thisUserClient() {
         return thisUserClient.get();
+    }
+
+    public static boolean isThisUserAMember() {
+        return (thisUserClient().userType() == User.Type.member);
     }
 
     public static void clear() {

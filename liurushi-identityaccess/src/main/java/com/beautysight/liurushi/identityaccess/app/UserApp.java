@@ -61,8 +61,4 @@ public class UserApp {
         throw new EntityNotFoundException("Expect bearer token present, but actual absent");
     }
 
-
-
-
-
 }

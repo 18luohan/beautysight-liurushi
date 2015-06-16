@@ -5,9 +5,9 @@
 package com.beautysight.liurushi.fundamental.infrastructure.storage;
 
 import com.beautysight.liurushi.common.utils.Https;
-import com.beautysight.liurushi.fundamental.storage.domain.ResourceInStorage;
-import com.beautysight.liurushi.fundamental.storage.domain.UploadOptions;
-import com.beautysight.liurushi.fundamental.storage.domain.UploadResult;
+import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
+import com.beautysight.liurushi.fundamental.domain.storage.UploadOptions;
+import com.beautysight.liurushi.fundamental.domain.storage.UploadResult;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import com.beautysight.liurushi.test.utils.Files;
 import com.qiniu.util.StringMap;
@@ -48,7 +48,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 
     @Test
     public void zoomImageAccordingTo() {
-        int expectedWidth = 800;
+        int expectedWidth = 200;
         String originalKey = "Ftl9KyVXj1OPA_zEFa0Cz9B6KtTR";
         ResourceInStorage resource = storageService.zoomImageAccordingTo(expectedWidth, originalKey);
         assertNotNull(resource);

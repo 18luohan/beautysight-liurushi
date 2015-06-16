@@ -7,7 +7,7 @@ package com.beautysight.liurushi.fundamental.infrastructure.storage;
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.utils.Https;
-import com.beautysight.liurushi.fundamental.storage.domain.*;
+import com.beautysight.liurushi.fundamental.domain.storage.*;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UploadManager;

@@ -18,14 +18,6 @@
     <bean id="mongoClientOptions" class="org.springframework.data.mongodb.core.MongoClientOptionsFactoryBean"/>
     -->
 
-    <bean id="mongoConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="order" value="1"/>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <property name="location">
-            <value>classpath:spring/mongo.properties</value>
-        </property>
-    </bean>
-
     <bean id="mongoClient" class="org.springframework.data.mongodb.core.MongoClientFactoryBean"/>
 
     <bean id="morphia" class="com.beautysight.liurushi.common.persistence.mongo.MorphiaFactoryBean">
@@ -35,6 +27,7 @@
             <list>
                 <value>com.beautysight.liurushi.identityaccess.domain.model</value>
                 <value>com.beautysight.liurushi.community.domain.model</value>
+                <value>com.beautysight.liurushi.fundamental.domain</value>
             </list>
         </property>
     </bean>
