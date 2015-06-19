@@ -9,6 +9,7 @@
         <property name="locations">
             <list>
                 <value>classpath:mongo.properties</value>
+                <value>classpath:qiniu_storage.properties</value>
             </list>
         </property>
     </bean>

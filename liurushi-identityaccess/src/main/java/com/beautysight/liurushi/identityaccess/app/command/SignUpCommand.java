@@ -31,11 +31,11 @@ public class SignUpCommand implements Command {
 
     private void validateUser() {
         PreconditionUtils.checkRequired("user.nickname", user.nickname);
-        PreconditionUtils.checkRequired("user.mobilePhone", user.mobilePhone);
+        PreconditionUtils.checkRequired("user.mobile", user.mobile);
         PreconditionUtils.checkRequired("user.password", user.password);
         PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
         PreconditionUtils.checkRequired("user.avatar", user.avatar);
-        user.avatar.validate();
+        user.avatar.validateAsOriginal();
         if (!user.password.equals(user.confirmPassword)) {
             throw new ParamValidationException(UserErrorId.password_confirmpwd_not_equal,
                     "user password not equal to confirmPassword");

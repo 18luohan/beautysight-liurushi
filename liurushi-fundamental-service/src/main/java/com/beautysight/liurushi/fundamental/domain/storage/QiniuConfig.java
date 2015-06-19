@@ -7,6 +7,8 @@ package com.beautysight.liurushi.fundamental.domain.storage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Here is Javadoc.
  * <p/>
@@ -32,5 +34,12 @@ public final class QiniuConfig {
 
     @Value("${qiniu.storage.secret.key}")
     public String secretKey;
+
+    public String bucketUrl;
+
+    @PostConstruct
+    public void supplementaryInit() {
+        this.bucketUrl = bucketUrlScheme + bucketDomain;
+    }
 
 }

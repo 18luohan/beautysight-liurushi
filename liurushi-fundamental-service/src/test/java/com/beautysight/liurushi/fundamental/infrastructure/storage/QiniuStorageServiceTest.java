@@ -35,10 +35,19 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     @Autowired
     private QiniuStorageService storageService;
 
+    private static final String key = "Ftl9KyVXj1OPA_zEFa0Cz9B6KtTR";
+
+    @Test
+    public void issueDownloadUrl() {
+        String result = storageService.issueDownloadUrl(key);
+        assertTrue(StringUtils.isNotBlank(result));
+        System.out.println(result);
+    }
+
     @Test
     public void uploadAvatar() throws IOException {
         UploadOptions uploadPolicy = uploadPolicyForTest();
-        String uploadToken = storageService.getUploadToken(uploadPolicy);
+        String uploadToken = storageService.issueUploadToken(uploadPolicy);
         UploadResult result = storageService.upload(Files.toBytes("images/avatar1.png"), uploadToken);
         assertTrue(result.isSuccessful());
         assertTrue(StringUtils.isNotBlank(result.key));
@@ -47,10 +56,19 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     }
 
     @Test
-    public void zoomImageAccordingTo() {
-        int expectedWidth = 200;
+    public void zoomImageTo() {
+        int expectedWidth = 180;
+        ResourceInStorage resource = storageService.zoomImageTo(expectedWidth, key);
+        assertNotNull(resource);
+        System.out.println("error:" + resource.error + ", key:" + resource.key
+                + ", hash:" + resource.hash + ", url:" + resource.url);
+    }
+
+    @Test
+    public void blurImage() {
+        int radius = 30, segma = 20;
         String originalKey = "Ftl9KyVXj1OPA_zEFa0Cz9B6KtTR";
-        ResourceInStorage resource = storageService.zoomImageAccordingTo(expectedWidth, originalKey);
+        ResourceInStorage resource = storageService.blurImageAccordingTo(radius, segma, originalKey);
         assertNotNull(resource);
         System.out.println("error:" + resource.error + ", key:" + resource.key
                 + ", hash:" + resource.hash + ", url:" + resource.url);
@@ -68,7 +86,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     @Test
     public void uploadToken() {
         UploadOptions uploadPolicy = uploadPolicyForTest().deadline(System.currentTimeMillis() / 1000 + 3600 * 12);
-        String token = storageService.getUploadToken(uploadPolicy);
+        String token = storageService.issueUploadToken(uploadPolicy);
         assertTrue(StringUtils.isNotBlank(token));
         System.out.println("token:" + token);
     }
@@ -82,7 +100,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 //        instructions = null;
         String savedAsKey = UUID.randomUUID().toString();
 //        savedAsKey = null;
-        String downloadUrl = storageService.getDownloadUrl(key, expiry, instructions, savedAsKey);
+        String downloadUrl = storageService.issueDownloadUrl(key, expiry, instructions, savedAsKey);
         System.out.println("savedAsKey:" + savedAsKey + ", url:" + downloadUrl);
         assertNotNull(downloadUrl);
     }
@@ -91,7 +109,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     public void uploadTokenWithChecksum() throws IOException {
         UploadOptions uploadPolicy = uploadPolicyForTest()
                 .checksum("pseudo-checksum-abcdefg-1000");
-        String uploadToken = storageService.getUploadToken(uploadPolicy);
+        String uploadToken = storageService.issueUploadToken(uploadPolicy);
         UploadResult result = storageService.upload(Files.toBytes("images/felicity.jpg"), uploadToken);
         assertTrue(result.isSuccessful());
         assertTrue(StringUtils.isNotBlank(result.key));
@@ -100,7 +118,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 
     @Test
     public void uploadWithDefaultPolicy() throws IOException {
-        String uploadToken = storageService.getUploadToken(uploadPolicyForTest());
+        String uploadToken = storageService.issueUploadToken(uploadPolicyForTest());
         UploadResult result = storageService.upload(Files.toBytes("images/jessy.jpg"), uploadToken);
         assertTrue(result.isSuccessful());
         assertTrue(StringUtils.isNotBlank(result.key));
@@ -111,7 +129,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     public void uploadWithCustomReturnBody() throws IOException {
         String returnBody = "{\"key\": $(key), \"hash\": $(etag), \"imageWidth\": $(imageInfo.width), \"imageHeight\": $(imageInfo.height)}";
         UploadOptions policy = uploadPolicyForTest().returnBody(returnBody);
-        UploadResult result = storageService.upload(Files.toBytes("images/jessy.jpg"), storageService.getUploadToken(policy));
+        UploadResult result = storageService.upload(Files.toBytes("images/jessy.jpg"), storageService.issueUploadToken(policy));
 
         assertTrue(result.isSuccessful());
         assertTrue(StringUtils.isNotBlank(result.key));
@@ -131,7 +149,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
         params.put("x:requestId", requestId);
 
         UploadResult result = storageService.upload(Files.toBytes("images/jessy.jpg"),
-                storageService.getUploadToken(policy), params);
+                storageService.issueUploadToken(policy), params);
 
         assertTrue(result.isSuccessful());
         assertTrue(StringUtils.isNotBlank(result.key));

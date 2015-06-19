@@ -143,10 +143,10 @@ public abstract class MongoAnnotationHandler<A extends Annotation> {
     }
 
     /**
-     * Return the script file extension {@Code ".js"}.
+     * Return the script file extension {@Code ".data"}.
      */
     protected String scriptFileExt() {
-        return ".js";
+        return ".data";
     }
 
     /**

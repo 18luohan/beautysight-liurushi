@@ -5,12 +5,9 @@
 package com.beautysight.liurushi.community.app;
 
 import com.beautysight.liurushi.common.utils.Jsons;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import com.beautysight.liurushi.test.mongo.Cleanup;
 import com.beautysight.liurushi.test.utils.Files;
-import com.beautysight.liurushi.test.utils.Reflections;
-import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,14 +30,6 @@ public class ContentAppTest extends SpringBasedAppTest {
         PublishContentCommand command = Jsons.toObject(
                 Files.fileInSameDirWith(ContentAppTest.class, "PublishContentCommand.json"),
                 PublishContentCommand.class);
-
-        User.Avatar avatar = new User.Avatar();
-        Reflections.setField(avatar, "key", "konglong");
-        Reflections.setField(avatar, "hash", "sjfjajfkddsfjiweksdfk");
-        User.UserLite author = new User.UserLite();
-        Reflections.setField(author, "id", new ObjectId());
-        Reflections.setField(author, "nickname", "konglong");
-        Reflections.setField(author, "avatar", avatar);
         contentApp.publishContent(command);
     }
 

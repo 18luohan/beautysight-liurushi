@@ -1,0 +1,13 @@
+{
+  "type": "android",
+  "model": "google-5",
+  "os": "android 4.3",
+  "rom": "android 4.3",
+  "ppi": "800",
+  "imei": "google-5-imei-001",
+  "imsi": "google-5-imsi-001",
+  "resolution": {
+    "width": "600",
+    "height": "900"
+  }
+}

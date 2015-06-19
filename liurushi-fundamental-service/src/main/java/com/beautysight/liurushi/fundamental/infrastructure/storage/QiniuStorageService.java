@@ -47,14 +47,15 @@ public class QiniuStorageService implements StorageService {
         this.auth = Auth.create(qiniuConfig.accessKey, qiniuConfig.secretKey);
     }
 
-    public ResourceInStorage zoomImageAccordingTo(int expectedWidth, String originalKey) {
+    @Override
+    public ResourceInStorage zoomImageTo(int expectedWidth, String imageKey) {
         try {
             String instructions = String.format("imageMogr2/thumbnail/%dx", expectedWidth);
-            String savedAsKey = originalKey + expectedWidth;
+            String savedAsKey = imageKey + expectedWidth;
             int expiry = 0;
-            String gettingThumbnailInfoUrl = this.getDownloadUrl(originalKey, expiry, instructions, savedAsKey);
-            ResourceInStorage resource = Https.request(gettingThumbnailInfoUrl, ResourceInStorage.class);
-            resource.url = this.getDownloadUrl(resource.key, expiry, null, null);
+            String zoomingImageUrl = this.issueDownloadUrl(imageKey, expiry, instructions, savedAsKey);
+            ResourceInStorage resource = Https.request(zoomingImageUrl, ResourceInStorage.class);
+            resource.url = this.issueDownloadUrl(resource.key, expiry, null, null);
             return resource;
         } catch (IOException e) {
             throw new ApplicationException(CommonErrorId.internal_server_error, "Error while http", e);
@@ -62,7 +63,22 @@ public class QiniuStorageService implements StorageService {
     }
 
     @Override
-    public String getUploadToken(UploadOptions options) {
+    public ResourceInStorage blurImageAccordingTo(int radius, int sigma, String originalKey) {
+        try {
+            String instructions = String.format("imageMogr2/blur/%dx%d", radius, sigma);
+            String savedAsKey = originalKey + String.format("blur%dx%d", radius, sigma);
+            int expiry = 0;
+            String gettingThumbnailInfoUrl = this.issueDownloadUrl(originalKey, expiry, instructions, savedAsKey);
+            ResourceInStorage resource = Https.request(gettingThumbnailInfoUrl, ResourceInStorage.class);
+            resource.url = this.issueDownloadUrl(resource.key, expiry, null, null);
+            return resource;
+        } catch (IOException e) {
+            throw new ApplicationException(CommonErrorId.internal_server_error, "Error while http", e);
+        }
+    }
+
+    @Override
+    public String issueUploadToken(UploadOptions options) {
         try {
             if (!options.isBucketGiven()) {
                 options.scope(qiniuConfig.bucket);
@@ -79,7 +95,12 @@ public class QiniuStorageService implements StorageService {
     }
 
     @Override
-    public String getDownloadUrl(String key, int expiry, String instructions, String savedAsKey) {
+    public String issueDownloadUrl(String key) {
+        return auth.privateDownloadUrl(qiniuConfig.bucketUrl + "/" + key);
+    }
+
+    @Override
+    public String issueDownloadUrl(String key, int expiry, String instructions, String savedAsKey) {
         StringBuilder urlWithoutScheme = new StringBuilder();
         urlWithoutScheme.append(qiniuConfig.bucketDomain).append("/").append(key);
 

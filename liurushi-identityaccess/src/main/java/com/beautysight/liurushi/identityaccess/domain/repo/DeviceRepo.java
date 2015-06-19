@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.domain.repo;
 
-import com.beautysight.liurushi.common.persistence.mongo.MongoRepository;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.google.common.base.Optional;

@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.model.content;
 
-import com.beautysight.liurushi.common.persistence.mongo.MongoRepository;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 
 /**
  * Here is Javadoc.

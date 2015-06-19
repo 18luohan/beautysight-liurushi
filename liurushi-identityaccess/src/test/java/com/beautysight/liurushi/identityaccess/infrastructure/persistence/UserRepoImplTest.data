@@ -1,0 +1,10 @@
+// # users
+{
+    nickname:'penny',
+    gender:'female',
+    mobile:'12345678901',
+    password:{
+        cipherPwd: '289425108060153d52f5521ad0dff1e16ce3fd38143748774afba9a610f54e11',
+        salt:'edb4c4f3138fca09a7ff5f5e7cced1ca18366ca8bb8fc80bdcbfab646416dfc2'
+    }
+}

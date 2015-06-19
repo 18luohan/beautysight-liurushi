@@ -34,10 +34,10 @@ public class UserService {
 //    private StorageService storageService;
 
     public User signUp(User newUser) {
-        Optional<User> theUser = userRepo.withMobilePhone(newUser.mobilePhone());
+        Optional<User> theUser = userRepo.withMobile(newUser.mobile());
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
-                    "user already exist with mobilePhone: " + newUser.mobilePhone());
+                    "user already exist with mobile: " + newUser.mobile());
         }
 
         newUser.setLastLoginToNow();
@@ -45,14 +45,14 @@ public class UserService {
     }
 
     public User login(User loggingInUser, String plainPwd) {
-        Optional<User> theUser = userRepo.withMobilePhone(loggingInUser.mobilePhone());
+        Optional<User> theUser = userRepo.withMobile(loggingInUser.mobile());
         if (!theUser.isPresent() || !theUser.get().isGivenPwdCorrect(plainPwd)) {
             throw new EntityNotFoundException(UserErrorId.user_not_exist_or_pwd_incorrect,
                     "user not exist or pwd incorrect");
         }
 
         loggingInUser.setLastLoginToNow();
-        userRepo.save(loggingInUser);
+        userRepo.updateLastLoginTime(loggingInUser);
         return theUser.get();
     }
 
@@ -71,7 +71,7 @@ public class UserService {
 //    }
 //
 //    private void produceAvatarThumbnail(String originalAvatarKey, int thumbnailSize) {
-//        storageService.getDownloadUrl()
+//        storageService.issueDownloadUrl()
 //    }
 
 }

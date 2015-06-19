@@ -32,7 +32,7 @@ public class AccessTokenService {
     @Autowired
     private AccessTokenRepo accessTokenRepo;
 
-    public AccessToken issueOrGetBasicTokenFor(Device device) {
+    public AccessToken getIfAbsentIssueBasicTokenFor(Device device) {
         Optional<AccessToken> theToken = accessTokenRepo.basicTokenIssuedFor(device);
         if (theToken.isPresent()) {
             return theToken.get();

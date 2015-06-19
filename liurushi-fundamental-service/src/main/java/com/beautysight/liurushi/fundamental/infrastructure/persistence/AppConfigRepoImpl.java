@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.fundamental.infrastructure.persistence;
 
-import com.beautysight.liurushi.common.persistence.mongo.AbstractMongoRepository;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfig;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigRepo;
 import com.google.common.base.Optional;

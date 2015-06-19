@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.common.persistence.mongo.AbstractMongoRepository;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.beautysight.liurushi.community.domain.model.content.PictureStory;
 import com.beautysight.liurushi.community.domain.model.content.PictureStoryRepo;
 import org.springframework.stereotype.Repository;

@@ -4,22 +4,21 @@
 
 package com.beautysight.liurushi.identityaccess.domain.repo;
 
-import com.beautysight.liurushi.common.persistence.mongo.MongoRepository;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.google.common.base.Optional;
+import org.bson.types.ObjectId;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-13.
- *
  * @author chenlong
  * @since 1.0
  */
 public interface UserRepo extends MongoRepository<User> {
 
-    Optional<User> withMobilePhone(String mobilePhone);
+    Optional<User> withMobile(String mobile);
 
-    void updateLastLogin(User loggingInUser);
+    void updateLastLoginTime(User loggingInUser);
+
+    User addAvatarFor(ObjectId userId, User.Avatar newAvatar);
 
 }

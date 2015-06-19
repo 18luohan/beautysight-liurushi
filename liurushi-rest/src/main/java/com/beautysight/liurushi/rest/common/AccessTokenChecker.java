@@ -57,6 +57,7 @@ public class AccessTokenChecker extends HandlerInterceptorAdapter {
                 return false;
             }
 
+            accessToken.validate();
             RequestContext.putThisUserClient(authApp.authenticate(accessToken));
         } catch (ApplicationException ex) {
             Logs.error(logger, ex, "Error while auth");

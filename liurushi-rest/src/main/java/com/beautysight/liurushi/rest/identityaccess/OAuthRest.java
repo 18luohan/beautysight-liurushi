@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-27.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -31,9 +27,9 @@ public class OAuthRest {
 
     @RequestMapping(value = "/basic_token", method = RequestMethod.POST)
     @VisitorApiPermission(true)
-    public AccessTokenPresentation issueOrGetBasicTokenFor(@RequestBody DeviceDTO deviceDTO) {
+    public AccessTokenPresentation getIfAbsentIssueBasicTokenFor(@RequestBody DeviceDTO deviceDTO) {
         deviceDTO.validate();
-        return oAuthApp.issueOrGetBasicTokenFor(deviceDTO);
+        return oAuthApp.getIfAbsentIssueBasicTokenFor(deviceDTO);
     }
 
 }

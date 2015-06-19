@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.infrastructure.persistence;
 
-import com.beautysight.liurushi.common.persistence.mongo.AbstractMongoRepository;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;

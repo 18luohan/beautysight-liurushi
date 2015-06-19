@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
  * @author chenlong
  * @since 1.0
  */

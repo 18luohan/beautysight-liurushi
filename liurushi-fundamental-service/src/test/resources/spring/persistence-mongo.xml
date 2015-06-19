@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd">
+       <!--default-autowire="byName" profile="unit-test">-->
+
+    <!--<beans profile="unit-test">-->
+
+    <context:component-scan base-package="com.beautysight.liurushi.fundamental.infrastructure.persistence"/>
+
+    <bean id="mongoClient" class="org.springframework.data.mongodb.core.MongoClientFactoryBean"/>
+
+    <bean id="morphia" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MorphiaFactoryBean">
+        <property name="singleton" value="true"/>
+        <property name="ignoreInvalidClasses" value="true"/>
+        <property name="mapPackages">
+            <list>
+                <value>com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="datastore" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.DataStoreFactoryBean">
+        <property name="singleton" value="true"/>
+        <property name="morphia" ref="morphia"/>
+        <property name="mongo" ref="mongoClient"/>
+        <property name="dbName" value="shaimei-test"/>
+    </bean>
+
+    <!--
+    <bean id="jongoWrapper" class="com.beautysight.liurushi.test.mongo.JongoWrapper">
+        <constructor-arg name="mongoClient" ref="mongoClient"/>
+        <constructor-arg name="dbName" value="${db.name}"/>
+    </bean>
+    -->
+
+    <!--</beans>-->
+
+</beans>

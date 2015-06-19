@@ -15,10 +15,14 @@ package com.beautysight.liurushi.fundamental.domain.storage;
  */
 public interface StorageService {
 
-    String getUploadToken(UploadOptions options);
+    String issueUploadToken(UploadOptions options);
 
-    String getDownloadUrl(String key, int expiry, String instructions, String savedAsKey);
+    String issueDownloadUrl(String key);
 
-    ResourceInStorage zoomImageAccordingTo(int expectedWidth, String originalKey);
+    String issueDownloadUrl(String key, int expiry, String instructions, String savedAsKey);
+
+    ResourceInStorage zoomImageTo(int expectedWidth, String imageKey);
+
+    ResourceInStorage blurImageAccordingTo(int radius, int sigma, String originalKey);
 
 }

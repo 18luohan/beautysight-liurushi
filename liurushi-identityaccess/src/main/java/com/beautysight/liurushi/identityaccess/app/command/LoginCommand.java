@@ -28,7 +28,7 @@ public class LoginCommand implements Command {
     }
 
     private void validateUser() {
-        PreconditionUtils.checkRequired("user.mobilePhone", user.mobilePhone);
+        PreconditionUtils.checkRequired("user.mobile", user.mobile);
         PreconditionUtils.checkRequired("user.password", user.password);
     }
 
