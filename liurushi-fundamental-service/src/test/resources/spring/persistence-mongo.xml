@@ -33,7 +33,7 @@
     <!--
     <bean id="jongoWrapper" class="com.beautysight.liurushi.test.mongo.JongoWrapper">
         <constructor-arg name="mongoClient" ref="mongoClient"/>
-        <constructor-arg name="dbName" value="${db.name}"/>
+        <constructor-arg name="dbName" value="${mongo.db.name}"/>
     </bean>
     -->
 

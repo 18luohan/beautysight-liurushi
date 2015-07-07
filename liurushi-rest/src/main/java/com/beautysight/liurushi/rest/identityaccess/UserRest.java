@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.rest.identityaccess;
 
+import com.beautysight.liurushi.common.utils.PreconditionUtils;
+import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.identityaccess.app.UserApp;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
@@ -11,10 +13,9 @@ import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPrese
 import com.beautysight.liurushi.identityaccess.app.presentation.DownloadUrlPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
+import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
-import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,16 +24,18 @@ import org.springframework.web.bind.annotation.*;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping(APIs.USERS_V1)
 public class UserRest {
 
     @Autowired
     private UserApp userApp;
+    @Autowired
+    private OAuthApp oAuthApp;
 
     @RequestMapping(value = "/{mobile}", method = RequestMethod.GET)
     @VisitorApiPermission(true)
     public UserExistPresentation checkIfUserExistWith(@PathVariable String mobile) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(mobile), "mobile must be given");
+        PreconditionUtils.checkRequiredMobile("mobile", mobile);
         return userApp.checkIfUserExistWith(mobile);
     }
 
@@ -52,13 +55,13 @@ public class UserRest {
 
     @RequestMapping(value = "/actions/logout", method = RequestMethod.PUT)
     public AccessTokenPresentation logout() {
-        return userApp.logout(RequestContext.thisUserClient());
+        return userApp.logout(oAuthApp.getUserClientBy(RequestContext.getAccessToken()));
     }
 
     @RequestMapping(value = "/current/avatar/{avatarSpec}", method = RequestMethod.POST)
     public DownloadUrlPresentation issueDownloadAvatarUrl(@PathVariable int avatarSpec) {
         User.Avatar.validateSpec(avatarSpec);
-        return userApp.issueDownloadAvatarUrl(avatarSpec, RequestContext.thisUserClient());
+        return userApp.issueDownloadAvatarUrl(avatarSpec, oAuthApp.getUserClientBy(RequestContext.getAccessToken()));
     }
 
 }

@@ -18,7 +18,12 @@
     <bean id="mongoClientOptions" class="org.springframework.data.mongodb.core.MongoClientOptionsFactoryBean"/>
     -->
 
-    <bean id="mongoClient" class="org.springframework.data.mongodb.core.MongoClientFactoryBean"/>
+
+
+    <bean id="mongoClient" class="org.springframework.data.mongodb.core.MongoClientFactoryBean">
+        <property name="host" value="${mongo.host}" />
+        <property name="port" value="${mongo.port}" />
+    </bean>
 
     <bean id="morphia" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MorphiaFactoryBean">
         <property name="singleton" value="true"/>
@@ -36,7 +41,7 @@
         <property name="singleton" value="true"/>
         <property name="morphia" ref="morphia"/>
         <property name="mongo" ref="mongoClient"/>
-        <property name="dbName" value="${db.name}"/>
+        <property name="dbName" value="${mongo.db.name}"/>
     </bean>
 
 </beans>

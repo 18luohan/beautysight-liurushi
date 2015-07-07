@@ -21,10 +21,6 @@ import java.lang.reflect.Modifier;
 import java.util.HashSet;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-06-01.
- *
  * @author chenlong
  * @since 1.0
  */

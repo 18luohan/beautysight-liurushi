@@ -6,6 +6,7 @@ package com.beautysight.liurushi.rest.community;
 
 import com.beautysight.liurushi.community.app.ContentApp;
 import com.beautysight.liurushi.community.app.PublishContentCommand;
+import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,12 +28,14 @@ public class ContentRest {
 
     @Autowired
     private ContentApp contentApp;
+    @Autowired
+    private OAuthApp oAuthApp;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void publishContent(@RequestBody PublishContentCommand command) {
         command.validate();
-        command.setAuthor(RequestContext.thisUserClient().user());
+        command.setAuthor(oAuthApp.getUserClientBy(RequestContext.getAccessToken()).user());
         contentApp.publishContent(command);
     }
-
+    
 }

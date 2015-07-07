@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.common.utils;
 
 import com.beautysight.liurushi.common.ex.JsonHandlingException;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
@@ -98,7 +99,7 @@ public class Jsons {
 
             this.configure(MapperFeature.AUTO_DETECT_FIELDS, true);
             this.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            //this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             /*this.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
                 @Override
                 public void serialize(

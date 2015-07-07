@@ -6,20 +6,29 @@ package com.beautysight.liurushi.test.utils;
 
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-25.
- *
  * @author chenlong
  * @since 1.0
  */
 public class Reflections {
 
     private static final String temp = "temp";
+
+    public static <T> T newInstanceUsingDefaultConstructor(Class<T> clazz) {
+        try {
+            Constructor<T> constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
+        } catch (Exception ex) {
+            throw new RuntimeException(
+                    String.format("Error while creating instance of %s using default constructor", clazz.getSimpleName()),
+                    ex);
+        }
+    }
 
     public static void setField(Object target, String name, Object value) {
         Field field = ReflectionUtils.findField(target.getClass(), name);

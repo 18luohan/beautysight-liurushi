@@ -5,16 +5,12 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.utils.Logs;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.model.UserClient;
+import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDTO;
+import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-11.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -22,27 +18,27 @@ public class RequestContext {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestContext.class);
 
-    private static final ThreadLocal<UserClient> thisUserClient = new ThreadLocal<>();
+    private static final ThreadLocal<AccessTokenDTO> accessToken = new ThreadLocal<>();
 
-    public static void putThisUserClient(UserClient userClient) {
-        thisUserClient.set(userClient);
-        Logs.debug(logger, "Put userClient into request context: {}", userClient);
+    public static void putAccessToken(AccessTokenDTO theToken) {
+        accessToken.set(theToken);
+        Logs.debug(logger, "Put access token into request context: {}", accessToken);
     }
 
-    public static UserClient thisUserClient() {
-        return thisUserClient.get();
+    public static AccessTokenDTO getAccessToken() {
+        return accessToken.get();
     }
 
     public static boolean isThisUserAMember() {
-        return (thisUserClient().userType() == User.Type.member);
+        return (accessToken.get().type == AccessToken.Type.Bearer);
     }
 
     public static void clear() {
         // TODO 是否真的有必要使用同步？
-        synchronized (thisUserClient) {
-            UserClient userClient = thisUserClient.get();
-            thisUserClient.remove();
-            Logs.debug(logger, "Cleared userClient from request context: {}", userClient);
+        synchronized (accessToken) {
+            AccessTokenDTO theToken = accessToken.get();
+            accessToken.remove();
+            Logs.debug(logger, "Cleared access token from request context: {}", theToken);
         }
     }
 

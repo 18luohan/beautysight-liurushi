@@ -9,6 +9,7 @@ import com.beautysight.liurushi.identityaccess.app.command.IssueDownloadUrlComma
 import com.beautysight.liurushi.identityaccess.app.command.IssueUploadTokenCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.DownloadUrlPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UploadTokenPresentation;
+import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/storage")
+@RequestMapping(APIs.STORAGE_V1)
 public class StorageRest {
 
     @Autowired

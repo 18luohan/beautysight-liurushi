@@ -11,10 +11,6 @@ import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-14.
- *
  * @author chenlong
  * @since 1.0
  */

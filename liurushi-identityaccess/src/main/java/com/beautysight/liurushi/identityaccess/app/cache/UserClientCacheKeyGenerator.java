@@ -21,7 +21,7 @@ public class UserClientCacheKeyGenerator implements KeyGenerator {
     @Override
     public Object generate(Object target, Method method, Object... params) {
         AccessTokenDTO dto = (AccessTokenDTO) params[0];
-        return new AccessTokenAsKey(dto);
+        return new AccessTokenCache.CacheKey(dto);
     }
 
 }

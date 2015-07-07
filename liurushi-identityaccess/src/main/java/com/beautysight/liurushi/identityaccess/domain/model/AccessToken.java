@@ -5,9 +5,12 @@
 package com.beautysight.liurushi.identityaccess.domain.model;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
+import com.beautysight.liurushi.common.ex.AuthException;
 import com.beautysight.liurushi.common.ex.BusinessException;
+import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.IllegalEntityStateException;
 import com.beautysight.liurushi.common.utils.DateTimes;
+import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.google.common.base.Preconditions;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -16,10 +19,6 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-14.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -34,24 +33,26 @@ public class AccessToken extends AbstractEntity {
     private String refreshToken;
     private Date refreshedAt;
 
-    private int expiresIn = ONE_HOUR_SECONDS;
-    private boolean expired;
+    private int expiresIn = 10;
 
     @Reference(value = "userId", lazy = true, idOnly = true)
     private User user;
     @Reference(value = "deviceId", lazy = true, idOnly = true)
     private Device device;
 
-    private AccessToken() {
+    public AccessToken() {
     }
 
     public AccessToken(Type tokenType, User user, Device device) {
         this.accessToken = generateToken();
-        this.refreshToken = generateToken();
         this.type = tokenType;
         this.user = user;
         this.device = device;
         this.expiresIn = this.determineExpiry();
+
+        if (type == Type.Bearer) {
+            this.refreshToken = generateToken();
+        }
     }
 
     public static AccessToken issueBasicTokenFor(Device device) {
@@ -72,12 +73,11 @@ public class AccessToken extends AbstractEntity {
 
     public void refresh() {
         if (this.type != Type.Bearer) {
-            throw new BusinessException("Can't refresh non-bearer token");
+            throw new BusinessException("Can't refresh %s token", this.type);
         }
 
         this.accessToken = generateToken();
         this.refreshedAt = new Date();
-        this.expired = false;
     }
 
     public boolean isExpired() {
@@ -87,10 +87,6 @@ public class AccessToken extends AbstractEntity {
         }
 
         if (this.type == Type.Bearer) {
-            // TODO 何时将token置为已过期？定时扫描 or 每次请求计算？
-            if (expired) {
-                return expired;
-            }
             Date effectiveAt = (refreshedAt == null ? createdAt : refreshedAt);
             return DateTimes.beforeOrEqualNow(effectiveAt, expiresIn);
         }

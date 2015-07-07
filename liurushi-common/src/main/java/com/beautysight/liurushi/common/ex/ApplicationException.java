@@ -5,16 +5,22 @@
 package com.beautysight.liurushi.common.ex;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-08.
- *
  * @author chenlong
  * @since 1.0
  */
 public class ApplicationException extends RuntimeException {
 
     private Error.Id errorId;
+
+    public ApplicationException(String message) {
+        super(message);
+        this.errorId = CommonErrorId.internal_server_error;
+    }
+
+    public ApplicationException(String message, Throwable cause) {
+        super(message, cause);
+        this.errorId = CommonErrorId.internal_server_error;
+    }
 
     public ApplicationException(Error.Id errorId, String message) {
         super(message);

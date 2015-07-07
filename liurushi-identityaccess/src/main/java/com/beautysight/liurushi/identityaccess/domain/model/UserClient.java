@@ -10,10 +10,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bson.types.ObjectId;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-30.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -42,8 +38,16 @@ public class UserClient extends ValueObject {
         this.userType = userType;
     }
 
-    public static UserClient newVisitor(Device device) {
+    private static UserClient newVisitor(Device device) {
         return new UserClient(null, device, User.Type.visitor);
+    }
+
+    public static UserClient newInstanceBy(AccessToken accessToken) {
+        if (accessToken.isBasic()) {
+            return UserClient.newVisitor(accessToken.device());
+        }
+
+        return new UserClient(accessToken.user(), accessToken.device(), accessToken.type());
     }
 
     public ObjectId userId() {

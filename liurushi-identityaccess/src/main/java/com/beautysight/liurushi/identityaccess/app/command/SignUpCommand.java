@@ -5,9 +5,10 @@
 package com.beautysight.liurushi.identityaccess.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
-import com.beautysight.liurushi.common.ex.ParamValidationException;
+import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Here is Javadoc.
@@ -31,14 +32,18 @@ public class SignUpCommand implements Command {
 
     private void validateUser() {
         PreconditionUtils.checkRequired("user.nickname", user.nickname);
-        PreconditionUtils.checkRequired("user.mobile", user.mobile);
+        PreconditionUtils.checkRequiredMobile("user.mobile", user.mobile);
         PreconditionUtils.checkRequired("user.password", user.password);
         PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
         PreconditionUtils.checkRequired("user.avatar", user.avatar);
         user.avatar.validateAsOriginal();
         if (!user.password.equals(user.confirmPassword)) {
-            throw new ParamValidationException(UserErrorId.password_confirmpwd_not_equal,
+            throw new IllegalParamException(UserErrorId.password_confirmpwd_not_equal,
                     "user password not equal to confirmPassword");
+        }
+
+        if (StringUtils.isNotBlank(user.email)) {
+            PreconditionUtils.checkEmail("user.email", user.email);
         }
     }
 

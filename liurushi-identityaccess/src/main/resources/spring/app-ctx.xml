@@ -13,6 +13,6 @@
     <!-- Repository Layer -->
     <context:component-scan base-package="com.beautysight.liurushi.identityaccess.infrastructure.persistence"/>
 
-    <context:component-scan base-package="com.beautysight.liurushi.identityaccess.infrastructure.service"/>
+    <context:component-scan base-package="com.beautysight.liurushi.identityaccess.infrastructure"/>
 
 </beans>

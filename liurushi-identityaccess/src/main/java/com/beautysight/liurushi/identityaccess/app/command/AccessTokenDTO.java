@@ -9,17 +9,13 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-28.
- *
  * @author chenlong
  * @since 1.0
  */
 public class AccessTokenDTO extends DTO {
 
-    public String accessToken;
     public AccessToken.Type type;
+    public String accessToken;
 
     public AccessTokenDTO(AccessToken.Type type, String accessToken) {
         this.type = type;
