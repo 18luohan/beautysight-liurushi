@@ -5,12 +5,9 @@
 package com.beautysight.liurushi.identityaccess.domain.model;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
-import com.beautysight.liurushi.common.ex.AuthException;
 import com.beautysight.liurushi.common.ex.BusinessException;
-import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.IllegalEntityStateException;
 import com.beautysight.liurushi.common.utils.DateTimes;
-import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.google.common.base.Preconditions;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -25,7 +22,8 @@ import java.util.UUID;
 @Entity(value = "access_tokens", noClassnameStored = true)
 public class AccessToken extends AbstractEntity {
 
-    private static final int ONE_HOUR_SECONDS = 3600;
+//    private static final int ONE_HOUR_SECONDS = 3600;
+    private static final int ONE_HOUR_SECONDS = 10;
     private static final int NEVER_EXPIRES = -1;
 
     private String accessToken;
@@ -33,7 +31,7 @@ public class AccessToken extends AbstractEntity {
     private String refreshToken;
     private Date refreshedAt;
 
-    private int expiresIn = 10;
+    private int expiresIn;
 
     @Reference(value = "userId", lazy = true, idOnly = true)
     private User user;

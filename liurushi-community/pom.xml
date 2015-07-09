@@ -21,6 +21,10 @@
         </dependency>
         <dependency>
             <groupId>com.beautysight</groupId>
+            <artifactId>liurushi-fundamental-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.beautysight</groupId>
             <artifactId>liurushi-identityaccess</artifactId>
         </dependency>
         <dependency>

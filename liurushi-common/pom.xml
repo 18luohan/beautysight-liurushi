@@ -26,6 +26,40 @@
             <version>4.4.1</version>
         </dependency>
 
+        <!-- MongoDB Driver -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+        </dependency>
+        <!-- Spring Data MongoDB -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+        </dependency>
+        <!-- Morphia -->
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia</artifactId>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia-util</artifactId>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia-entityscanner-plug</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia-logging-slf4j</artifactId>
+        </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>junit</groupId>
