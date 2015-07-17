@@ -8,7 +8,7 @@ import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CacheException;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.GuavaCaches;
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDTO;
+import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.google.common.cache.Cache;
 
@@ -23,10 +23,10 @@ public class AccessTokenCache {
 
     private final Cache<CacheKey, CacheValue> userClientCache = GuavaCaches.createCache();
 
-    public AccessToken getIfAbsentLoad(final AccessTokenDTO accessTokenDTO, final Callable<AccessToken> loader) {
+    public AccessToken getIfAbsentLoad(final AuthCommand authCommand, final Callable<AccessToken> loader) {
         try {
             CacheValue value = userClientCache.get(
-                    new CacheKey(accessTokenDTO),
+                    new CacheKey(authCommand),
                     new Callable<CacheValue>() {
                         @Override
                         public CacheValue call() throws Exception {
@@ -40,8 +40,8 @@ public class AccessTokenCache {
         }
     }
 
-    public void evictBy(final AccessTokenDTO accessTokenDTO) {
-        userClientCache.invalidate(new CacheKey(accessTokenDTO));
+    public void evictBy(final AuthCommand authCommand) {
+        userClientCache.invalidate(new CacheKey(authCommand));
     }
 
     private ApplicationException handleException(final Exception ex) {
@@ -61,7 +61,7 @@ public class AccessTokenCache {
         private AccessToken.Type type;
         private String token;
 
-        public CacheKey(AccessTokenDTO dto) {
+        public CacheKey(AuthCommand dto) {
             this.type = dto.type;
             this.token = dto.accessToken;
         }

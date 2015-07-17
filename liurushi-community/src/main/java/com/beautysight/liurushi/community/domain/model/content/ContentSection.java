@@ -14,8 +14,6 @@ import org.mongodb.morphia.mapping.MappingException;
 import java.lang.reflect.Method;
 
 /**
- * A key abstract that represents story section.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -25,12 +23,8 @@ public abstract class ContentSection extends AbstractEntity {
 
     protected Type type;
 
-    public void validate() {
-        PreconditionUtils.checkRequired(format("%s.type"), type);
-    }
-
-    public enum Type {
-        image, text
+    public Type type() {
+        return this.type;
     }
 
     public static ContentSection newInstanceByType(DBObject dbObject) {
@@ -52,17 +46,13 @@ public abstract class ContentSection extends AbstractEntity {
         }
     }
 
-    public static void say(String words) {
-        System.out.println("hello " + words);
-    }
+    // TODO 待删除
+//    public void validate() {
+//        PreconditionUtils.checkRequired(format("%s.type"), type);
+//    }
 
-    public static void main(String[] args) {
-        try {
-            Method method = ContentSection.class.getDeclaredMethod("say", String.class);
-            method.invoke(null, "guava");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public enum Type {
+        image, text
     }
 
 }

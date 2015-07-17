@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+
+    <group name="mongo.config" description="mongo db config">
+        <property name="mongo.host" defaultValue="localhost" />
+        <property name="mongo.port" defaultValue="27017" />
+        <property name="mongo.db.name" defaultValue="shaimei" />
+    </group>
+
+    <group name="qiniu.config" description="qiniu storage config">
+        <property name="qiniu.storage.bucket" defaultValue="beautysight-test" />
+        <property name="qiniu.storage.bucket.domain" defaultValue="7xj3ch.com2.z0.glb.qiniucdn.com" />
+        <property name="qiniu.storage.bucket.url.scheme" defaultValue="http://" description="qiniu service url prefix" />
+        <property name="qiniu.storage.access.key" defaultValue="9AUEFpoKA-n2AZBWOwDrBvfFLQyqoG99S7-0HzjX" />
+        <property name="qiniu.storage.secret.key" defaultValue="xppuUVH10EK8C-uhFEyNAmYsByF27zHSxg7SSI-n" />
+    </group>
+
+    <group name="log.config">
+        <property name="app.name" value="liurushi" />
+        <property name="app.logs.dir" value="~/logs/liurushi" />
+        <property name="app.log.level" value="DEBUG" />
+    </group>
+
+    <script>
+        <!--
+            此处的目标是对src/main/resources目录下的资源文件进行过滤处理，由于src/main/resources目录下资源文件
+            构建后会输出到WEB-INF/classes/目录下，所以template属性值以WEB-INF/classes/为前缀
+        -->
+        <generate template="WEB-INF/classes/mongo.properties" destfile="WEB-INF/classes/mongo.properties"
+                  charset="UTF-8"/>
+        <generate template="WEB-INF/classes/qiniu_storage.properties"
+                  destfile="WEB-INF/classes/qiniu_storage.properties" charset="UTF-8"/>
+        <generate template="WEB-INF/classes/logback.xml" destfile="WEB-INF/classes/logback.xml" charset="UTF-8"/>
+    </script>
+
+</config>

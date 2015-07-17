@@ -6,13 +6,14 @@
 
     <groupId>com.beautysight</groupId>
     <artifactId>liurushi</artifactId>
-    <version>1.0</version>
+    <version>0.1.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
     <modules>
         <module>liurushi-common</module>
         <module>liurushi-identityaccess</module>
+        <module>liurushi-identityaccess-facade</module>
         <module>liurushi-community</module>
         <module>liurushi-rest</module>
         <module>liurushi-test</module>
@@ -195,27 +196,32 @@
         <dependencies>
             <!-- This App Modules -->
             <dependency>
-                <groupId>com.beautysight</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>liurushi-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.beautysight</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>liurushi-identityaccess</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.beautysight</groupId>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>liurushi-identityaccess-facade</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>liurushi-community</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.beautysight</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>liurushi-fundamental-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.beautysight</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>liurushi-test</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -273,6 +279,11 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.isrsal</groupId>
+                <artifactId>spring-mvc-logger</artifactId>
+                <version>0.2</version>
             </dependency>
             <!-- Spring Validator Provider -->
             <dependency>
@@ -448,6 +459,12 @@
         <testResources>
             <testResource>
                 <directory>src/test/java</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
                 <includes>
                     <include>**/*</include>
                 </includes>

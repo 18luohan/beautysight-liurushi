@@ -8,7 +8,7 @@
     <context:component-scan base-package="com.beautysight.liurushi.community.app"/>
     <!-- Domain Service Layer -->
     <context:component-scan base-package="com.beautysight.liurushi.community.domain.service"/>
-    <!-- Repository Layer -->
-    <context:component-scan base-package="com.beautysight.liurushi.community.infrastructure.persistence"/>
+    <!-- infrastructure Layer -->
+    <context:component-scan base-package="com.beautysight.liurushi.community.infrastructure"/>
 
 </beans>

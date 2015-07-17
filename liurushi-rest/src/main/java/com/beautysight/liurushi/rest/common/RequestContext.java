@@ -5,8 +5,7 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.utils.Logs;
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDTO;
-import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
+import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ public class RequestContext {
     }
 
     public static boolean isThisUserAMember() {
-        return (accessToken.get().type == AccessToken.Type.Bearer);
+        return (accessToken.get().type == AccessTokenDTO.Type.Bearer);
     }
 
     public static void clear() {

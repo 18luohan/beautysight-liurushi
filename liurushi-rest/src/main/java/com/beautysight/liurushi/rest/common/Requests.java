@@ -6,8 +6,7 @@ package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.AuthException;
 import com.beautysight.liurushi.common.utils.Logs;
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDTO;
-import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
+import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
@@ -70,7 +69,7 @@ public class Requests {
     private static AccessTokenDTO parse(String authorization) {
         String[] data = authorization.split(" ");
         Preconditions.checkArgument((data.length == 2), "Authorization malformed");
-        return new AccessTokenDTO(AccessToken.Type.valueOf(data[0]), data[1]);
+        return new AccessTokenDTO(AccessTokenDTO.Type.valueOf(data[0]), data[1]);
     }
 
 }

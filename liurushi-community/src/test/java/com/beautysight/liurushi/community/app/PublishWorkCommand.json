@@ -1,0 +1,125 @@
+{
+    "pictureStory" : {
+        "title" : "主标题7",
+        "subtitle" : "副标题写点啥呢",
+        "layout" : { "cols":6 },
+        "cover" : {
+            "sectionId": "sec-1",
+            "whPercentage": 100,
+            "visibleArea": {
+                "startLoc": {"xPercentage":0,"yPercentage":0},
+                "endLoc": {"xPercentage":100,"yPercentage":100}
+            }
+        },
+        "shots" : [
+            {
+                "sectionId": "sec-2",
+                "order": 1,
+                "size": {
+                    "rowSpan": 2,
+                    "colSpan": 3
+                },
+                "visibleArea": {
+                    "startLoc": {"xPercentage":0,"yPercentage":0},
+                    "endLoc": {"xPercentage":60,"yPercentage":60}
+                }
+            },
+            {
+                "sectionId": "sec-3",
+                "order": 2,
+                "size": {
+                    "rowSpan": 2,
+                    "colSpan": 6
+                },
+                "visibleArea": {
+                    "startLoc": {"xPercentage":0,"yPercentage":0},
+                    "endLoc": {"xPercentage":100,"yPercentage":100}
+                }
+            },
+            {
+                "sectionId": "sec-4",
+                "order": 3,
+                "size": {
+                    "rowSpan": 3,
+                    "colSpan": 2
+                },
+                "visibleArea": {
+                    "startLoc": {"xPercentage":40,"yPercentage":20},
+                    "endLoc": {"xPercentage":100,"yPercentage":80}
+                }
+            },
+            {
+                "sectionId": "sec-5",
+                "order": 4,
+                "size": {
+                    "rowSpan": 3,
+                    "colSpan": 2
+                },
+                "visibleArea": {
+                    "startLoc": {"xPercentage":40,"yPercentage":20},
+                    "endLoc": {"xPercentage":100,"yPercentage":80}
+                }
+            },
+            {
+                "sectionId": "sec-6",
+                "order": 5,
+                "size": {
+                    "rowSpan": 3,
+                    "colSpan": 2
+                },
+                "visibleArea": {
+                    "startLoc": {"xPercentage":40,"yPercentage":20},
+                    "endLoc": {"xPercentage":100,"yPercentage":80}
+                }
+            }
+        ]
+    },
+    "presentation" : {
+        "slides" : [
+            {
+                "sectionId": "sec-1",
+                "order": 1,
+                "textWidget": {
+                    "text": "袋鼠妈妈",
+                    "color": "orange",
+                    "orientation": "left_sloping",
+                    "location": {"xPercentage": 20, "yPercentage": 70}
+                }
+            },
+            {
+                "sectionId": "sec-2",
+                "order": 2
+            },
+            {
+                "sectionId": "sec-3",
+                "order": 3
+            },
+            {
+                "sectionId": "sec-4",
+                "order": 4,
+                "textWidget": {
+                    "text": "袋鼠宝宝",
+                    "color": "orange",
+                    "orientation": "left_sloping",
+                    "location": {"xPercentage": 60, "yPercentage": 60}
+                }
+            },
+            {
+                "sectionId": "sec-5",
+                "order": 5
+            },
+            {
+                "sectionId": "sec-6",
+                "order": 6
+            }
+        ]
+    },
+    "contentSections" : [
+        {"id":"sec-1","type":"image","name":"pic-1","format":"png","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-1-sig","resource":{"key":"pic-1-s-key","hash":"pic-1-s-hash"}},
+        {"id":"sec-2","type":"image","name":"pic-2","format":"jpg","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-2-sig","resource":{"key":"pic-2-s-key","hash":"pic-2-s-hash"}},
+        {"id":"sec-3","type":"text","text":"愈欣赏愈懂欣赏","charStyle":"quote","alignment":"left"},
+        {"id":"sec-4","type":"image","name":"pic-4","format":"png","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-4-sig","resource":{"key":"pic-4-s-key","hash":"pic-4-s-hash"}},
+        {"id":"sec-5","type":"image","name":"pic-5","format":"jpg","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-5-sig","resource":{"key":"pic-5-s-key","hash":"pic-5-s-hash"}},
+        {"id":"sec-6","type":"image","name":"pic-6","format":"png","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-6-sig","resource":{"key":"pic-6-s-key","hash":"pic-6-s-hash"}}
+    ]
+}

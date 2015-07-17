@@ -3,7 +3,7 @@
  */
 package com.beautysight.liurushi.common.utils;
 
-import com.beautysight.liurushi.common.app.Presentation;
+import com.beautysight.liurushi.common.app.PresentationModel;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -12,22 +12,28 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-11.
- *
  * @author chenlong
  * @since 1.0
  */
 public class JsonsTest {
 
     @Test
-    public void testToJsonString() throws Exception {
+    public void toJsonString() throws Exception {
         Post post = new Post(1000, "penny", newDate(2012, 12, 12, 16, 30, 30, 0));
         String actual = Jsons.toJsonString(post);
         String expected = "{\"threadId\":1000,\"author\":\"penny\",\"committedAt\":\"2012-12-12T16:30:30Z\"}";
         assertEquals(expected, actual);
     }
+
+    /**
+     * 测试反序列化时遇到不认识的属性，json引擎是否会抛出异常。期望不要抛出异常，忽略即可。
+     */
+    @Test
+    public void toObjectWithUnknownProperties() {
+        String jsonString = "{\"threadId\":1000,\"author\":\"penny\",\"committedAt\":\"2012-12-12T16:30:30Z\"}";
+        Jsons.toObject(jsonString, Post.class);
+    }
+
 
     private Date newDate(int year,
                          int monthOfYear,
@@ -40,7 +46,7 @@ public class JsonsTest {
                 millisOfSecond).toDate();
     }
 
-    private static class Post implements Presentation {
+    private static class Post implements PresentationModel {
         private int threadId;
         private String author;
         //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

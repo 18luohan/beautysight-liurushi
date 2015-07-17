@@ -4,13 +4,13 @@
 
 package com.beautysight.liurushi.identityaccess.app.presentation;
 
-import com.beautysight.liurushi.common.app.Presentation;
+import com.beautysight.liurushi.common.app.PresentationModel;
 
 /**
  * @author chenlong
  * @since 1.0
  */
-public class UserExistPresentation implements Presentation {
+public class UserExistPresentation implements PresentationModel {
 
     private boolean exist;
 

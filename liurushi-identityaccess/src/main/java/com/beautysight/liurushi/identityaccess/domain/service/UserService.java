@@ -6,14 +6,22 @@ package com.beautysight.liurushi.identityaccess.domain.service;
 
 import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
+import com.beautysight.liurushi.common.utils.Logs;
+import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
+import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.identityaccess.domain.repo.DeviceRepo;
 import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.google.common.base.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Here is Javadoc.
@@ -26,14 +34,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     private UserRepo userRepo;
     @Autowired
     private DeviceRepo deviceRepo;
-//    @Autowired
-//    private StorageService storageService;
+    @Autowired
+    private StorageService storageService;
 
-    public User signUp(User newUser) {
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
+
+    public User signUp(final User newUser) {
         Optional<User> theUser = userRepo.withMobile(newUser.mobile());
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
@@ -41,7 +53,23 @@ public class UserService {
         }
 
         newUser.setLastLoginToNow();
-        return userRepo.save(newUser);
+        final User savedUser = userRepo.save(newUser);
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                ResourceInStorage avatar300 = storageService.zoomImageTo(300, savedUser.originalAvatarKey());
+                Logs.debug(logger, "Asynchronously produced 300 px avatar for user: %s", savedUser.mobile());
+                int radius = 30, segma = 20;
+                ResourceInStorage blurredAvatar = storageService.blurImageAccordingTo(radius, segma, savedUser.originalAvatarKey());
+                Logs.debug(logger, "Asynchronously produced blurred avatar background for user: %s", savedUser.mobile());
+                savedUser.setMaxAvatar(avatar300, 300);
+                savedUser.setBlurredAvatar(blurredAvatar);
+                userRepo.merge(savedUser);
+            }
+        });
+
+        return savedUser;
     }
 
     public User login(User loggingInUser, String plainPwd) {

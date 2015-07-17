@@ -60,6 +60,11 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     }
 
     @Override
+    public T findOne(String id) {
+        return findOne(new ObjectId(id));
+    }
+
+    @Override
     public T findOne(ObjectId id) {
         Assert.notNull(id, "The given id must not be null!");
         return datastore.get(entityClass(), id);

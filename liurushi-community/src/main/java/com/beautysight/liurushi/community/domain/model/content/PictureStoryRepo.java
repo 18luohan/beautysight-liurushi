@@ -6,13 +6,15 @@ package com.beautysight.liurushi.community.domain.model.content;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 
+import java.util.List;
+
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-22.
- *
  * @author chenlong
  * @since 1.0
  */
 public interface PictureStoryRepo extends MongoRepository<PictureStory> {
+
+    List<PictureStory> getLatestPictureStories(int count);
+    List<PictureStory> findPictureStoriesInRange(String referenceWorkId, int offset);
+
 }

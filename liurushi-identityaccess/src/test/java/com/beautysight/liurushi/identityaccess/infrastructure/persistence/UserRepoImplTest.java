@@ -43,17 +43,4 @@ public class UserRepoImplTest extends SpringBasedAppTest {
                 Reflections.<Date>getField(updatedUser, "lastLogin").getTime());
     }
 
-    @Test
-    @Prepare
-    @Cleanup
-    public void addAvatarFor() {
-        User user = userRepo.withMobile("12345678901").get();
-        User.Avatar newAvatar = new User.Avatar("key123", "hash123", 180);
-        User updatedUser = userRepo.addAvatarFor(user.id(), newAvatar);
-
-        Optional<User.Avatar> theAvatar = updatedUser.toUserLite().specificAvatar(180);
-        assertTrue(theAvatar.isPresent());
-        assertEquals("avatar.key", newAvatar.key(), theAvatar.get().key());
-    }
-
 }

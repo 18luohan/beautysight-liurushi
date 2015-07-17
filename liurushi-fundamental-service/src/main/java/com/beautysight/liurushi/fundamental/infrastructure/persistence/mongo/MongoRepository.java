@@ -8,15 +8,12 @@ import org.bson.types.ObjectId;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-13.
- *
  * @author chenlong
  * @since 1.0
  */
 public interface MongoRepository<T> extends PagingAndSortingRepository<T, ObjectId> {
 
+    T findOne(String id);
     void merge(T entity);
 
 }

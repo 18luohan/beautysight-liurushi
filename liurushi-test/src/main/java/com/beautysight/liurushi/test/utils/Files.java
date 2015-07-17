@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class Files {
 
-    public static byte[] toBytes(String file) throws IOException {
+    public static byte[] readFileInClassPathAsBytes(String file) throws IOException {
         FileInputStream input = null;
         ByteArrayOutputStream byteOut = null;
 

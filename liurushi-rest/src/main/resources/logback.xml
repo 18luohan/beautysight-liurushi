@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <property name="app.name" value="${app_name}" />
+    <property name="app.logs.dir" value="${app_logs_dir}" />
+    <property name="app.log.level" value="${app_log_level}" />
+
+    <contextName>${app_name}</contextName>
+
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    
+    <appender name="bizAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${app.logs.dir}/${app.name}-biz.log</File>
+        <encoder>
+            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.logs.dir}/${app.name}-biz.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="springAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${app.logs.dir}/spring.log</File>
+        <encoder>
+            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.logs.dir}/spring.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="mongoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${app.logs.dir}/mongo.log</File>
+        <encoder>
+            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.logs.dir}/mongo.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="qiniuAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${app.logs.dir}/qiniu.log</File>
+        <encoder>
+            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.logs.dir}/qiniu.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${app.logs.dir}/${app.name}-error.log</File>
+        <encoder>
+            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.logs.dir}/${app.name}-error.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- application biz log -->
+    <logger name="com.beautysight" level="${app.log.level}">
+        <appender-ref ref="bizAppender"/>
+    </logger>
+    <logger name="com.github.isrsal.logging.LoggingFilter" level="${app.log.level}">
+        <appender-ref ref="bizAppender"/>
+    </logger>
+
+    <!-- spring log -->
+    <logger name="org.springframework" level="${app.log.level}">
+        <appender-ref ref="springAppender"/>
+    </logger>
+
+    <!-- mongo log -->
+    <logger name="com.mongodb" level="${app.log.level}">
+        <appender-ref ref="mongoAppender"/>
+    </logger>
+
+    <!-- qiniu log -->
+    <logger name="com.beautysight.liurushi.fundamental.infrastructure.storage.QiniuStorageService" level="${app.log.level}">
+        <appender-ref ref="qiniuAppender"/>
+    </logger>
+    <logger name="com.qiniu" level="${app.log.level}">
+        <appender-ref ref="qiniuAppender"/>
+    </logger>
+
+    <!-- error log -->
+    <logger name="errorLogger" level="ERROR">
+        <appender-ref ref="errorAppender"/>
+    </logger>
+
+    <root level="${app.log.level}">
+        <appender-ref ref="consoleAppender"/>
+    </root>
+
+</configuration>

@@ -4,11 +4,15 @@
 
 package com.beautysight.liurushi.fundamental.infrastructure.storage;
 
-import com.beautysight.liurushi.common.ex.ApplicationException;
-import com.beautysight.liurushi.common.ex.CommonErrorId;
+import com.beautysight.liurushi.common.ex.StorageException;
 import com.beautysight.liurushi.common.utils.Https;
-import com.beautysight.liurushi.fundamental.domain.storage.*;
+import com.beautysight.liurushi.common.utils.Logs;
+import com.beautysight.liurushi.fundamental.domain.storage.QiniuConfig;
+import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
+import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
+import com.beautysight.liurushi.fundamental.domain.storage.UploadOptions;
 import com.qiniu.common.QiniuException;
+import com.qiniu.http.Client;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
@@ -21,17 +25,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-18.
- *
  * @author chenlong
  * @since 1.0
  */
-@Service
+@Service("storageService")
 public class QiniuStorageService implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(QiniuStorageService.class);
@@ -40,6 +39,8 @@ public class QiniuStorageService implements StorageService {
     private QiniuConfig qiniuConfig;
 
     private final UploadManager uploadManager = new UploadManager();
+    private final Client client = new Client();
+
     private Auth auth;
 
     @PostConstruct
@@ -49,137 +50,172 @@ public class QiniuStorageService implements StorageService {
 
     @Override
     public ResourceInStorage zoomImageTo(int expectedWidth, String imageKey) {
-        try {
-            String instructions = String.format("imageMogr2/thumbnail/%dx", expectedWidth);
-            String savedAsKey = imageKey + expectedWidth;
-            int expiry = 0;
-            String zoomingImageUrl = this.issueDownloadUrl(imageKey, expiry, instructions, savedAsKey);
-            ResourceInStorage resource = Https.request(zoomingImageUrl, ResourceInStorage.class);
-            resource.url = this.issueDownloadUrl(resource.key, expiry, null, null);
-            return resource;
-        } catch (IOException e) {
-            throw new ApplicationException(CommonErrorId.internal_server_error, "Error while http", e);
-        }
+        String fileOps = String.format("imageMogr2/thumbnail/%dx", expectedWidth);
+        String savedAsKey = imageKey + expectedWidth;
+        int expiry = 0;
+        final String zoomingImageUrl = this.issueDownloadUrlWithFileOps(imageKey, expiry, fileOps, savedAsKey);
+        ResourceInStorage resource = QiniuServiceTemplate.request(
+                String.format("download & %s", fileOps),
+                new RequestExecutor() {
+                    @Override
+                    Response execute() throws QiniuException {
+                        return client.get(zoomingImageUrl);
+                    }
+                });
+        resource.setUrl(this.issueDownloadUrl(resource.getKey()));
+        return resource;
     }
 
     @Override
     public ResourceInStorage blurImageAccordingTo(int radius, int sigma, String originalKey) {
-        try {
-            String instructions = String.format("imageMogr2/blur/%dx%d", radius, sigma);
-            String savedAsKey = originalKey + String.format("blur%dx%d", radius, sigma);
-            int expiry = 0;
-            String gettingThumbnailInfoUrl = this.issueDownloadUrl(originalKey, expiry, instructions, savedAsKey);
-            ResourceInStorage resource = Https.request(gettingThumbnailInfoUrl, ResourceInStorage.class);
-            resource.url = this.issueDownloadUrl(resource.key, expiry, null, null);
-            return resource;
-        } catch (IOException e) {
-            throw new ApplicationException(CommonErrorId.internal_server_error, "Error while http", e);
-        }
+        String fileOps = String.format("imageMogr2/blur/%dx%d", radius, sigma);
+        String savedAsKey = originalKey + String.format("blur%dx%d", radius, sigma);
+        int expiry = 0;
+        final String gettingThumbnailInfoUrl = this.issueDownloadUrlWithFileOps(originalKey, expiry, fileOps, savedAsKey);
+        ResourceInStorage resource = QiniuServiceTemplate.request(
+                String.format("download & %s", fileOps),
+                new RequestExecutor() {
+                    @Override
+                    Response execute() throws QiniuException {
+                        return client.get(gettingThumbnailInfoUrl);
+                    }
+                });
+        resource.setUrl(this.issueDownloadUrl(resource.getKey()));
+        return resource;
     }
 
     @Override
-    public String issueUploadToken(UploadOptions options) {
-        try {
-            if (!options.isBucketGiven()) {
-                options.scope(qiniuConfig.bucket);
-            }
-            return auth.uploadToken(options.scope().bucket(),
-                    options.scope().key(),
-                    options.deadline(),
-                    options.toStringMap()
-            );
-        } catch (Throwable e) {
-            throw new ApplicationException(CommonErrorId.internal_server_error,
-                    "Error while getting upload token from qiniu cloud storage", e);
-        }
-    }
-
-    @Override
-    public String issueDownloadUrl(String key) {
-        return auth.privateDownloadUrl(qiniuConfig.bucketUrl + "/" + key);
-    }
-
-    @Override
-    public String issueDownloadUrl(String key, int expiry, String instructions, String savedAsKey) {
-        StringBuilder urlWithoutScheme = new StringBuilder();
-        urlWithoutScheme.append(qiniuConfig.bucketDomain).append("/").append(key);
-
-        StringBuilder queryString = new StringBuilder();
-        if (StringUtils.isNotBlank(instructions)) {
-            queryString.append(instructions);
-            if (StringUtils.isNotBlank(savedAsKey)) {
-                String scope = qiniuConfig.bucket + ":" + savedAsKey;
-//                 Base64.encodeBase64URLSafeString(scope.getBytes("UTF-8"));
-                queryString.append("|saveas/").append(UrlSafeBase64.encodeToString(scope));
-            }
+    public String issueUploadToken(final UploadOptions options) {
+        if (!options.isBucketGiven()) {
+            options.scope(qiniuConfig.bucket);
         }
 
-        if (queryString.length() > 0) {
-            urlWithoutScheme.append("?").append(Https.encodeWithUTF8(queryString.toString()));
-            String sign = auth.sign(urlWithoutScheme.toString());
-            urlWithoutScheme.append("/sign/").append(sign);
-        }
-
-
-        String url = qiniuConfig.bucketUrlScheme + urlWithoutScheme;
-        if (expiry > 0) {
-            return auth.privateDownloadUrl(url, expiry);
-        }
-        return auth.privateDownloadUrl(url);
-        // TODO 考虑异常如何处理？
-    }
-
-    public UploadResult upload(final byte[] fileBytes, final String uploadToken) {
-        return new UploadTemplate() {
+        return QiniuServiceTemplate.executeAuthService("issue upload token", new AuthServiceExecutor<String>() {
             @Override
-            public Response doUpload() throws QiniuException {
+            String execute() {
+                return auth.uploadToken(options.scope().bucket(),
+                        options.scope().key(),
+                        options.deadline(),
+                        options.toStringMap()
+                );
+            }
+        });
+    }
+
+    @Override
+    public String issueDownloadUrl(final String key) {
+        return QiniuServiceTemplate.executeAuthService("issue download url", new AuthServiceExecutor<String>() {
+            @Override
+            String execute() {
+                return auth.privateDownloadUrl(qiniuConfig.bucketUrl + "/" + key);
+            }
+        });
+    }
+
+    @Override
+    public String issueDownloadUrlWithFileOps(final String key, final int expiry, final String fileOps, final String savedAsKey) {
+        return QiniuServiceTemplate.executeAuthService(
+                String.format("issue download url with %s", fileOps),
+                new AuthServiceExecutor<String>() {
+                    @Override
+                    String execute() {
+                        StringBuilder urlWithoutScheme = new StringBuilder();
+                        urlWithoutScheme.append(qiniuConfig.bucketDomain).append("/").append(key);
+
+                        StringBuilder queryString = new StringBuilder();
+                        if (StringUtils.isNotBlank(fileOps)) {
+                            queryString.append(fileOps);
+                            if (StringUtils.isNotBlank(savedAsKey)) {
+                                String scope = qiniuConfig.bucket + ":" + savedAsKey;
+                                //Base64.encodeBase64URLSafeString(scope.getBytes("UTF-8"));
+                                queryString.append("|saveas/").append(UrlSafeBase64.encodeToString(scope));
+                            }
+                        }
+
+                        if (queryString.length() > 0) {
+                            urlWithoutScheme.append("?").append(Https.encodeWithUTF8(queryString.toString()));
+                            String sign = auth.sign(urlWithoutScheme.toString());
+                            urlWithoutScheme.append("/sign/").append(sign);
+                        }
+
+                        String url = qiniuConfig.bucketUrlScheme + urlWithoutScheme;
+                        if (expiry > 0) {
+                            return auth.privateDownloadUrl(url, expiry);
+                        }
+                        return auth.privateDownloadUrl(url);
+                    }
+                });
+    }
+
+    public ResourceInStorage upload(final byte[] fileBytes, final String uploadToken) {
+        return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
+            @Override
+            public Response execute() throws QiniuException {
                 return uploadManager.put(fileBytes, null, uploadToken);
             }
-        }.upload();
+        });
     }
 
-    public UploadResult upload(final byte[] fileBytes, final String uploadToke, final StringMap params) {
-        return new UploadTemplate() {
+    public ResourceInStorage upload(final byte[] fileBytes, final String uploadToke, final StringMap params) {
+        return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
             @Override
-            public Response doUpload() throws QiniuException {
+            public Response execute() throws QiniuException {
                 String key = null;
                 String mime = null;
                 boolean checkCrc = false;
                 return uploadManager.put(fileBytes, key, uploadToke, params, mime, checkCrc);
             }
-        }.upload();
+        });
     }
 
-    private static abstract class UploadTemplate {
-        public UploadResult upload() {
+    private static class QiniuServiceTemplate {
+        public static ResourceInStorage request(String apiDesc, RequestExecutor executor) {
             try {
-                Response resp = doUpload();
+                Response response = executor.execute();
 
-                logger.debug("Response: {}", resp.toString());
-                logger.debug("Response body: {}", resp.bodyString());
+                if (logger.isDebugEnabled()) {
+                    Logs.debug(logger, "Request qiniu api: {}, response: {}, respBody: {}",
+                            apiDesc, response.toString(), response.bodyString());
+                }
 
-                if (resp.isOK()) {
-                    return resp.jsonToObject(UploadResult.class);
+                if (response.isOK()) {
+                    return response.jsonToObject(ResourceInStorage.class);
                 } else {
-                    return UploadResult.failed(resp.error);
+                    throw new StorageException("Qiniu responded with error, api: %s, error: %s",
+                            apiDesc, response.error);
                 }
-            } catch (QiniuException e) {
-                logger.error("Error response: {}", e.response.toString());
-
-                try {
-                    logger.error("Error response body: {}", e.response.bodyString());
-                } catch (QiniuException e1) {
-                    logger.error("Error while reading error response body", e);
-                }
-
-                return UploadResult.failed(e.response.error);
-            } catch (Throwable e) {
-                logger.error("Unexpected error while uploading file to Qiniu Cloud Storage", e);
-                return UploadResult.failed(e.getMessage());
+            } catch (QiniuException ex) {
+                String message = String.format(
+                        "Qiniu responded with error, api: %s, error: %s",
+                        apiDesc, ex.response.toString());
+                throw logAndWrap(ex, message);
+            } catch (Throwable ex) {
+                String message = String.format("Unexpected error while call qiniu api: %s", apiDesc);
+                throw logAndWrap(ex, message);
             }
         }
 
-        public abstract Response doUpload() throws QiniuException;
+        public static <T> T executeAuthService(String authServiceDesc, AuthServiceExecutor<T> executor) {
+            try {
+                return executor.execute();
+            } catch (Throwable ex) {
+                String message = String.format("Unexpected error while qiniu auth service: %s", authServiceDesc);
+                throw logAndWrap(ex, message);
+            }
+        }
+
+        public static StorageException logAndWrap(Throwable ex, String message) {
+            Logs.error(logger, ex, message);
+            return new StorageException(message, ex);
+        }
+    }
+
+    private static abstract class RequestExecutor {
+        abstract Response execute() throws QiniuException;
+    }
+
+    private static abstract class AuthServiceExecutor<T> {
+        abstract T execute();
     }
 
 }

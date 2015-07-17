@@ -15,8 +15,8 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
  */
 public class Dimensions extends ValueObject {
 
-    private int width;
-    private int height;
+    private Integer width;
+    private Integer height;
 
     public void validate() {
         PreconditionUtils.checkGreaterThanZero(format("%s.width"), width);

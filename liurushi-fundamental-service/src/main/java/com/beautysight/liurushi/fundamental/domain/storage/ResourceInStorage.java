@@ -4,21 +4,38 @@
 
 package com.beautysight.liurushi.fundamental.domain.storage;
 
-import com.beautysight.liurushi.common.app.DTO;
+import com.beautysight.liurushi.common.domain.ValueObject;
+import com.beautysight.liurushi.common.utils.PreconditionUtils;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-06-04.
- *
  * @author chenlong
  * @since 1.0
  */
-public class ResourceInStorage extends DTO {
+public class ResourceInStorage extends ValueObject {
 
-    public String error;
-    public String key;
-    public String hash;
-    public String url;
+    private String key;
+    private String hash;
+    private String url;
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void validate() {
+        PreconditionUtils.checkRequired("ResourceInStorage.key", key);
+        PreconditionUtils.checkRequired("ResourceInStorage.hash", hash);
+    }
 
 }

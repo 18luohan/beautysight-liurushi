@@ -4,12 +4,7 @@
 
 package com.beautysight.liurushi.fundamental.domain.storage;
 
-
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-18.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -19,7 +14,7 @@ public interface StorageService {
 
     String issueDownloadUrl(String key);
 
-    String issueDownloadUrl(String key, int expiry, String instructions, String savedAsKey);
+    String issueDownloadUrlWithFileOps(final String key, final int expiry, final String instructions, final String savedAsKey);
 
     ResourceInStorage zoomImageTo(int expectedWidth, String imageKey);
 

@@ -2,13 +2,9 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.rest.identityaccess;
+package com.beautysight.liurushi.rest.fundamental;
 
-import com.beautysight.liurushi.identityaccess.app.StorageApp;
-import com.beautysight.liurushi.identityaccess.app.command.IssueDownloadUrlCommand;
-import com.beautysight.liurushi.identityaccess.app.command.IssueUploadTokenCommand;
-import com.beautysight.liurushi.identityaccess.app.presentation.DownloadUrlPresentation;
-import com.beautysight.liurushi.identityaccess.app.presentation.UploadTokenPresentation;
+import com.beautysight.liurushi.fundamental.app.*;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
 import org.springframework.beans.factory.annotation.Autowired;

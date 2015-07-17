@@ -12,7 +12,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -23,13 +22,10 @@ import org.springframework.web.util.UriUtils;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-06-04.
+ * Http client utils
  *
  * @author chenlong
  * @since 1.0

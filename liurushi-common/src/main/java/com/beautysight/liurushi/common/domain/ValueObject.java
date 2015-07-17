@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.common.domain;
 
-import com.beautysight.liurushi.common.shared.CommonModel;
+import com.beautysight.liurushi.common.shared.DomainModel;
 
 import java.io.Serializable;
 
@@ -13,5 +13,5 @@ import java.io.Serializable;
  * @author chenlong
  * @since 1.0
  */
-public abstract class ValueObject extends CommonModel implements JsonAnyFieldVisible, Serializable {
+public abstract class ValueObject extends DomainModel implements JsonAnyFieldVisible, Serializable {
 }

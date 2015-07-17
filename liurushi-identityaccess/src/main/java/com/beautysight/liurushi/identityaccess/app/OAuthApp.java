@@ -7,7 +7,7 @@ package com.beautysight.liurushi.identityaccess.app;
 import com.beautysight.liurushi.common.ex.AuthException;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.identityaccess.app.cache.AccessTokenCache;
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDTO;
+import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
 import com.beautysight.liurushi.identityaccess.app.command.DeviceDTO;
 import com.beautysight.liurushi.identityaccess.app.command.RefreshAccessTokenCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
@@ -47,17 +47,17 @@ public class OAuthApp {
         return AccessTokenPresentation.from(basicToken);
     }
 
-    public void authenticate(final AccessTokenDTO accessTokenDTO) {
-        AccessToken theToken = accessTokenCache.getIfAbsentLoad(accessTokenDTO, new Callable<AccessToken>() {
+    public void authenticate(final AuthCommand authCommand) {
+        AccessToken theToken = accessTokenCache.getIfAbsentLoad(authCommand, new Callable<AccessToken>() {
             @Override
             public AccessToken call() throws Exception {
                 return accessTokenService.checkValidityAndLoad(
-                        accessTokenDTO.accessToken, accessTokenDTO.type);
+                        authCommand.accessToken, authCommand.type);
             }
         });
 
         if (theToken.isExpired()) {
-            accessTokenCache.evictBy(accessTokenDTO);
+            accessTokenCache.evictBy(authCommand);
             throw new AuthException(AuthErrorId.expired_access_token, "Expired %s token: %s",
                     theToken.type(),
                     theToken.accessToken());
@@ -75,11 +75,15 @@ public class OAuthApp {
             throw new IllegalParamException("refreshToken invalid");
         }
 
-        return AccessTokenPresentation.from(accessTokenService.refreshBearerToken(theToken.get()));
+        if (theToken.get().isExpired()) {
+            return AccessTokenPresentation.from(accessTokenService.refreshBearerToken(theToken.get()));
+        }
+
+        return AccessTokenPresentation.from(theToken.get());
     }
 
-    public UserClient getUserClientBy(AccessTokenDTO accessTokenDTO) {
-        return accessTokenService.getUserClientBy(accessTokenDTO.type, accessTokenDTO.accessToken);
+    public UserClient getUserClientBy(String type, String accessToken) {
+        return accessTokenService.getUserClientBy(AccessToken.Type.valueOf(type.toString()), accessToken);
     }
 
 }

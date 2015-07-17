@@ -5,12 +5,12 @@
 package com.beautysight.liurushi.identityaccess.app;
 
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
-import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
+import com.beautysight.liurushi.common.ex.IllegalDomainModelStateException;
+import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
-import com.beautysight.liurushi.identityaccess.app.presentation.DownloadUrlPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
@@ -69,22 +69,17 @@ public class UserApp {
         throw new EntityNotFoundException("Expect bearer token present, but actual absent");
     }
 
-    public DownloadUrlPresentation issueDownloadAvatarUrl(int expectedSpec, UserClient thisUserClient) {
-        Optional<User.Avatar> theAvatar = thisUserClient.user().specificAvatar(expectedSpec);
+    public DownloadUrlPresentation issueDownloadUrlOfMaxAvatar(UserClient thisUserClient) {
+        User.Avatar theAvatar = thisUserClient.user().maxAvatar();
 
         String downloadUrl;
-        if (theAvatar.isPresent()) {
-            downloadUrl = storageService.issueDownloadUrl(theAvatar.get().key());
-        } else {
-            ResourceInStorage resource = storageService.zoomImageTo(expectedSpec,
-                    thisUserClient.user().originalAvatar().key());
-            User.Avatar newAvatar = new User.Avatar(resource.key, resource.hash, expectedSpec);
-            userRepo.addAvatarFor(thisUserClient.user().id(), newAvatar);
-            downloadUrl = resource.url;
+        if (theAvatar != null) {
+            downloadUrl = storageService.issueDownloadUrl(theAvatar.key());
+            // TODO 更新 request context或缓存
+            return DownloadUrlPresentation.from(downloadUrl);
         }
 
-        // 更新 request context或缓存
-        return DownloadUrlPresentation.from(downloadUrl);
+        throw new IllegalDomainModelStateException("User has no max avatar, mobile: %s", thisUserClient.user().mobile());
     }
 
 }

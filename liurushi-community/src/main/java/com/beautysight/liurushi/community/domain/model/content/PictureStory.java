@@ -7,7 +7,6 @@ package com.beautysight.liurushi.community.domain.model.content;
 import com.beautysight.liurushi.common.domain.Location;
 import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
@@ -20,25 +19,24 @@ import java.util.List;
  * @since 1.0
  */
 @Entity(value = "picture_stories", noClassnameStored = true)
-public class PictureStory extends Content<PictureStory.Shot> {
+public class PictureStory extends Work<PictureStory.Shot> {
 
-    private Title title;
-    private Title subtitle;
+    private String title;
+    private String subtitle;
     private Layout layout;
     private Cover cover;
     private List<Shot> shots;
-    private User.UserLite author;
 
     public PictureStory() {
     }
 
-    public PictureStory(Title title, Title subtitle, Layout layout, Cover cover, List<Shot> shots, User.UserLite author) {
+    public PictureStory(String title, String subtitle, Layout layout, Cover cover, List<Shot> shots, Author author) {
+        super(author);
         this.title = title;
         this.subtitle = subtitle;
         this.layout = layout;
         this.cover = cover;
         this.shots = shots;
-        this.author = author;
     }
 
     @Override
@@ -50,20 +48,9 @@ public class PictureStory extends Content<PictureStory.Shot> {
         return cover;
     }
 
-    public static class Title extends ValueObject {
-        private String text;
-        private Location location;
-
-        public void validate() {
-            PreconditionUtils.checkRequired("Title.text", text);
-            PreconditionUtils.checkRequired("Title.location", location);
-            location.validate();
-        }
-    }
-
     public static class Layout extends ValueObject {
-        private int rows;
-        private int cols;
+        private Integer rows;
+        private Integer cols;
 
         public void validate() {
             PreconditionUtils.checkGreaterThanZero("Layout.rows", rows);
@@ -71,17 +58,13 @@ public class PictureStory extends Content<PictureStory.Shot> {
         }
     }
 
-    public static class LayoutLocation extends ValueObject {
-        private int whichRow;
-        private int whichCol;
-        private int rows;
-        private int cols;
+    public static class ControlSize extends ValueObject {
+        private Integer rowSpan;
+        private Integer colSpan;
 
         public void validate() {
-            PreconditionUtils.checkGreaterThanZero("LayoutLocation.whichRow", whichRow);
-            PreconditionUtils.checkGreaterThanZero("LayoutLocation.whichCol", whichCol);
-            PreconditionUtils.checkGreaterThanZero("LayoutLocation.rows", rows);
-            PreconditionUtils.checkGreaterThanZero("LayoutLocation.cols", cols);
+            PreconditionUtils.checkGreaterThanZero("ControlSize(e.g. shot).rowSpan", rowSpan);
+            PreconditionUtils.checkGreaterThanZero("ControlSize(e.g. shot).colSpan", colSpan);
         }
     }
 
@@ -100,22 +83,30 @@ public class PictureStory extends Content<PictureStory.Shot> {
     /**
      * 一张照片，或叫一个镜头。镜头里面可以画面，也可以是文字。
      */
-    public static class Shot extends ComponentPart {
-
-        private LayoutLocation layoutLoc;
+    public static class Shot extends Control {
+        private ControlSize size;
         private VisibleArea visibleArea;
     }
 
     public static class Cover {
 
         @Reference(value = "sectionId", idOnly = true)
-        private ContentSection content;
-        private int whPercentage;
+        private Picture picture;
+
+        /**
+         * 宽高比
+         */
+        private Integer whPercentage;
         private VisibleArea visibleArea;
 
-        public void setContentSection(ContentSection content) {
-            this.content = content;
+        public void setPicture(Picture picture) {
+            this.picture = picture;
         }
+
+        public String pictureKey() {
+            return this.picture.key();
+        }
+
     }
 
 }

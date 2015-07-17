@@ -35,23 +35,25 @@ public class PreconditionUtils {
         }
     }
 
-    public static void checkGreaterThanZero(String field, int val) {
+    public static void checkGreaterThanZero(String field, Integer val) {
         checkGreaterThan(0, field, val);
     }
 
-    public static void checkGreaterThan(int bound, String field, int val) {
+    public static void checkGreaterThan(int bound, String field, Integer val) {
+        checkRequired(field, val);
         if (val <= bound) {
-            throw new IllegalParamException("%s must be greater than %s", field, bound);
+            throw new IllegalParamException("%s must be greater than %s, actual %s", field, bound, val);
         }
     }
 
-    public static void checkGreaterThanOrEqZero(String field, int val) {
+    public static void checkGreaterThanOrEqZero(String field, Integer val) {
         checkGreaterThanOrEq(0, field, val);
     }
 
-    public static void checkGreaterThanOrEq(int bound, String field, int val) {
+    public static void checkGreaterThanOrEq(int bound, String field, Integer val) {
+        checkRequired(field, val);
         if (val < bound) {
-            throw new IllegalParamException("%s must be greater than or eq %s", field, bound);
+            throw new IllegalParamException("%s must be greater than or eq %s, actual %s", field, bound, val);
         }
     }
 
@@ -67,6 +69,13 @@ public class PreconditionUtils {
                 "given val of %s must not be blank", field);
         if (!Regexp.isEmail(val)) {
             throw new IllegalParamException("%s illegal", field);
+        }
+    }
+
+    public static <T> void checkEqual(T expected, T actual, String failedMessage) {
+        if (expected != actual && !expected.equals(actual)) {
+            throw new IllegalParamException(String.format("%s, expected %s, but actual %s",
+                    failedMessage, expected, actual));
         }
     }
 

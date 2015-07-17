@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.common.utils;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import java.util.Date;
 
@@ -22,6 +23,18 @@ public class DateTimes {
         DateTime thisTime = new DateTime(basicDate).plusSeconds(secondOffset);
         DateTime now = new DateTime();
         return (thisTime.compareTo(now) <= 0);
+    }
+
+    public static Date today() {
+        return LocalDate.now().toDate();
+    }
+
+    public static Date tomorrow() {
+        return LocalDate.now().plusDays(1).toDate();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DateTimes.tomorrow());
     }
 
 }

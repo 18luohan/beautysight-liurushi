@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.beautysight</groupId>
         <artifactId>liurushi</artifactId>
-        <version>1.0</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.beautysight</groupId>
@@ -16,20 +16,48 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.beautysight</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>liurushi-identityaccess</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.beautysight</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>liurushi-community</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>liurushi-identityaccess-facade</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.isrsal</groupId>
+            <artifactId>spring-mvc-logger</artifactId>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
+                <groupId>com.alibaba.citrus.tool</groupId>
+                <artifactId>autoconfig-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <charset>UTF-8</charset>
+                    <!-- 要进行AutoConfig的目标文件，默认为${project.artifact.file} -->
+                    <dest>${project.artifact.file}</dest>
+                    <userProperties>antx-dev.properties</userProperties>
+                    <!-- 配置后，是否展开目标文件，默认为false，不展开 -->
+                    <exploding>true</exploding>
+                    <!-- 展开到指定目录，默认为${project.build.directory}/${project.build.finalName} -->
+                    <explodedDirectory>${project.build.directory}/${project.build.finalName}</explodedDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>autoconfig</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

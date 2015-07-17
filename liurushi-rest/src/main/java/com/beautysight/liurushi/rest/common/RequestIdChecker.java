@@ -39,8 +39,11 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Optional<String> requestId = Requests.getHeader(REQUEST_ID, request);
-        Logs.debugWithoutPrefixTraceId(logger, "Receive request: {}, request id: {}",
-                Requests.methodAndURI(request), requestId.orNull());
+
+        if (logger.isDebugEnabled()) {
+            Logs.debugWithoutPrefixTraceId(logger, "Receive request id: {}, uri: {}",
+                    requestId.orNull(), Requests.methodAndURI(request));
+        }
 
         if (!requestId.isPresent()) {
             Responses.setStatusAndWriteTo(response, CommonErrorId.bad_request,
@@ -49,6 +52,7 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
         }
 
         Logs.setTraceId(requestId.get());
+
         return true;
     }
 

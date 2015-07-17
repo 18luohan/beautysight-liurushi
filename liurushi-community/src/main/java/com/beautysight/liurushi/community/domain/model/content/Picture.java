@@ -5,8 +5,7 @@
 package com.beautysight.liurushi.community.domain.model.content;
 
 import com.beautysight.liurushi.common.domain.Dimensions;
-import com.beautysight.liurushi.common.domain.ValueObject;
-import com.beautysight.liurushi.common.utils.PreconditionUtils;
+import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import org.mongodb.morphia.annotations.Reference;
 
 /**
@@ -20,7 +19,7 @@ public class Picture extends ContentSection {
     private String name;
     private Format format;
     private Dimensions dimensions;
-    private int size;
+    private Integer size;
     private String signature;
     private ResourceInStorage resource;
 
@@ -38,18 +37,12 @@ public class Picture extends ContentSection {
         this.type = Type.image;
     }
 
-    public enum Format {
-        jpg, jpeg, png, bmp, webp
+    public String key() {
+        return resource.getKey();
     }
 
-    public static class ResourceInStorage extends ValueObject {
-        private String key;
-        private String hash;
-
-        public void validate() {
-            PreconditionUtils.checkRequired("ResourceInStorage.key", key);
-            PreconditionUtils.checkRequired("ResourceInStorage.hash", hash);
-        }
+    public enum Format {
+        jpg, jpeg, png, bmp, webp
     }
 
 }

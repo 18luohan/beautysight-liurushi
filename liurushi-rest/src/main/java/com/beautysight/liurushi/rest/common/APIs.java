@@ -16,5 +16,6 @@ public class APIs {
     public static final String STORAGE_V1 = v1 + "/storage";
     public static final String OAUTH_V1 = v1 + "/oauth";
     public static final String SMS_V1 = v1 + "/sms";
+    public static final String WORKS_V1 = v1 + "/works";
 
 }

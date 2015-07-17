@@ -8,16 +8,13 @@ import com.beautysight.liurushi.community.domain.model.content.PictureStory;
 import com.beautysight.liurushi.community.domain.model.content.PictureStoryRepo;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.*;
+import java.util.List;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-06-01.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -25,6 +22,14 @@ public class PictureStoryRepoImplTest extends SpringBasedAppTest {
 
     @Autowired
     private PictureStoryRepo pictureStoryRepo;
+
+    @Test
+    public void findPictureStoriesInRange() {
+        String referenceWorkId = "55a787c96c12e410a779e9fe";
+        int offset = 2;
+        List<PictureStory> pictureStories = pictureStoryRepo.findPictureStoriesInRange(referenceWorkId, offset);
+        Assert.assertEquals(5, pictureStories.size());
+    }
 
     @Test
     public void test() {

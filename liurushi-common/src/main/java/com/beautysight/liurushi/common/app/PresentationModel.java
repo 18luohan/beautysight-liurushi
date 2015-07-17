@@ -15,5 +15,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  * @since 1.0
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public interface Presentation {
+public interface PresentationModel {
+
 }
