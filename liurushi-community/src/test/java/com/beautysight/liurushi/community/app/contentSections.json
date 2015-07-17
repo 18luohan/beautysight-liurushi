@@ -1,0 +1,8 @@
+[
+  {"id":"sec-1","type":"image","name":"pic-1","format":"png","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-1-sig","resource":{"key":"pic-1-s-key","hash":"pic-1-s-hash"}},
+  {"id":"sec-2","type":"image","name":"pic-2","format":"jpg","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-2-sig","resource":{"key":"pic-2-s-key","hash":"pic-2-s-hash"}},
+  {"id":"sec-3","type":"text","text":"愈欣赏愈懂欣赏","charStyle":"quote","alignment":"left"},
+  {"id":"sec-4","type":"image","name":"pic-4","format":"png","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-4-sig","resource":{"key":"pic-4-s-key","hash":"pic-4-s-hash"}},
+  {"id":"sec-5","type":"image","name":"pic-5","format":"jpg","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-5-sig","resource":{"key":"pic-5-s-key","hash":"pic-5-s-hash"}},
+  {"id":"sec-6","type":"image","name":"pic-6","format":"png","dimensions":{"width":800,"height":600},"size":50000,"signature":"pic-6-sig","resource":{"key":"pic-6-s-key","hash":"pic-6-s-hash"}}
+]

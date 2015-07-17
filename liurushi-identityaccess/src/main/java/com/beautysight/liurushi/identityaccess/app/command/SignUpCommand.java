@@ -31,12 +31,16 @@ public class SignUpCommand implements Command {
     }
 
     private void validateUser() {
-        PreconditionUtils.checkRequired("user.nickname", user.nickname);
+        // nickname 可选
         PreconditionUtils.checkRequiredMobile("user.mobile", user.mobile);
         PreconditionUtils.checkRequired("user.password", user.password);
         PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
-        PreconditionUtils.checkRequired("user.avatar", user.avatar);
-        user.avatar.validateAsOriginal();
+
+        // 用户头像可选
+        if (user.avatar != null) {
+            user.avatar.validateAsOriginal();
+        }
+
         if (!user.password.equals(user.confirmPassword)) {
             throw new IllegalParamException(UserErrorId.password_confirmpwd_not_equal,
                     "user password not equal to confirmPassword");

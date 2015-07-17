@@ -10,10 +10,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.File;
@@ -99,6 +96,8 @@ public class Jsons {
 
             this.configure(MapperFeature.AUTO_DETECT_FIELDS, true);
             this.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            // 反序列化时忽略不认识的属性
+            this.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             /*this.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
                 @Override

@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.app.cache;
 
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDTO;
+import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class UserClientCacheKeyGenerator implements KeyGenerator {
 
     @Override
     public Object generate(Object target, Method method, Object... params) {
-        AccessTokenDTO dto = (AccessTokenDTO) params[0];
+        AuthCommand dto = (AuthCommand) params[0];
         return new AccessTokenCache.CacheKey(dto);
     }
 

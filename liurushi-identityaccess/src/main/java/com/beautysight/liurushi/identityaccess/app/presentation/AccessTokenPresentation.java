@@ -4,14 +4,14 @@
 
 package com.beautysight.liurushi.identityaccess.app.presentation;
 
-import com.beautysight.liurushi.common.app.Presentation;
+import com.beautysight.liurushi.common.app.PresentationModel;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 
 /**
  * @author chenlong
  * @since 1.0
  */
-public class AccessTokenPresentation implements Presentation {
+public class AccessTokenPresentation implements PresentationModel {
 
     private String accessToken;
     private String refreshToken;

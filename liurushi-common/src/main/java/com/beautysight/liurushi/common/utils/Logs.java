@@ -26,6 +26,7 @@ public class Logs {
         localTraceId.set(traceId);
         debugWithoutPrefixTraceId(logger, "Set traceId for current thread: {}", traceId);
     }
+
     public static void clearTraceId() {
         // TODO 是否真的有必要使用同步？
         synchronized (localTraceId) {
@@ -75,6 +76,10 @@ public class Logs {
 
     public static void error(Logger logger, String format, Object... args) {
         logger.error(format, args);
+    }
+
+    public static void error(Logger logger, Throwable ex, String msg) {
+        logger.error(msg, ex);
     }
 
     public static void error(Logger logger, Throwable ex, String format, Object... args) {

@@ -7,7 +7,7 @@ package com.beautysight.liurushi.community.domain.model.content;
 import com.beautysight.liurushi.common.domain.Location;
 import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.List;
@@ -19,17 +19,20 @@ import java.util.List;
  * @since 1.0
  */
 @Entity(value = "presentations", noClassnameStored = true)
-public class Presentation extends Content<Presentation.Slide> {
+public class Presentation extends Work<Presentation.Slide> {
 
     private List<Slide> slides;
-    private User.UserLite author;
 
     private Presentation() {
     }
 
-    public Presentation(List<Slide> slides, User.UserLite author) {
+    public Presentation(List<Slide> slides, Author author) {
+        super(author);
         this.slides = slides;
-        this.author = author;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class Presentation extends Content<Presentation.Slide> {
     /**
      * 一张幻灯片
      */
-    public static class Slide extends ComponentPart {
+    public static class Slide extends Control {
 
         private Widget textWidget;
 

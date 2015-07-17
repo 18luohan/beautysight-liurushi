@@ -7,7 +7,7 @@ package com.beautysight.liurushi.identityaccess.app;
 import com.beautysight.liurushi.common.ex.AuthException;
 import com.beautysight.liurushi.common.utils.GuavaCaches;
 import com.beautysight.liurushi.identityaccess.app.cache.AccessTokenCache;
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDTO;
+import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
 import com.beautysight.liurushi.identityaccess.app.command.DeviceDTO;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
 import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
@@ -51,7 +51,7 @@ public class OAuthAppTest {
     // dynamically partial mocking
     private Cache<AccessTokenCache.CacheKey, UserClient> userClientCache = GuavaCaches.createCache();
 
-    private AccessTokenCache.CacheKey key = new AccessTokenCache.CacheKey(new AccessTokenDTO(AccessToken.Type.Bearer, "any_token"));
+    private AccessTokenCache.CacheKey key = new AccessTokenCache.CacheKey(new AuthCommand(AccessToken.Type.Bearer, "any_token"));
     private UserClient userClient = newUserClient();
 
     @Test
@@ -72,8 +72,8 @@ public class OAuthAppTest {
 //        }};
 //
 //
-//        AccessTokenDTO dto = new AccessTokenDTO(AccessToken.Type.Basic, "any_token");
-//        final UserClient realUserClient = oAuthApp.authenticate(dto);
+//        AccessTokenDTO dpo = new AccessTokenDTO(AccessToken.Type.Basic, "any_token");
+//        final UserClient realUserClient = oAuthApp.authenticate(dpo);
 //
 //        new Verifications() {{
 //            assertTrue(realUserClient.deviceId() == expectedUserClient.deviceId());
@@ -90,8 +90,8 @@ public class OAuthAppTest {
 //            result = expectedUserClient;
 //        }};
 //
-//        AccessTokenDTO dto = new AccessTokenDTO(AccessToken.Type.Basic, "any_token");
-//        final UserClient realUserClient = oAuthApp.authenticate(dto);
+//        AccessTokenDTO dpo = new AccessTokenDTO(AccessToken.Type.Basic, "any_token");
+//        final UserClient realUserClient = oAuthApp.authenticate(dpo);
 //
 //        new Verifications() {{
 //            assertTrue(realUserClient.deviceId() == expectedUserClient.deviceId());
@@ -120,7 +120,7 @@ public class OAuthAppTest {
             userClientCache.invalidate(any); times = 1;
         }};
 
-        AccessTokenDTO dto = new AccessTokenDTO(AccessToken.Type.Bearer, "any_token");
+        AuthCommand dto = new AuthCommand(AccessToken.Type.Bearer, "any_token");
         oAuthApp.authenticate(dto);
 
         UserClient cachedUserClient = userClientCache.getIfPresent(key);

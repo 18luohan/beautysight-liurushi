@@ -17,6 +17,10 @@ public class ApplicationException extends RuntimeException {
         this.errorId = CommonErrorId.internal_server_error;
     }
 
+    public ApplicationException(String msgFormat, Object... msgArgs) {
+        this(String.format(msgFormat, msgArgs));
+    }
+
     public ApplicationException(String message, Throwable cause) {
         super(message, cause);
         this.errorId = CommonErrorId.internal_server_error;
@@ -38,6 +42,10 @@ public class ApplicationException extends RuntimeException {
 
     public ApplicationException(Error.Id errorId, Throwable cause, String msgFormat, Object... msgArgs) {
         this(errorId, String.format(msgFormat, msgArgs), cause);
+    }
+
+    public ApplicationException(Throwable cause, String msgFormat, Object... msgArgs) {
+        this(String.format(msgFormat, msgArgs), cause);
     }
 
     public Error.Id errorId() {

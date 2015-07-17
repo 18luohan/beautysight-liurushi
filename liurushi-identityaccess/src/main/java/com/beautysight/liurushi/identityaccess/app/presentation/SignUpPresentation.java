@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.app.presentation;
 
-import com.beautysight.liurushi.common.app.Presentation;
+import com.beautysight.liurushi.common.app.PresentationModel;
 
 /**
  * Here is Javadoc.
@@ -14,7 +14,7 @@ import com.beautysight.liurushi.common.app.Presentation;
  * @author chenlong
  * @since 1.0
  */
-public class SignUpPresentation implements Presentation {
+public class SignUpPresentation implements PresentationModel {
 
     private String basicToken;
     private String avatarUrl;

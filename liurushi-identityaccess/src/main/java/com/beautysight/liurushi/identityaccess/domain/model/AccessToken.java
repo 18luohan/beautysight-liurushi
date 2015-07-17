@@ -6,8 +6,6 @@ package com.beautysight.liurushi.identityaccess.domain.model;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.ex.BusinessException;
-import com.beautysight.liurushi.common.ex.IllegalEntityStateException;
-import com.beautysight.liurushi.common.utils.DateTimes;
 import com.google.common.base.Preconditions;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -22,8 +20,8 @@ import java.util.UUID;
 @Entity(value = "access_tokens", noClassnameStored = true)
 public class AccessToken extends AbstractEntity {
 
-//    private static final int ONE_HOUR_SECONDS = 3600;
-    private static final int ONE_HOUR_SECONDS = 10;
+    private static final int ONE_HOUR_SECONDS = 3600;
+//    private static final int ONE_HOUR_SECONDS = 30;
     private static final int NEVER_EXPIRES = -1;
 
     private String accessToken;
@@ -84,12 +82,15 @@ public class AccessToken extends AbstractEntity {
             return false;
         }
 
-        if (this.type == Type.Bearer) {
-            Date effectiveAt = (refreshedAt == null ? createdAt : refreshedAt);
-            return DateTimes.beforeOrEqualNow(effectiveAt, expiresIn);
-        }
+        // TODO 为了测试方便，token永久有效
+        return false;
 
-        throw new IllegalEntityStateException("Illegal token type, type: %s, token: %s", type, accessToken);
+//        if (this.type == Type.Bearer) {
+//            Date effectiveAt = (refreshedAt == null ? createdAt : refreshedAt);
+//            return DateTimes.beforeOrEqualNow(effectiveAt, expiresIn);
+//        }
+//
+//        throw new IllegalEntityStateException("Illegal token type, type: %s, token: %s", type, accessToken);
     }
 
     public String accessToken() {

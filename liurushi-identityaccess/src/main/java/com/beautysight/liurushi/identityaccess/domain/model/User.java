@@ -8,16 +8,14 @@ import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.Passwords;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.google.common.base.Optional;
+import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,7 +39,8 @@ public class User extends AbstractEntity {
     private Date lastLogin;
 
     private Avatar originalAvatar;
-    private List<Avatar> avatars = new ArrayList<>();
+    private Avatar maxAvatar;
+    private Avatar blurredAvatar;
 
     private User() {
     }
@@ -53,10 +52,39 @@ public class User extends AbstractEntity {
         this.email = email;
         this.password = new Password(plainPwd);
         this.originalAvatar = originalAvatar;
+
+        // 如果nickname为空，就将手机号作为昵称
+        if (StringUtils.isBlank(this.nickname)) {
+            this.nickname = mobile;
+        }
     }
 
     public boolean isGivenPwdCorrect(String plainPwd) {
         return this.password.isGivenPwdCorrect(plainPwd);
+    }
+
+    public boolean hasAvatar() {
+        return (this.originalAvatar != null);
+    }
+
+    public String originalAvatarKey() {
+        return this.originalAvatar.key();
+    }
+
+    public String nickname() {
+        return this.nickname;
+    }
+
+    public Avatar maxAvatar() {
+        return this.maxAvatar;
+    }
+
+    public void setMaxAvatar(ResourceInStorage avatar, int spec) {
+        this.maxAvatar = new Avatar(avatar, spec);
+    }
+
+    public void setBlurredAvatar(ResourceInStorage avatar) {
+        this.blurredAvatar = new Avatar(avatar, 0);
     }
 
     public String mobile() {
@@ -73,44 +101,6 @@ public class User extends AbstractEntity {
 
     public UserLite toUserLite() {
         return new UserLite(this);
-    }
-
-    public static class UserLite extends ValueObject {
-        private ObjectId id;
-        private String nickname;
-        private Avatar originalAvatar;
-        private List<Avatar> avatars;
-
-        private UserLite(User user) {
-            this.id = user.id();
-            this.nickname = user.nickname;
-            this.originalAvatar = user.originalAvatar;
-            this.avatars = user.avatars;
-        }
-
-        public ObjectId id() {
-            return this.id;
-        }
-
-        public Avatar originalAvatar() {
-            return this.originalAvatar;
-        }
-
-        public Optional<Avatar> specificAvatar(int spec) {
-            Avatar.validateSpec(spec);
-
-            if (CollectionUtils.isEmpty(avatars)) {
-                Optional.absent();
-            }
-
-            for (Avatar avatar : avatars) {
-                if (avatar.spec == spec) {
-                    return Optional.of(avatar);
-                }
-            }
-
-            return Optional.absent();
-        }
     }
 
     public enum Type {
@@ -136,23 +126,31 @@ public class User extends AbstractEntity {
 
     public static class Avatar extends ValueObject {
 
-        private static final Set<Integer> avatarSpecs = Sets.newHashSet(66, 110, 180);
+        private static final Set<Integer> avatarSpecs = Sets.newHashSet(300, 270, 210, 108, 96, 66, 110, 180);
 
         private String key;
-        private String hashVal;
+        private String hash;
         private int spec;
 
         public Avatar() {
         }
 
-        public Avatar(String key, String hashVal, int spec) {
+        public Avatar(ResourceInStorage resource, int spec) {
+            this(resource.getKey(), resource.getHash(), spec);
+        }
+
+        public Avatar(String key, String hash, int spec) {
             this.key = key;
-            this.hashVal = hashVal;
+            this.hash = hash;
             this.spec = spec;
         }
 
         public String key() {
             return this.key;
+        }
+
+        public int spec() {
+            return this.spec;
         }
 
         public void validate() {
@@ -173,8 +171,43 @@ public class User extends AbstractEntity {
 
         private void commonValidate() {
             PreconditionUtils.checkRequired("Avatar.key", key);
-            PreconditionUtils.checkRequired("Avatar.hashVal", hashVal);
+            PreconditionUtils.checkRequired("Avatar.hash", hash);
         }
 
+    }
+
+    public static class UserLite extends ValueObject {
+        private ObjectId id;
+        private String mobile;
+        private String nickname;
+
+        private Avatar originalAvatar;
+        private Avatar maxAvatar;
+        private Avatar blurredAvatar;
+
+        private UserLite(User user) {
+            this.id = user.id();
+            this.mobile = user.mobile;
+            this.nickname = user.nickname;
+            this.originalAvatar = user.originalAvatar;
+            this.maxAvatar = user.maxAvatar;
+            this.blurredAvatar = user.blurredAvatar;
+        }
+
+        public ObjectId id() {
+            return this.id;
+        }
+
+        public String mobile() {
+            return this.mobile;
+        }
+
+        public Avatar originalAvatar() {
+            return this.originalAvatar;
+        }
+
+        public Avatar maxAvatar() {
+            return this.maxAvatar;
+        }
     }
 }

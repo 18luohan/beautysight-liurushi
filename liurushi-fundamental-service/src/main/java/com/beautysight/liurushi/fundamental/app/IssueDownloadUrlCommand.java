@@ -2,7 +2,7 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.identityaccess.app.command;
+package com.beautysight.liurushi.fundamental.app;
 
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
