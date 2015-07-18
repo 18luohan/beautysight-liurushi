@@ -25,7 +25,7 @@ public class ControlDPO extends DPO {
 
     public void validate() {
         PreconditionUtils.checkRequired(format("%s.sectionId"), sectionId);
-        PreconditionUtils.checkGreaterThanZero(format("%s.order"), order);
+        PreconditionUtils.checkGreaterThanOrEqZero(format("%s.order"), order);
     }
 
     public static void validate(List<? extends ControlDPO> parts) {
@@ -36,8 +36,8 @@ public class ControlDPO extends DPO {
             orderSum += part.order;
         }
 
-        if (orderSum != (1 + parts.size()) * parts.size() / 2) {
-            throw new IllegalArgumentException("order must start from 1 and the step must be 1.");
+        if (orderSum != (parts.get(0).order + parts.get(parts.size()-1).order) * parts.size() / 2) {
+            throw new IllegalArgumentException("order must be consecutive and the step must be 1.");
         }
     }
 
