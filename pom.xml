@@ -284,6 +284,12 @@
                 <groupId>com.github.isrsal</groupId>
                 <artifactId>spring-mvc-logger</artifactId>
                 <version>0.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Spring Validator Provider -->
             <dependency>
