@@ -31,8 +31,8 @@ public class WorkRest {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void publishWork(@RequestBody PublishWorkCommand command) {
-        command.validate();
         command.setAuthor(authorService.getAuthorBy(RequestContext.getAccessToken()));
+        command.validate();
         workApp.publishWork(command);
     }
 
@@ -45,18 +45,34 @@ public class WorkRest {
 
     @RequestMapping(value = "/pgc/latest", method = RequestMethod.GET)
     @VisitorApiPermission(true)
-    public WorkProfilePresentation getLatestWorkProfiles(@RequestParam("count") int count) {
+    public WorkProfilePresentation getPgcLatestWorkProfiles(@RequestParam("count") int count) {
         PreconditionUtils.checkGreaterThanZero("request param count", count);
-        return workApp.getLatestWorkProfiles(count);
+        return workApp.getPgcLatestWorkProfiles(count);
     }
 
     @RequestMapping(value = "/pgc", method = RequestMethod.GET)
     @VisitorApiPermission(true)
-    public WorkProfilePresentation getLatestWorkProfiles(@RequestParam("referenceWork") String referenceWork,
-                                                         @RequestParam("offset") int offset) {
+    public WorkProfilePresentation getPgcWorkProfilesInRange(@RequestParam("referenceWork") String referenceWork,
+                                                             @RequestParam("offset") int offset) {
         PreconditionUtils.checkRequired("request param referenceWork", referenceWork);
         PreconditionUtils.checkGreaterThanOrEqZero("request param offset", offset);
-        return workApp.findWorkProfilesInRange(referenceWork, offset);
+        return workApp.findPgcWorkProfilesInRange(referenceWork, offset);
+    }
+
+    @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
+    @VisitorApiPermission(true)
+    public WorkProfilePresentation getUgcLatestWorkProfiles(@RequestParam("count") int count) {
+        PreconditionUtils.checkGreaterThanZero("request param count", count);
+        return workApp.getUgcLatestWorkProfiles(count);
+    }
+
+    @RequestMapping(value = "/ugc", method = RequestMethod.GET)
+    @VisitorApiPermission(true)
+    public WorkProfilePresentation getUgcWorkProfilesInRange(@RequestParam("referenceWork") String referenceWork,
+                                                             @RequestParam("offset") int offset) {
+        PreconditionUtils.checkRequired("request param referenceWork", referenceWork);
+        PreconditionUtils.checkGreaterThanOrEqZero("request param offset", offset);
+        return workApp.findUgcWorkProfilesInRange(referenceWork, offset);
     }
 
 }

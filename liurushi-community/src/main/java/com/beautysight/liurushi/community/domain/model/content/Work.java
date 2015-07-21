@@ -21,7 +21,7 @@ public abstract class Work<T extends Control> extends AbstractEntity {
 
     private ObjectId authorId;
     private Date publishedAt;
-    private Source source = Source.pgc;
+    private Source source;
 
     public Work() {
         this(null);

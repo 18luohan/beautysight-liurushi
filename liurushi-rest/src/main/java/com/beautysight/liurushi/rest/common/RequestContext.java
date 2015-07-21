@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.rest.common;
 
+import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 import org.slf4j.Logger;
@@ -17,7 +18,12 @@ public class RequestContext {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestContext.class);
 
-    private static final ThreadLocal<AccessTokenDTO> accessToken = new ThreadLocal<>();
+    private static final ThreadLocal<AccessTokenDTO> accessToken = new ThreadLocal<AccessTokenDTO>() {
+        @Override
+        protected AccessTokenDTO initialValue() {
+            return null;
+        }
+    };
 
     public static void putAccessToken(AccessTokenDTO theToken) {
         accessToken.set(theToken);
@@ -25,11 +31,15 @@ public class RequestContext {
     }
 
     public static AccessTokenDTO getAccessToken() {
+        if (accessToken.get() == null) {
+            throw new ApplicationException("Expected to get access token from request context, but actual not present");
+        }
         return accessToken.get();
     }
 
     public static boolean isThisUserAMember() {
-        return (accessToken.get().type == AccessTokenDTO.Type.Bearer);
+        return (accessToken.get() != null
+                && accessToken.get().type == AccessTokenDTO.Type.Bearer);
     }
 
     public static void clear() {

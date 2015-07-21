@@ -32,22 +32,22 @@ public class RegexpTest {
 
     @Test
     public void isMobile() {
-        assertFalse(Regexp.isMobile("1"));
-        assertFalse(Regexp.isMobile("12345678901"));
-        assertFalse(Regexp.isMobile("15824464622"));
-        assertFalse(Regexp.isMobile("+15824464622"));
-        assertFalse(Regexp.isMobile("-15824464622"));
-        assertFalse(Regexp.isMobile("+-15824464622"));
-        assertFalse(Regexp.isMobile("-345-15824464622"));
-        assertFalse(Regexp.isMobile("-345--15824464622"));
-        assertFalse(Regexp.isMobile("+-345-15824464622"));
+        assertFalse(Regexp.isMobileWithCallingCode("1"));
+        assertFalse(Regexp.isMobileWithCallingCode("12345678901"));
+        assertFalse(Regexp.isMobileWithCallingCode("15824464622"));
+        assertFalse(Regexp.isMobileWithCallingCode("+15824464622"));
+        assertFalse(Regexp.isMobileWithCallingCode("-15824464622"));
+        assertFalse(Regexp.isMobileWithCallingCode("+-15824464622"));
+        assertFalse(Regexp.isMobileWithCallingCode("-345-15824464622"));
+        assertFalse(Regexp.isMobileWithCallingCode("-345--15824464622"));
+        assertFalse(Regexp.isMobileWithCallingCode("+-345-15824464622"));
 
-        assertTrue(Regexp.isMobile("+1-15824464622"));
-        assertTrue(Regexp.isMobile("+1-1-15824464622"));
+        assertTrue(Regexp.isMobileWithCallingCode("+1-15824464622"));
+        assertTrue(Regexp.isMobileWithCallingCode("+1-1-15824464622"));
         // 开曼群岛国际区号：+1-345
-        assertTrue(Regexp.isMobile("+1-345-15824464622"));
-        assertTrue(Regexp.isMobile("+86-15824464622"));
-        assertTrue(Regexp.isMobile("+389-1-15824464622"));
+        assertTrue(Regexp.isMobileWithCallingCode("+1-345-15824464622"));
+        assertTrue(Regexp.isMobileWithCallingCode("+86-15824464622"));
+        assertTrue(Regexp.isMobileWithCallingCode("+389-1-15824464622"));
     }
 
 }

@@ -18,10 +18,19 @@
 
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>
-            <mvc:exclude-mapping path="/"/>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/" />
             <bean class="com.beautysight.liurushi.rest.common.RequestIdChecker"/>
         </mvc:interceptor>
+        <!--
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/" />
+            <bean class="com.beautysight.liurushi.rest.common.AppIdentityAuthenticator">
+                <property name="mobileAppId" value="${mobile.app.id}" />
+            </bean>
+        </mvc:interceptor>
+        -->
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/"/>

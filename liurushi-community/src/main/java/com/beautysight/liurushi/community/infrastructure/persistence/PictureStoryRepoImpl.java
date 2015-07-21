@@ -24,25 +24,23 @@ import java.util.List;
 @Repository
 public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> implements PictureStoryRepo {
 
-    @Override
-    public List<PictureStory> getLatestPictureStories(int count) {
-        Query<PictureStory> query = datastore.createQuery(entityClass());
+    public List<PictureStory> getLatestPictureStories(Work.Source source, int count) {
+        Query<PictureStory> query = newQuery();
         query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
-                .field("source").equal(Work.Source.pgc)
+                .field("source").equal(source)
                 // 目前morphia组件还不支持$natural查询修饰符
                 .order("-id").limit(count);
         return query.asList();
     }
 
-    @Override
-    public List<PictureStory> findPictureStoriesInRange(String referenceWorkId, int offset) {
+    public List<PictureStory> findPictureStoriesInRange(Work.Source source, String referenceWorkId, int offset) {
         List<PictureStory> result = new ArrayList<>();
 
         Query<PictureStory> query;
         if (offset > 0) {
-            query = datastore.createQuery(entityClass());
+            query = newQuery();
             query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
-                    .field("source").equal(Work.Source.pgc)
+                    .field("source").equal(source)
                     .field("id").greaterThan(new ObjectId(referenceWorkId))
                     // 目前morphia组件还不支持$natural查询修饰符
                     .order("id").limit(offset);
@@ -54,9 +52,9 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
             }
         }
 
-        query = datastore.createQuery(entityClass());
+        query = newQuery();
         query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
-                .field("source").equal(Work.Source.pgc)
+                .field("source").equal(source)
                 .field("id").lessThanOrEq(new ObjectId(referenceWorkId))
                 // 目前morphia组件还不支持$natural查询修饰符
                 .order("-id").limit(offset + 1);

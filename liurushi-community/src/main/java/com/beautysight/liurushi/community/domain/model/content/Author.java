@@ -16,12 +16,18 @@ public class Author extends ValueObject {
     public String nickname;
     public String originalAvatarUrl;
     public String maxAvatarUrl;
+    public Group group;
 
-    public Author(String id, String nickname, String originalAvatarUrl, String maxAvatarUrl) {
+    public Author(String id, String nickname, String originalAvatarUrl, String maxAvatarUrl, String groupAsStr) {
         this.id = id;
         this.nickname = nickname;
         this.originalAvatarUrl = originalAvatarUrl;
         this.maxAvatarUrl = maxAvatarUrl;
+        this.group = Group.valueOf(groupAsStr);
+    }
+
+    public enum Group {
+        professional, amateur
     }
 
 }

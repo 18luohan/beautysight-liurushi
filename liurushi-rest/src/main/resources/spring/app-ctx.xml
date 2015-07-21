@@ -3,13 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="mongoConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="liurushiConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="order" value="1"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
-                <value>classpath:mongo.properties</value>
-                <value>classpath:qiniu_storage.properties</value>
+                <value>classpath:liurushi.properties</value>
             </list>
         </property>
     </bean>

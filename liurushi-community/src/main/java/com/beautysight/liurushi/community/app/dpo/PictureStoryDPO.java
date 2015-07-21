@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.app.dpo;
 
+import com.beautysight.liurushi.common.app.DPO;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.domain.model.content.*;
@@ -17,13 +18,15 @@ import java.util.Map;
  * @author chenlong
  * @since 1.0
  */
-public class PictureStoryDTO {
+public class PictureStoryDPO extends DPO {
+    
     public String title;
     public String subtitle;
     public PictureStory.Layout layout;
     public CoverDPO cover;
     public List<ShotDPO> shots;
     public Author author;
+    public Work.Source source;
 
     public void validate() {
         PreconditionUtils.checkRequired("pictureStory.title", title);
@@ -32,6 +35,9 @@ public class PictureStoryDTO {
         PreconditionUtils.checkRequired("pictureStory.shots", shots);
         cover.validate();
         ControlDPO.validate(shots);
+
+        PreconditionUtils.checkRequired("pictureStory.author", author);
+        PreconditionUtils.checkRequired("pictureStory.source", source);
     }
 
     public PictureStory toPictureStory() {
@@ -43,7 +49,7 @@ public class PictureStoryDTO {
         return new PictureStory(title, subtitle, layout, cover.toCover(), shotList, author);
     }
 
-    public static PictureStoryDTO from(PictureStory source, Map<String, String> keyToDownloadUrlMapping) {
+    public static PictureStoryDPO from(PictureStory source, Map<String, String> keyToDownloadUrlMapping) {
         // translate cover
         CoverDPO targetCoverDPO = new CoverDPO();
         Beans.copyProperties(source.cover(), targetCoverDPO);
@@ -77,7 +83,7 @@ public class PictureStoryDTO {
             shotDTOs.add(targetShotDTO);
         }
 
-        PictureStoryDTO target = new PictureStoryDTO();
+        PictureStoryDPO target = new PictureStoryDPO();
         Beans.copyProperties(source, target, "cover", "shots");
         target.cover = targetCoverDPO;
         target.shots = shotDTOs;

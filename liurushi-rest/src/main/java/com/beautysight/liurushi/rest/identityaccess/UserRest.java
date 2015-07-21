@@ -12,11 +12,14 @@ import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
+import com.beautysight.liurushi.identityaccess.app.presentation.UserProfilePresentation;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author chenlong
@@ -31,10 +34,10 @@ public class UserRest {
     @Autowired
     private OAuthApp oAuthApp;
 
-    @RequestMapping(value = "/{mobile}", method = RequestMethod.GET)
+    @RequestMapping(value = "/actions/exist", method = RequestMethod.GET)
     @VisitorApiPermission(true)
-    public UserExistPresentation checkIfUserExistWith(@PathVariable String mobile) {
-        PreconditionUtils.checkRequiredMobile("mobile", mobile);
+    public UserExistPresentation checkIfUserExistWith(@RequestParam String mobile) {
+        PreconditionUtils.checkRequiredMobile("request param mobile", mobile);
         return userApp.checkIfUserExistWith(mobile);
     }
 
@@ -59,11 +62,25 @@ public class UserRest {
                 RequestContext.getAccessToken().accessToken));
     }
 
+    @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
+    @VisitorApiPermission(true)
+    public UserProfilePresentation getUserProfile(String userId) {
+        PreconditionUtils.checkRequired("url path variable userId", userId);
+        return userApp.getUserProfile(userId);
+    }
+
     @RequestMapping(value = "/current/avatar/max", method = RequestMethod.POST)
     public DownloadUrlPresentation issueDownloadUrlOfMaxAvatar() {
         return userApp.issueDownloadUrlOfMaxAvatar(
                 oAuthApp.getUserClientBy(RequestContext.getAccessToken().type.toString(),
                         RequestContext.getAccessToken().accessToken));
+    }
+
+    @RequestMapping(value = "/actions/set_grp_to_pro", method = RequestMethod.PUT)
+    @VisitorApiPermission(true)
+    public void setUsersGroupToProfessional(@RequestBody List<String> mobiles) {
+        PreconditionUtils.checkRequired("request param mobiles", mobiles);
+        userApp.setUsersGroupToProfessional(mobiles);
     }
 
 }

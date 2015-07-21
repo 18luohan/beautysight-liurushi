@@ -49,21 +49,22 @@ public class Requests {
         }
     }
 
-    public static AccessTokenDTO getAccessToken(HttpServletRequest request) {
+    public static Optional<AccessTokenDTO> getAccessToken(HttpServletRequest request) {
         Optional<String> authorization = Requests.getHeader(AUTHORIZATION, request);
         Logs.debug(logger, "Authorize request: {}, authorization: {}",
                 Requests.methodAndURI(request), authorization.orNull());
 
-        if (!authorization.isPresent()) {
-            throw new AuthException("%s header required", AUTHORIZATION);
+        if (authorization.isPresent()) {
+            try {
+                return Optional.of(parse(authorization.get()));
+            } catch (Exception e) {
+                throw new AuthException(e,
+                        "malformed authorization, expected: <Basic|Bearer> ${access_token}", AUTHORIZATION);
+            }
         }
 
-        try {
-            return parse(authorization.get());
-        } catch (Exception e) {
-            throw new AuthException(e,
-                    "malformed authorization, expected: <Basic|Bearer> ${access_token}", AUTHORIZATION);
-        }
+        Logs.debug(logger, "{} header is not present", AUTHORIZATION);
+        return Optional.absent();
     }
 
     private static AccessTokenDTO parse(String authorization) {

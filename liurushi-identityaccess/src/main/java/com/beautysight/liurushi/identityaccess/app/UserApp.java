@@ -6,12 +6,14 @@ package com.beautysight.liurushi.identityaccess.app;
 
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.ex.IllegalDomainModelStateException;
+import com.beautysight.liurushi.common.utils.Regexp;
 import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
+import com.beautysight.liurushi.identityaccess.app.presentation.UserProfilePresentation;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
@@ -23,6 +25,9 @@ import com.beautysight.liurushi.identityaccess.domain.service.UserService;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chenlong
@@ -69,6 +74,13 @@ public class UserApp {
         throw new EntityNotFoundException("Expect bearer token present, but actual absent");
     }
 
+    public UserProfilePresentation getUserProfile(String userId) {
+        User user = userRepo.findOne(userId);
+        String originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
+        String maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
+        return UserProfilePresentation.from(user.toUserProfile(), originalAvatarUrl, maxAvatarUrl);
+    }
+
     public DownloadUrlPresentation issueDownloadUrlOfMaxAvatar(UserClient thisUserClient) {
         User.Avatar theAvatar = thisUserClient.user().maxAvatar();
 
@@ -80,6 +92,16 @@ public class UserApp {
         }
 
         throw new IllegalDomainModelStateException("User has no max avatar, mobile: %s", thisUserClient.user().mobile());
+    }
+
+    public void setUsersGroupToProfessional(List<String> mobiles) {
+        List<String> mobilesWithCallingCode = new ArrayList<>(mobiles.size());
+        for (String mobile : mobiles) {
+            if (Regexp.isChinaMobileWithoutCallingCode(mobile)) {
+                mobilesWithCallingCode.add("+86-" + mobile);
+            }
+        }
+        userRepo.setUsersGroupToProfessional(mobilesWithCallingCode);
     }
 
 }

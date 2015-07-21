@@ -21,15 +21,17 @@
         <property name="app.log.level" value="DEBUG" />
     </group>
 
+    <group name="mobile.app.config">
+        <property name="mobile.app.id" value="letsplay" />
+    </group>
+
     <script>
         <!--
             此处的目标是对src/main/resources目录下的资源文件进行过滤处理，由于src/main/resources目录下资源文件
             构建后会输出到WEB-INF/classes/目录下，所以template属性值以WEB-INF/classes/为前缀
         -->
-        <generate template="WEB-INF/classes/mongo.properties" destfile="WEB-INF/classes/mongo.properties"
+        <generate template="WEB-INF/classes/liurushi.properties" destfile="WEB-INF/classes/liurushi.properties"
                   charset="UTF-8"/>
-        <generate template="WEB-INF/classes/qiniu_storage.properties"
-                  destfile="WEB-INF/classes/qiniu_storage.properties" charset="UTF-8"/>
         <generate template="WEB-INF/classes/logback.xml" destfile="WEB-INF/classes/logback.xml" charset="UTF-8"/>
     </script>
 

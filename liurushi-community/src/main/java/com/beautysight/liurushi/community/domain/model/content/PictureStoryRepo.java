@@ -14,7 +14,8 @@ import java.util.List;
  */
 public interface PictureStoryRepo extends MongoRepository<PictureStory> {
 
-    List<PictureStory> getLatestPictureStories(int count);
-    List<PictureStory> findPictureStoriesInRange(String referenceWorkId, int offset);
+    List<PictureStory> getLatestPictureStories(Work.Source source, int count);
+
+    List<PictureStory> findPictureStoriesInRange(Work.Source source, String referenceWorkId, int offset);
 
 }

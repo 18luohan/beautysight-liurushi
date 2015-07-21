@@ -23,18 +23,18 @@ public class PictureStoryRepoImplTest extends SpringBasedAppTest {
     @Autowired
     private PictureStoryRepo pictureStoryRepo;
 
-    @Test
-    public void findPictureStoriesInRange() {
-        String referenceWorkId = "55a787c96c12e410a779e9fe";
-        int offset = 2;
-        List<PictureStory> pictureStories = pictureStoryRepo.findPictureStoriesInRange(referenceWorkId, offset);
-        Assert.assertEquals(5, pictureStories.size());
-    }
-
-    @Test
-    public void test() {
-        PictureStory story = pictureStoryRepo.findOne(new ObjectId("556d7fd0f8d0efa2c55361f1"));
-        System.out.println(story.id());
-    }
+//    @Test
+//    public void findPictureStoriesInRange() {
+//        String referenceWorkId = "55a787c96c12e410a779e9fe";
+//        int offset = 2;
+//        List<PictureStory> pictureStories = pictureStoryRepo.findPictureStoriesInRange(referenceWorkId, offset);
+//        Assert.assertEquals(5, pictureStories.size());
+//    }
+//
+//    @Test
+//    public void test() {
+//        PictureStory story = pictureStoryRepo.findOne(new ObjectId("556d7fd0f8d0efa2c55361f1"));
+//        System.out.println(story.id());
+//    }
 
 }

@@ -15,7 +15,7 @@ import org.bson.types.ObjectId;
  */
 public class UserClient extends ValueObject {
 
-    private User.UserLite user;
+    private User.UserProfile user;
     private User.Type userType;
     private ObjectId deviceId;
 
@@ -24,7 +24,7 @@ public class UserClient extends ValueObject {
 
     public UserClient(User user, Device device, AccessToken.Type tokenType) {
         if (user != null) {
-            this.user = user.toUserLite();
+            this.user = user.toUserProfile();
         }
         this.deviceId = device.id();
         this.userType = determineUserType(tokenType);
@@ -32,7 +32,7 @@ public class UserClient extends ValueObject {
 
     public UserClient(User user, Device device, User.Type userType) {
         if (user != null) {
-            this.user = user.toUserLite();
+            this.user = user.toUserProfile();
         }
         this.deviceId = device.id();
         this.userType = userType;
@@ -54,7 +54,7 @@ public class UserClient extends ValueObject {
         return this.user.id();
     }
 
-    public User.UserLite user() {
+    public User.UserProfile user() {
         return this.user;
     }
 

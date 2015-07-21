@@ -4,7 +4,6 @@
 
 package com.beautysight.liurushi.common.utils;
 
-
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -46,10 +45,6 @@ public class Passwords {
         SECURE_RANDOM.setSeed(SECURE_RANDOM.generateSeed(SALT_BYTES.length));
         SECURE_RANDOM.nextBytes(SALT_BYTES);
         return Hex.encodeHexString(SALT_BYTES);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(encrypt("123456", Passwords.nextSalt()));
     }
 
 }

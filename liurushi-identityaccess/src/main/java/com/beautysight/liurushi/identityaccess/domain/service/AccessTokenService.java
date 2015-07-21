@@ -78,4 +78,13 @@ public class AccessTokenService {
         return UserClient.newInstanceBy(theToken.get());
     }
 
+    public User getUserBy(String type, String accessToken) {
+        Optional<AccessToken> theToken = accessTokenRepo.accessTokenOf(accessToken, AccessToken.Type.valueOf(type));
+        if (!theToken.isPresent()) {
+            throw new EntityNotFoundException("Not found %s token: %s", type, accessToken);
+        }
+
+        return theToken.get().user();
+    }
+
 }

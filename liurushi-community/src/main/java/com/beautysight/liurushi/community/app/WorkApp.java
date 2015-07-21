@@ -71,9 +71,25 @@ public class WorkApp {
         return WorkPresentation.from(pictureStory, presentation, keyToDownloadUrlMapping);
     }
 
-    public WorkProfilePresentation getLatestWorkProfiles(int count) {
+    public WorkProfilePresentation getPgcLatestWorkProfiles(int count) {
+        return getLatestWorkProfiles(Work.Source.pgc, count);
+    }
+
+    public WorkProfilePresentation findPgcWorkProfilesInRange(String referenceWorkId, int offset) {
+        return findWorkProfilesInRange(Work.Source.pgc, referenceWorkId, offset);
+    }
+
+    public WorkProfilePresentation getUgcLatestWorkProfiles(int count) {
+        return getLatestWorkProfiles(Work.Source.ugc, count);
+    }
+
+    public WorkProfilePresentation findUgcWorkProfilesInRange(String referenceWorkId, int offset) {
+        return findWorkProfilesInRange(Work.Source.ugc, referenceWorkId, offset);
+    }
+
+    private WorkProfilePresentation getLatestWorkProfiles(Work.Source source, int count) {
         List<WorkProfile> workProfiles = new ArrayList<>();
-        List<PictureStory> theWorks = pictureStoryRepo.getLatestPictureStories(count);
+        List<PictureStory> theWorks = pictureStoryRepo.getLatestPictureStories(source, count);
 
         if (CollectionUtils.isEmpty(theWorks)) {
             return new WorkProfilePresentation(workProfiles);
@@ -88,9 +104,9 @@ public class WorkApp {
         return new WorkProfilePresentation(workProfiles);
     }
 
-    public WorkProfilePresentation findWorkProfilesInRange(String referenceWorkId, int offset) {
+    private WorkProfilePresentation findWorkProfilesInRange(Work.Source source, String referenceWorkId, int offset) {
         List<WorkProfile> workProfiles = new ArrayList<>();
-        List<PictureStory> theWorks = pictureStoryRepo.findPictureStoriesInRange(referenceWorkId, offset);
+        List<PictureStory> theWorks = pictureStoryRepo.findPictureStoriesInRange(source, referenceWorkId, offset);
 
         if (CollectionUtils.isEmpty(theWorks)) {
             return new WorkProfilePresentation(workProfiles);

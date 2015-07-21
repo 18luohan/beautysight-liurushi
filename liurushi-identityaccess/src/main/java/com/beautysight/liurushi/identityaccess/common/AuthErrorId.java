@@ -17,6 +17,7 @@ import com.beautysight.liurushi.common.ex.Error;
  */
 public enum AuthErrorId implements Error.Id {
 
+    invalid_app_id,
     invalid_access_token,
     expired_access_token;
 

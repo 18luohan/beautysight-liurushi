@@ -7,7 +7,8 @@ package com.beautysight.liurushi.identityaccess.domain.repo;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.google.common.base.Optional;
-import org.bson.types.ObjectId;
+
+import java.util.List;
 
 /**
  * @author chenlong
@@ -19,6 +20,6 @@ public interface UserRepo extends MongoRepository<User> {
 
     void updateLastLoginTime(User loggingInUser);
 
-    User addAvatarFor(ObjectId userId, User.Avatar newAvatar);
+    void setUsersGroupToProfessional(List<String> mobiles);
 
 }

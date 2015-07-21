@@ -22,8 +22,11 @@ public class PresentationDPO extends DPO {
 
     public List<SlideDPO> slides;
     public Author author;
+    public Work.Source source;
 
     public void validate() {
+        PreconditionUtils.checkRequired("presentation.author", author);
+        PreconditionUtils.checkRequired("presentation.source", source);
         PreconditionUtils.checkRequired("presentation.slides", slides);
         ControlDPO.validate(slides);
     }

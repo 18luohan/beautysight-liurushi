@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
 public class Regexp {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$");
-    private static final Pattern MOBILE_PATTERN = Pattern.compile("^\\+\\d+(-\\d+)?-1[3458]\\d{9}$");
+    private static final Pattern MOBILE_WITH_CALLING_CODE_PATTERN = Pattern.compile("^\\+\\d+(-\\d+)?-1[3458]\\d{9}$");
+    private static final Pattern CHINA_MOBILE_PATTERN = Pattern.compile("^1[3458]\\d{9}$");
 
     public static boolean isEmail(String email) {
         return EMAIL_PATTERN.matcher(email).matches();
@@ -34,8 +35,12 @@ public class Regexp {
      *               电信的号段：133、153、180（未启用）、189
      * @return true 格式合法；false 格式不合法
      */
-    public static boolean isMobile(String mobile) {
-        return MOBILE_PATTERN.matcher(mobile).matches();
+    public static boolean isMobileWithCallingCode(String mobile) {
+        return MOBILE_WITH_CALLING_CODE_PATTERN.matcher(mobile).matches();
+    }
+
+    public static boolean isChinaMobileWithoutCallingCode(String mobile) {
+        return CHINA_MOBILE_PATTERN.matcher(mobile).matches();
     }
 
 }

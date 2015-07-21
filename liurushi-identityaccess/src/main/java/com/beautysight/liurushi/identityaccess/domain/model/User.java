@@ -19,10 +19,6 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-06.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -41,6 +37,9 @@ public class User extends AbstractEntity {
     private Avatar originalAvatar;
     private Avatar maxAvatar;
     private Avatar blurredAvatar;
+
+    // 默认组别为业余组
+    private Group group = Group.amateur;
 
     private User() {
     }
@@ -75,6 +74,10 @@ public class User extends AbstractEntity {
         return this.nickname;
     }
 
+    public Group group() {
+        return this.group;
+    }
+
     public Avatar maxAvatar() {
         return this.maxAvatar;
     }
@@ -99,12 +102,16 @@ public class User extends AbstractEntity {
         return this.lastLogin;
     }
 
-    public UserLite toUserLite() {
-        return new UserLite(this);
+    public UserProfile toUserProfile() {
+        return new UserProfile(this);
     }
 
     public enum Type {
         visitor, member
+    }
+
+    public enum Group {
+        professional, amateur
     }
 
     private static class Password {
@@ -130,7 +137,7 @@ public class User extends AbstractEntity {
 
         private String key;
         private String hash;
-        private int spec;
+        private Integer spec;
 
         public Avatar() {
         }
@@ -176,22 +183,25 @@ public class User extends AbstractEntity {
 
     }
 
-    public static class UserLite extends ValueObject {
+    public static class UserProfile extends ValueObject {
+
         private ObjectId id;
-        private String mobile;
         private String nickname;
+        private Gender gender;
+        private String mobile;
+        private String email;
 
         private Avatar originalAvatar;
-        private Avatar maxAvatar;
-        private Avatar blurredAvatar;
+        private User.Avatar maxAvatar;
 
-        private UserLite(User user) {
-            this.id = user.id();
-            this.mobile = user.mobile;
+        private UserProfile(User user) {
+            this.id = user.id;
             this.nickname = user.nickname;
+            this.gender = user.gender;
+            this.mobile = user.mobile;
+            this.email = user.email;
             this.originalAvatar = user.originalAvatar;
             this.maxAvatar = user.maxAvatar;
-            this.blurredAvatar = user.blurredAvatar;
         }
 
         public ObjectId id() {
@@ -210,4 +220,5 @@ public class User extends AbstractEntity {
             return this.maxAvatar;
         }
     }
+
 }

@@ -25,6 +25,11 @@ public class AccessTokenDTO implements DTO {
         PreconditionUtils.checkRequired("accessToken.accessToken", accessToken);
     }
 
+    @Override
+    public String toString() {
+        return String.format("{type:%s, accessToken:%s}", type, accessToken);
+    }
+
     public enum Type {
         Basic, Bearer
     }

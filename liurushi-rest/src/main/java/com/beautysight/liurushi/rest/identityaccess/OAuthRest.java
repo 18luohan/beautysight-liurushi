@@ -9,7 +9,7 @@ import com.beautysight.liurushi.identityaccess.app.command.DeviceDTO;
 import com.beautysight.liurushi.identityaccess.app.command.RefreshAccessTokenCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
 import com.beautysight.liurushi.rest.common.APIs;
-import com.beautysight.liurushi.rest.common.Requests;
+import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +40,7 @@ public class OAuthRest {
     @RequestMapping(value = "/bearer_token", method = RequestMethod.PUT)
     public AccessTokenPresentation refreshBearerToken(@RequestBody RefreshAccessTokenCommand command,
                                                       HttpServletRequest request) {
-        command.bearerToken = Requests.getAccessToken(request).accessToken;
+        command.bearerToken = RequestContext.getAccessToken().accessToken;
         command.validate();
         return oAuthApp.refreshBearerToken(command);
     }

@@ -59,7 +59,7 @@ public class PreconditionUtils {
 
     public static void checkRequiredMobile(String field, String val) {
         checkRequired(field, val);
-        if (!Regexp.isMobile(val)) {
+        if (!Regexp.isMobileWithCallingCode(val)) {
             throw new IllegalParamException("%s illegal", field);
         }
     }

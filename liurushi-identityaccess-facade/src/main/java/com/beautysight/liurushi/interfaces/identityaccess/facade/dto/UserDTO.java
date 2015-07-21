@@ -12,7 +12,12 @@ public class UserDTO implements DTO {
 
     public String id;
     public String nickname;
+    public Group group;
     public String originalAvatarUrl;
     public String maxAvatarUrl;
+
+    public enum Group {
+        professional, amateur
+    }
 
 }

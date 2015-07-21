@@ -5,7 +5,7 @@
 package com.beautysight.liurushi.community.app.presentation;
 
 import com.beautysight.liurushi.common.app.PresentationModel;
-import com.beautysight.liurushi.community.app.dpo.PictureStoryDTO;
+import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
 import com.beautysight.liurushi.community.app.dpo.PresentationDPO;
 import com.beautysight.liurushi.community.domain.model.content.PictureStory;
 import com.beautysight.liurushi.community.domain.model.content.Presentation;
@@ -18,14 +18,14 @@ import java.util.Map;
  */
 public class WorkPresentation implements PresentationModel {
 
-    private PictureStoryDTO pictureStory;
+    private PictureStoryDPO pictureStory;
     private PresentationDPO presentation;
 
     public static WorkPresentation from(PictureStory pictureStory,
                                         Presentation presentation,
                                         Map<String, String> keyToDownloadUrlMapping) {
         WorkPresentation workPresentation = new WorkPresentation();
-        workPresentation.pictureStory = PictureStoryDTO.from(pictureStory, keyToDownloadUrlMapping);
+        workPresentation.pictureStory = PictureStoryDPO.from(pictureStory, keyToDownloadUrlMapping);
         workPresentation.presentation = PresentationDPO.from(presentation, keyToDownloadUrlMapping);
         return workPresentation;
     }

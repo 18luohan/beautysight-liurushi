@@ -8,9 +8,11 @@ import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.Abs
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.google.common.base.Optional;
-import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author chenlong
@@ -31,9 +33,10 @@ public class UserRepoImpl extends AbstractMongoRepository<User> implements UserR
     }
 
     @Override
-    public User addAvatarFor(ObjectId userId, User.Avatar newAvatar) {
-        UpdateOperations<User> updateOps = newUpdateOps().add("avatars", newAvatar, true);
-        return datastore.findAndModify(newQuery(Conditions.of("id", userId)), updateOps);
+    public void setUsersGroupToProfessional(List<String> mobiles) {
+        Query query = newQuery().field("mobile").in(mobiles);
+        UpdateOperations<User> updateOps = newUpdateOps().set("group", User.Group.professional);
+        datastore.update(query, updateOps);
     }
 
     @Override

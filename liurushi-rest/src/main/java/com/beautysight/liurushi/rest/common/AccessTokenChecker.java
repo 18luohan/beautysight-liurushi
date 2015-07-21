@@ -10,6 +10,7 @@ import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,28 +34,18 @@ public class AccessTokenChecker extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try {
-            AccessTokenDTO accessToken = Requests.getAccessToken(request);
+            Optional<AccessTokenDTO> accessToken = Requests.getAccessToken(request);
 
-            /*
-             * 严格检查注册、登录时使用的token类型，预防恶意攻击。
-             * 退出时无需检查，因为如果使用basic token，就不允许访问该API。
-             * 其他接口不检查，因为没有清楚明确的规则确定该使用何种token。
-             */
-            if (isSignUpOrLoginAPI(request) && (accessToken.type == AccessTokenDTO.Type.Bearer)) {
-                Logs.warn(logger, "someone uses bearer token for sign-up or login api");
-                Responses.setStatusAndWriteTo(response, CommonErrorId.unauthorized,
-                        "Should use basic token for sign-up or login api");
-                return false;
+            if (accessToken.isPresent()) {
+                accessToken.get().validate();
+
+                // 如果是refresh bearer token api，就跳过对请求的认证
+                if (!isRefreshBearerTokenAPI(request)) {
+                    authApp.authenticate(new AuthCommand(accessToken.get().type.toString(), accessToken.get().accessToken));
+                }
+
+                RequestContext.putAccessToken(accessToken.get());
             }
-
-            accessToken.validate();
-
-            // 如果是refresh bearer token api，就跳过对请求的认证
-            if (!isRefreshBearerTokenAPI(request)) {
-                authApp.authenticate(new AuthCommand(accessToken.type.toString(), accessToken.accessToken));
-            }
-
-            RequestContext.putAccessToken(accessToken);
         } catch (ApplicationException ex) {
             Logs.error(logger, ex, "Error while auth");
             Responses.setStatusAndWriteTo(response, ex.errorId(), ex.getMessage());
@@ -76,17 +67,9 @@ public class AccessTokenChecker extends HandlerInterceptorAdapter {
         RequestContext.clear();
     }
 
-    private boolean isSignUpOrLoginAPI(HttpServletRequest request) {
-        boolean signUp = (HttpMethod.POST == HttpMethod.valueOf(request.getMethod())
-                && request.getRequestURI().endsWith("/users"));
-        boolean login = (HttpMethod.PUT == HttpMethod.valueOf(request.getMethod())
-                && request.getRequestURI().endsWith("/users/actions/login"));
-        return (signUp || login);
-    }
-
     private boolean isRefreshBearerTokenAPI(HttpServletRequest request) {
         return (HttpMethod.PUT == HttpMethod.valueOf(request.getMethod())
-                    && request.getRequestURI().endsWith("/oauth/bearer_token"));
+                && request.getRequestURI().endsWith("/oauth/bearer_token"));
     }
 
 }

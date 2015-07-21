@@ -207,7 +207,7 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     protected Query<T> newQuery(Conditions conditions) {
         Assert.notNull(conditions, "The given conditions must not be null");
-        Query<T> query = datastore.createQuery(entityClass());
+        Query<T> query = newQuery();
         Iterator<Conditions.Condition> it = conditions.iterator();
         while (it.hasNext()) {
             Conditions.Condition condition = it.next();
@@ -218,6 +218,10 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     protected UpdateOperations<T> newUpdateOps() {
         return datastore.createUpdateOperations(entityClass());
+    }
+
+    protected Query<T> newQuery() {
+        return datastore.createQuery(entityClass());
     }
 
     private static boolean isNullOrEmpty(Iterable<?> iterable) {

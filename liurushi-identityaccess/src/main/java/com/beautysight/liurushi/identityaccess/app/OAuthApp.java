@@ -14,6 +14,7 @@ import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPrese
 import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
+import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.identityaccess.domain.model.UserClient;
 import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
 import com.beautysight.liurushi.identityaccess.domain.repo.DeviceRepo;
@@ -83,7 +84,11 @@ public class OAuthApp {
     }
 
     public UserClient getUserClientBy(String type, String accessToken) {
-        return accessTokenService.getUserClientBy(AccessToken.Type.valueOf(type.toString()), accessToken);
+        return accessTokenService.getUserClientBy(AccessToken.Type.valueOf(type), accessToken);
+    }
+
+    public User getUserBy(String type, String accessToken) {
+        return accessTokenService.getUserBy(type, accessToken);
     }
 
 }
