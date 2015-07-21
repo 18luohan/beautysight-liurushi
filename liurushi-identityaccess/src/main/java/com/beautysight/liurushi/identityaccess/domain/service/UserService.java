@@ -46,7 +46,9 @@ public class UserService {
     private static final ExecutorService executor = Executors.newCachedThreadPool();
 
     public User signUp(final User newUser) {
+        Logs.debug(logger, "signUp beginning");
         Optional<User> theUser = userRepo.withMobile(newUser.mobile());
+        Logs.debug(logger, "signUp ok");
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
                     "user already exist with mobile: " + newUser.mobile());
@@ -54,6 +56,7 @@ public class UserService {
 
         newUser.setLastLoginToNow();
         final User savedUser = userRepo.save(newUser);
+        Logs.debug(logger, "userRepo.save ok");
 
         executor.submit(new Runnable() {
             @Override
@@ -69,6 +72,7 @@ public class UserService {
             }
         });
 
+        Logs.debug(logger, "signUp finally ok");
         return savedUser;
     }
 
