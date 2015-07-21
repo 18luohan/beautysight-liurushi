@@ -4,10 +4,12 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
+import com.beautysight.liurushi.community.domain.model.content.OffsetDirection;
 import com.beautysight.liurushi.community.domain.model.content.PictureStory;
 import com.beautysight.liurushi.community.domain.model.content.PictureStoryRepo;
 import com.beautysight.liurushi.community.domain.model.content.Work;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
+import com.google.common.base.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
@@ -33,15 +35,21 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
         return query.asList();
     }
 
-    public List<PictureStory> findPictureStoriesInRange(Work.Source source, String referenceWorkId, int offset) {
+    public List<PictureStory> findPictureStoriesInRange(
+            Work.Source source, Optional<String> referenceWorkId, int offset, OffsetDirection direction) {
         List<PictureStory> result = new ArrayList<>();
 
+        if (!referenceWorkId.isPresent()) {
+            return getLatestPictureStories(source, offset);
+        }
+
         Query<PictureStory> query;
-        if (offset > 0) {
+        boolean isReferenceWorkAdded = false;
+        if (offset > 0 && (direction == OffsetDirection.both || direction == OffsetDirection.after)) {
             query = newQuery();
             query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
                     .field("source").equal(source)
-                    .field("id").greaterThan(new ObjectId(referenceWorkId))
+                    .field("id").greaterThanOrEq(new ObjectId(referenceWorkId.get()))
                     // 目前morphia组件还不支持$natural查询修饰符
                     .order("id").limit(offset);
             List<PictureStory> ascendingList = query.asList();
@@ -49,18 +57,25 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
                 // 倒序排列
                 Collections.reverse(ascendingList);
                 result.addAll(ascendingList);
+                isReferenceWorkAdded = true;
             }
         }
 
-        query = newQuery();
-        query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
-                .field("source").equal(source)
-                .field("id").lessThanOrEq(new ObjectId(referenceWorkId))
-                // 目前morphia组件还不支持$natural查询修饰符
-                .order("-id").limit(offset + 1);
-        List<PictureStory> descendingList = query.asList();
-        if (CollectionUtils.isNotEmpty(descendingList)) {
-            result.addAll(query.asList());
+        if (offset > 0 && (direction == OffsetDirection.both || direction == OffsetDirection.before)) {
+            query = newQuery();
+            query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
+                    .field("source").equal(source)
+                    .field("id").lessThanOrEq(new ObjectId(referenceWorkId.get()))
+                    // 目前morphia组件还不支持$natural查询修饰符
+                    .order("-id").limit(offset + 1);
+            List<PictureStory> descendingList = query.asList();
+            if (CollectionUtils.isNotEmpty(descendingList)) {
+                if (isReferenceWorkAdded) {
+                    result.addAll(descendingList.subList(1, descendingList.size()));
+                } else {
+                    result.addAll(descendingList);
+                }
+            }
         }
 
         return result;

@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.community.domain.model.content;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface PictureStoryRepo extends MongoRepository<PictureStory> {
 
     List<PictureStory> getLatestPictureStories(Work.Source source, int count);
 
-    List<PictureStory> findPictureStoriesInRange(Work.Source source, String referenceWorkId, int offset);
+    List<PictureStory> findPictureStoriesInRange(
+            Work.Source source, Optional<String> referenceWorkId, int offset, OffsetDirection direction);
 
 }

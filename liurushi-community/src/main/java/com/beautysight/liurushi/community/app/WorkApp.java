@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.app;
 
+import com.beautysight.liurushi.community.app.command.FindWorkProfilesInRangeCommand;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.dpo.ControlDPO;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
@@ -11,6 +12,7 @@ import com.beautysight.liurushi.community.app.presentation.WorkProfilePresentati
 import com.beautysight.liurushi.community.domain.model.content.*;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
+import com.google.common.base.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,16 +77,16 @@ public class WorkApp {
         return getLatestWorkProfiles(Work.Source.pgc, count);
     }
 
-    public WorkProfilePresentation findPgcWorkProfilesInRange(String referenceWorkId, int offset) {
-        return findWorkProfilesInRange(Work.Source.pgc, referenceWorkId, offset);
+    public WorkProfilePresentation findPgcWorkProfilesInRange(FindWorkProfilesInRangeCommand command) {
+        return findWorkProfilesInRange(Work.Source.pgc, command);
     }
 
     public WorkProfilePresentation getUgcLatestWorkProfiles(int count) {
         return getLatestWorkProfiles(Work.Source.ugc, count);
     }
 
-    public WorkProfilePresentation findUgcWorkProfilesInRange(String referenceWorkId, int offset) {
-        return findWorkProfilesInRange(Work.Source.ugc, referenceWorkId, offset);
+    public WorkProfilePresentation findUgcWorkProfilesInRange(FindWorkProfilesInRangeCommand command) {
+        return findWorkProfilesInRange(Work.Source.ugc, command);
     }
 
     private WorkProfilePresentation getLatestWorkProfiles(Work.Source source, int count) {
@@ -104,9 +106,11 @@ public class WorkApp {
         return new WorkProfilePresentation(workProfiles);
     }
 
-    private WorkProfilePresentation findWorkProfilesInRange(Work.Source source, String referenceWorkId, int offset) {
+    private WorkProfilePresentation findWorkProfilesInRange(Work.Source source, FindWorkProfilesInRangeCommand command) {
         List<WorkProfile> workProfiles = new ArrayList<>();
-        List<PictureStory> theWorks = pictureStoryRepo.findPictureStoriesInRange(source, referenceWorkId, offset);
+
+        List<PictureStory> theWorks = pictureStoryRepo.findPictureStoriesInRange(
+                source, Optional.fromNullable(command.referenceWork), command.offset, command.direction);
 
         if (CollectionUtils.isEmpty(theWorks)) {
             return new WorkProfilePresentation(workProfiles);

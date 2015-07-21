@@ -6,6 +6,7 @@ package com.beautysight.liurushi.identityaccess.app;
 
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.ex.IllegalDomainModelStateException;
+import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.common.utils.Regexp;
 import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
@@ -23,6 +24,8 @@ import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.beautysight.liurushi.identityaccess.domain.service.AccessTokenService;
 import com.beautysight.liurushi.identityaccess.domain.service.UserService;
 import com.google.common.base.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,8 @@ import java.util.List;
  */
 @Service
 public class UserApp {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserApp.class);
 
     @Autowired
     private UserService userService;
@@ -53,9 +58,13 @@ public class UserApp {
     }
 
     public AccessTokenPresentation signUp(SignUpCommand command) {
+        Logs.debug(logger, "signUp start");
         User user = userService.signUp(command.user.toUser());
+        Logs.debug(logger, "signUp complete");
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
+        Logs.debug(logger, "saveOrAddUserToDevice complete");
         AccessToken bearerToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
+        Logs.debug(logger, "accessTokenRepo save");
         return AccessTokenPresentation.from(bearerToken);
     }
 
