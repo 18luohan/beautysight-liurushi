@@ -56,10 +56,11 @@ public class UserRest {
     }
 
     @RequestMapping(value = "/actions/logout", method = RequestMethod.PUT)
-    public AccessTokenPresentation logout() {
-        return userApp.logout(oAuthApp.getUserClientBy(
-                RequestContext.getAccessToken().type.toString(),
-                RequestContext.getAccessToken().accessToken));
+    public void logout() {
+        // TODO 让 token 过期
+//        userApp.logout(oAuthApp.getUserClientBy(
+//                RequestContext.getAccessToken().type.toString(),
+//                RequestContext.getAccessToken().accessToken));
     }
 
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
