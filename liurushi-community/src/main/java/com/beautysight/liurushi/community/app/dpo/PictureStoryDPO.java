@@ -46,7 +46,7 @@ public class PictureStoryDPO extends DPO {
         for (ShotDPO dto : shots) {
             shotList.add(dto.toShot());
         }
-        return new PictureStory(title, subtitle, layout, cover.toCover(), shotList, author);
+        return new PictureStory(title, subtitle, layout, cover.toCover(), shotList, author, source);
     }
 
     public static PictureStoryDPO from(PictureStory source, Map<String, String> keyToDownloadUrlMapping) {

@@ -30,8 +30,8 @@ public class PictureStory extends Work<PictureStory.Shot> {
     public PictureStory() {
     }
 
-    public PictureStory(String title, String subtitle, Layout layout, Cover cover, List<Shot> shots, Author author) {
-        super(author);
+    public PictureStory(String title, String subtitle, Layout layout, Cover cover, List<Shot> shots, Author author, Source source) {
+        super(author, source);
         this.title = title;
         this.subtitle = subtitle;
         this.layout = layout;

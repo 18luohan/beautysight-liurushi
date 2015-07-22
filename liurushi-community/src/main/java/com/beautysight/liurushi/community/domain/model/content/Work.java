@@ -24,14 +24,15 @@ public abstract class Work<T extends Control> extends AbstractEntity {
     private Source source;
 
     public Work() {
-        this(null);
+        this(null, null);
     }
 
-    public Work(Author author) {
+    public Work(Author author, Source source) {
         if (author != null) {
             this.authorId = new ObjectId(author.id);
         }
         this.publishedAt = new Date();
+        this.source = source;
     }
 
     public ObjectId authorId() {

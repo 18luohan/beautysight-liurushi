@@ -98,4 +98,5 @@ public class Logs {
             logger.debug(format, args);
         }
     }
+
 }

@@ -26,8 +26,8 @@ public class Presentation extends Work<Presentation.Slide> {
     private Presentation() {
     }
 
-    public Presentation(List<Slide> slides, Author author) {
-        super(author);
+    public Presentation(List<Slide> slides, Author author, Source source) {
+        super(author, source);
         this.slides = slides;
     }
 

@@ -37,7 +37,7 @@ public class PresentationDPO extends DPO {
         for (SlideDPO dto : slides) {
             slideList.add(dto.toSlide());
         }
-        return new Presentation(slideList, author);
+        return new Presentation(slideList, author, source);
     }
 
     public static PresentationDPO from(Presentation source, Map<String, String> keyToDownloadUrlMapping) {
