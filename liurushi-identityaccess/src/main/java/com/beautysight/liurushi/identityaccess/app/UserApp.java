@@ -12,6 +12,7 @@ import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
+import com.beautysight.liurushi.identityaccess.app.presentation.SignUpOrLoginPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserProfilePresentation;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
@@ -56,18 +57,27 @@ public class UserApp {
         return new UserExistPresentation(userRepo.withMobile(mobile).isPresent());
     }
 
-    public AccessTokenPresentation signUp(SignUpCommand command) {
+    public SignUpOrLoginPresentation signUp(SignUpCommand command) {
         User user = userService.signUp(command.user.toUser());
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
         AccessToken bearerToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
-        return AccessTokenPresentation.from(bearerToken);
+        AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(bearerToken);
+        UserProfilePresentation userProfilePresentation = translateToPresentationFrom(user);
+        return new SignUpOrLoginPresentation(userProfilePresentation, accessTokenPresentation);
     }
 
-    public AccessTokenPresentation login(LoginCommand command) {
+    public SignUpOrLoginPresentation login(LoginCommand command) {
         User theUser = userService.login(command.user.toUser(), command.user.password);
         Device theDevice = userService.saveOrAddUserToDevice(command.device.toDevice(), theUser);
         AccessToken accessToken = accessTokenService.issueOrRefreshBearerTokenFor(theUser, theDevice);
-        return AccessTokenPresentation.from(accessToken);
+        AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(accessToken);
+        UserProfilePresentation userProfilePresentation = translateToPresentationFrom(theUser);
+        return new SignUpOrLoginPresentation(userProfilePresentation, accessTokenPresentation);
+    }
+
+    public UserProfilePresentation getUserProfile(String userId) {
+        User user = userRepo.findOne(userId);
+        return translateToPresentationFrom(user);
     }
 
     public AccessTokenPresentation logout(UserClient userClient) {
@@ -76,13 +86,6 @@ public class UserApp {
             return AccessTokenPresentation.from(accessTokenService.exchangeForBasicToken(theToken.get()));
         }
         throw new EntityNotFoundException("Expect bearer token present, but actual absent");
-    }
-
-    public UserProfilePresentation getUserProfile(String userId) {
-        User user = userRepo.findOne(userId);
-        String originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
-        String maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
-        return UserProfilePresentation.from(user.toUserProfile(), originalAvatarUrl, maxAvatarUrl);
     }
 
     public DownloadUrlPresentation issueDownloadUrlOfMaxAvatar(UserClient thisUserClient) {
@@ -106,6 +109,12 @@ public class UserApp {
             }
         }
         userRepo.setUsersGroupToProfessional(mobilesWithCallingCode);
+    }
+
+    private UserProfilePresentation translateToPresentationFrom(User user) {
+        String originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
+        String maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
+        return UserProfilePresentation.from(user.toUserProfile(), originalAvatarUrl, maxAvatarUrl);
     }
 
 }

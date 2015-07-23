@@ -10,7 +10,7 @@ import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.identityaccess.app.UserApp;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
-import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
+import com.beautysight.liurushi.identityaccess.app.presentation.SignUpOrLoginPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserProfilePresentation;
 import com.beautysight.liurushi.rest.common.APIs;
@@ -43,14 +43,14 @@ public class UserRest {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @VisitorApiPermission(true)
-    public AccessTokenPresentation signUp(@RequestBody SignUpCommand signUpCommand) {
+    public SignUpOrLoginPresentation signUp(@RequestBody SignUpCommand signUpCommand) {
         signUpCommand.validate();
         return userApp.signUp(signUpCommand);
     }
 
     @RequestMapping(value = "/actions/login", method = RequestMethod.PUT)
     @VisitorApiPermission(true)
-    public AccessTokenPresentation login(@RequestBody LoginCommand loginCommand) {
+    public SignUpOrLoginPresentation login(@RequestBody LoginCommand loginCommand) {
         loginCommand.validate();
         return userApp.login(loginCommand);
     }
