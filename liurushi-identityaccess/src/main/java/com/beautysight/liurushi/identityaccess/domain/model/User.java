@@ -41,7 +41,8 @@ public class User extends AbstractEntity {
     // 默认组别为业余组
     private Group group = Group.amateur;
 
-    private User() {
+    public User() {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
 
     public User(String nickname, Gender gender, String mobile, String email, String plainPwd, Avatar originalAvatar) {
@@ -167,7 +168,6 @@ public class User extends AbstractEntity {
 
         public void validateAsOriginal() {
             commonValidate();
-            PreconditionUtils.checkGreaterThanZero("Avatar.spec", this.spec);
         }
 
         public static void validateSpec(int spec) {

@@ -62,6 +62,8 @@ public class UserApp {
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
         AccessToken bearerToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
         AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(bearerToken);
+        // 再次查询以获取最新的User对象
+        user = userRepo.findOne(user.id());
         UserProfilePresentation userProfilePresentation = translateToPresentationFrom(user);
         return new SignUpOrLoginPresentation(userProfilePresentation, accessTokenPresentation);
     }
@@ -113,7 +115,10 @@ public class UserApp {
 
     private UserProfilePresentation translateToPresentationFrom(User user) {
         String originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
-        String maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
+        String maxAvatarUrl = null;
+        if (user.maxAvatar() != null) {
+            maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
+        }
         return UserProfilePresentation.from(user.toUserProfile(), originalAvatarUrl, maxAvatarUrl);
     }
 
