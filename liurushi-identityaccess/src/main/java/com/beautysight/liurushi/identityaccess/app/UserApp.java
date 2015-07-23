@@ -6,7 +6,6 @@ package com.beautysight.liurushi.identityaccess.app;
 
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.ex.IllegalDomainModelStateException;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.common.utils.Regexp;
 import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
@@ -58,13 +57,9 @@ public class UserApp {
     }
 
     public AccessTokenPresentation signUp(SignUpCommand command) {
-        Logs.debug(logger, "signUp start");
         User user = userService.signUp(command.user.toUser());
-        Logs.debug(logger, "signUp complete");
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
-        Logs.debug(logger, "saveOrAddUserToDevice complete");
         AccessToken bearerToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
-        Logs.debug(logger, "accessTokenRepo save");
         return AccessTokenPresentation.from(bearerToken);
     }
 

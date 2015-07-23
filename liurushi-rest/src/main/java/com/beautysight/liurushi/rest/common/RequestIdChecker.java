@@ -5,7 +5,6 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.CommonErrorId;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,6 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestIdChecker.class);
 
-    private static final String REQUEST_ID = "X-Request-ID";
-
     /**
      * Intercept the execution of a handler. Called after HandlerMapping determined
      * an appropriate handler object, but before HandlerAdapter invokes the handler.
@@ -38,20 +35,17 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Optional<String> requestId = Requests.getHeader(REQUEST_ID, request);
+        Optional<String> requestId = Requests.requestIdOf(request);
 
-        if (logger.isDebugEnabled()) {
-            Logs.debugWithoutPrefixTraceId(logger, "Receive request id: {}, uri: {}",
-                    requestId.orNull(), Requests.methodAndURI(request));
+        if (logger.isInfoEnabled()) {
+            logger.info("Checking the {} header: {}", Requests.REQUEST_ID, requestId.orNull());
         }
 
         if (!requestId.isPresent()) {
             Responses.setStatusAndWriteTo(response, CommonErrorId.bad_request,
-                    String.format("%s header required", REQUEST_ID));
+                    String.format("%s header required", Requests.REQUEST_ID));
             return false;
         }
-
-        Logs.setTraceId(requestId.get());
 
         return true;
     }
@@ -73,6 +67,9 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
      * 注意，这个方法中抛出的异常并不会被各种自定义的ExceptionHandler捕获处理；
      * Spring MVC Dispatcher 虽然可以捕获到这些异常，但是并未做特别的处理，仅仅将异常记录到日志中。
      * 但如果是preHandle方法中抛出的异常，就会交给自定义的ExceptionHandler处理，处于什么样的考量要这样设计呢？
+     * <p/>
+     * 只有preHandle方法执行成功且返回true，afterCompletion方法才会被调用。
+     * 所以说，如果request handler中抛出了异常，afterCompletion方法仍旧会执行，实际求证确实如此。
      *
      * @param request
      * @param response
@@ -82,9 +79,8 @@ public class RequestIdChecker extends HandlerInterceptorAdapter {
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        super.afterCompletion(request, response, handler, ex);
         // 注意，如果preHandle方法返回false或抛出异常，该方法就不会执行
         // TODO 如果Controller(对spring来说就是handler)中抛出异常，该在哪里执行清理操作？
-        Logs.clearTraceId();
+        // do nothing
     }
 }

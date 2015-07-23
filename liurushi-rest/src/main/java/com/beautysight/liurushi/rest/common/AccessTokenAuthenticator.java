@@ -6,7 +6,6 @@ package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
@@ -24,17 +23,24 @@ import javax.servlet.http.HttpServletResponse;
  * @author chenlong
  * @since 1.0
  */
-public class AccessTokenChecker extends HandlerInterceptorAdapter {
+public class AccessTokenAuthenticator extends HandlerInterceptorAdapter {
 
-    private static final Logger logger = LoggerFactory.getLogger(AccessTokenChecker.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccessTokenAuthenticator.class);
 
     @Autowired
     private OAuthApp authApp;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (logger.isInfoEnabled()) {
+            logger.info("Beginning to authenticate access token");
+        }
+
         try {
             Optional<AccessTokenDTO> accessToken = Requests.getAccessToken(request);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Authenticating access token: {}", accessToken.orNull());
+            }
 
             if (accessToken.isPresent()) {
                 accessToken.get().validate();
@@ -47,13 +53,17 @@ public class AccessTokenChecker extends HandlerInterceptorAdapter {
                 RequestContext.putAccessToken(accessToken.get());
             }
         } catch (ApplicationException ex) {
-            Logs.error(logger, ex, "Error while auth");
+            logger.error("Error while authenticate access token", ex);
             Responses.setStatusAndWriteTo(response, ex.errorId(), ex.getMessage());
             return false;
         } catch (Exception ex) {
-            Logs.error(logger, ex, "Error while auth");
+            logger.error("Error while authenticate access token", ex);
             Responses.setStatusAndWriteTo(response, CommonErrorId.unauthorized, ex.getMessage());
             return false;
+        } finally {
+            if (logger.isInfoEnabled()) {
+                logger.info("Finished authenticating access token");
+            }
         }
 
         return true;

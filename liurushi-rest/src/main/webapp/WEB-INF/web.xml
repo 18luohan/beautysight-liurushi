@@ -38,23 +38,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
-    <!--
-        used so we can use forms of method type 'PUT' and 'DELETE' (such as in the Pet form)
-        see here: http://static.springsource.org/spring/docs/current/spring-framework-reference/html/view.html#rest-method-conversion
-    -->
-    <filter>
-        <filter-name>httpMethodFilter</filter-name>
-        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>httpMethodFilter</filter-name>
-        <servlet-name>springMVC</servlet-name>
-    </filter-mapping>
-    <filter>
-        <filter-name>loggingFilter</filter-name>
-        <filter-class>com.github.isrsal.logging.LoggingFilter</filter-class>
-    </filter>
-
     <!-- used to provide the ability to enter Chinese characters inside the Owner Form -->
     <filter>
         <filter-name>encodingFilter</filter-name>
@@ -72,9 +55,36 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <filter>
+        <filter-name>MDCInsertingServletFilter</filter-name>
+        <filter-class>com.beautysight.liurushi.rest.common.MDCInsertingServletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>MDCInsertingServletFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>loggingFilter</filter-name>
+        <filter-class>com.github.isrsal.logging.LoggingFilter</filter-class>
+    </filter>
     <filter-mapping>
         <filter-name>loggingFilter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--
+        used so we can use forms of method type 'PUT' and 'DELETE' (such as in the Pet form)
+        see here: http://static.springsource.org/spring/docs/current/spring-framework-reference/html/view.html#rest-method-conversion
+    -->
+    <filter>
+        <filter-name>httpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>httpMethodFilter</filter-name>
+        <servlet-name>springMVC</servlet-name>
     </filter-mapping>
 
 </web-app>

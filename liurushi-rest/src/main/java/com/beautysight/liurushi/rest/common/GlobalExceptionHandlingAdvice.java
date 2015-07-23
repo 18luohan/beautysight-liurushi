@@ -7,7 +7,6 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.Error;
-import com.beautysight.liurushi.common.utils.Logs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -58,7 +57,7 @@ public class GlobalExceptionHandlingAdvice {
     }
 
     private void logException(Throwable ex, HttpServletRequest request) {
-        Logs.error(logger, ex, "Error while processing request: {}", Requests.methodAndURI(request));
+        logger.error(String.format("Error while processing request: %s", Requests.methodAndURI(request)), ex);
     }
 
     private ModelAndView modelAndView(Throwable ex, Error.Id errorId) {

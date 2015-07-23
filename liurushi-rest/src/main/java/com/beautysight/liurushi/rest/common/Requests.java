@@ -5,7 +5,6 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.AuthException;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -25,10 +24,20 @@ public class Requests {
 
     private static final Logger logger = LoggerFactory.getLogger(Requests.class);
 
-    private static final String AUTHORIZATION = "Authorization";
+    public static final String REQUEST_ID = "X-Request-ID";
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String APP_ID_HEADER = "X-BeautySight-App-ID";
 
     public static String methodAndURI(HttpServletRequest request) {
         return String.format("%s %s", request.getMethod(), request.getRequestURI());
+    }
+
+    public static Optional<String> requestIdOf(HttpServletRequest request) {
+        return Requests.getHeader(REQUEST_ID, request);
+    }
+
+    public static Optional<String> appIdOf(HttpServletRequest request) {
+        return Requests.getHeader(APP_ID_HEADER, request);
     }
 
     public static Optional<String> getHeader(String headerName, HttpServletRequest request) {
@@ -51,8 +60,9 @@ public class Requests {
 
     public static Optional<AccessTokenDTO> getAccessToken(HttpServletRequest request) {
         Optional<String> authorization = Requests.getHeader(AUTHORIZATION, request);
-        Logs.debug(logger, "Authorize request: {}, authorization: {}",
-                Requests.methodAndURI(request), authorization.orNull());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got authorization header: {}", authorization.orNull());
+        }
 
         if (authorization.isPresent()) {
             try {
@@ -63,7 +73,6 @@ public class Requests {
             }
         }
 
-        Logs.debug(logger, "{} header is not present", AUTHORIZATION);
         return Optional.absent();
     }
 

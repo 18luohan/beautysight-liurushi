@@ -6,7 +6,6 @@ package com.beautysight.liurushi.fundamental.infrastructure.storage;
 
 import com.beautysight.liurushi.common.ex.StorageException;
 import com.beautysight.liurushi.common.utils.Https;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.fundamental.domain.storage.QiniuConfig;
 import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
@@ -174,7 +173,7 @@ public class QiniuStorageService implements StorageService {
                 Response response = executor.execute();
 
                 if (logger.isDebugEnabled()) {
-                    Logs.debug(logger, "Request qiniu api: {}, response: {}, respBody: {}",
+                    logger.debug("Request qiniu api: {}, response: {}, respBody: {}",
                             apiDesc, response.toString(), response.bodyString());
                 }
 
@@ -205,7 +204,7 @@ public class QiniuStorageService implements StorageService {
         }
 
         public static StorageException logAndWrap(Throwable ex, String message) {
-            Logs.error(logger, ex, message);
+            logger.error(message, ex);
             return new StorageException(message, ex);
         }
     }

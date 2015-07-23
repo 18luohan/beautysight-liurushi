@@ -5,7 +5,6 @@
 package com.beautysight.liurushi.rest.permission;
 
 import com.beautysight.liurushi.common.ex.CommonErrorId;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.common.Requests;
 import com.beautysight.liurushi.rest.common.Responses;
@@ -18,9 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-30.
+ * Rest API 权限控制器
  *
  * @author chenlong
  * @since 1.0
@@ -31,6 +28,10 @@ public class ApiPermissionInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (logger.isInfoEnabled()) {
+            logger.info("Beginning to check for permission to access restful api");
+        }
+
         boolean hasPermission = hasPermission(request, handler);
         if (hasPermission) {
             return true;
@@ -38,6 +39,11 @@ public class ApiPermissionInterceptor extends HandlerInterceptorAdapter {
 
         Responses.setStatusAndWriteTo(response, CommonErrorId.no_permission_for_this_api,
                 "You have no permission for this api");
+
+        if (logger.isInfoEnabled()) {
+            logger.info("Finishing checking for permission to access restful api");
+        }
+
         return false;
     }
 
@@ -52,7 +58,7 @@ public class ApiPermissionInterceptor extends HandlerInterceptorAdapter {
 
             if (annotation == null) {
                 if (logger.isDebugEnabled()) {
-                    Logs.debug(logger, "{}.{} not annotated by {}, so visitors can not request this api",
+                    logger.debug("{}.{} not annotated by {}, so visitors can not request this api",
                             handlerMethod.getBeanType().getSimpleName(),
                             handlerMethod.getMethod().getName(),
                             VisitorApiPermission.class.getSimpleName());
@@ -64,7 +70,7 @@ public class ApiPermissionInterceptor extends HandlerInterceptorAdapter {
         }
 
         if (logger.isWarnEnabled()) {
-            Logs.warn(logger, "Give permission for api {}, because it'll be processed by a handler, rather than a handler method.",
+            logger.warn("Give permission for api {}, because it'll be processed by a handler, rather than a handler method.",
                     Requests.methodAndURI(request));
         }
 

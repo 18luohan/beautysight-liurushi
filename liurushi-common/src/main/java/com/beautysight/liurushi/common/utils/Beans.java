@@ -75,7 +75,7 @@ public class Beans {
                             sourceField.getName(), sourceField.getType());
                     if (targetField == null) {
                         if (logger.isDebugEnabled()) {
-                            Logs.debug(logger, "Ignore property because their types don't match: {}", sourceField);
+                            logger.debug("Ignore property because their types don't match: {}", sourceField);
                         }
                         continue;
                     }
@@ -104,7 +104,7 @@ public class Beans {
         Object sourceVal = valueOf(sourceField, source);
         if (sourceVal == null) {
             if (logger.isDebugEnabled()) {
-                Logs.debug(logger, "Ignore property because its value is null: {}", sourceField);
+                logger.debug("Ignore property because its value is null: {}", sourceField);
             }
             return;
         }
@@ -123,7 +123,7 @@ public class Beans {
 
     private static void logIgnoredFieldAsDebug(Field field) {
         if (logger.isDebugEnabled()) {
-            Logs.debug(logger, "Ignore property while copying bean properties:{}", field);
+            logger.debug("Ignore property while copying bean properties:{}", field);
         }
     }
 

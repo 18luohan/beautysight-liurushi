@@ -16,12 +16,12 @@ import static org.junit.Assert.assertEquals;
  * @author chenlong
  * @since 1.0
  */
-public class LogsTest {
+public class LogTest {
 
     @Test
     public void formatLogMessage() {
         String message = "Authorize request: {} {}, access token: {}";
-        String[] args = new String[] { "Post", "/users/1000", "1000-token" };
+        String[] args = new String[]{"Post", "/users/1000", "1000-token"};
         String actual = MessageFormatter.arrayFormat(message, args).getMessage();
         String expected = String.format("Authorize request: %s %s, access token: %s", args);
         assertEquals(expected, actual);

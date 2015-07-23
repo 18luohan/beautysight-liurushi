@@ -5,7 +5,6 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.ApplicationException;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,9 @@ public class RequestContext {
 
     public static void putAccessToken(AccessTokenDTO theToken) {
         accessToken.set(theToken);
-        Logs.debug(logger, "Put access token into request context: {}", accessToken);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Put access token into request context: {}", accessToken);
+        }
     }
 
     public static AccessTokenDTO getAccessToken() {
@@ -47,7 +48,9 @@ public class RequestContext {
         synchronized (accessToken) {
             AccessTokenDTO theToken = accessToken.get();
             accessToken.remove();
-            Logs.debug(logger, "Cleared access token from request context: {}", theToken);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cleared access token from request context: {}", theToken);
+            }
         }
     }
 

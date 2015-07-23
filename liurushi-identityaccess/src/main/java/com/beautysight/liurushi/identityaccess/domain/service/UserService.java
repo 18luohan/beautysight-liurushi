@@ -6,7 +6,6 @@ package com.beautysight.liurushi.identityaccess.domain.service;
 
 import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
@@ -46,9 +45,7 @@ public class UserService {
     private static final ExecutorService executor = Executors.newCachedThreadPool();
 
     public User signUp(final User newUser) {
-        Logs.debug(logger, "signUp beginning");
         Optional<User> theUser = userRepo.withMobile(newUser.mobile());
-        Logs.debug(logger, "signUp ok");
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
                     "user already exist with mobile: " + newUser.mobile());
@@ -56,23 +53,21 @@ public class UserService {
 
         newUser.setLastLoginToNow();
         final User savedUser = userRepo.save(newUser);
-        Logs.debug(logger, "userRepo.save ok");
 
         executor.submit(new Runnable() {
             @Override
             public void run() {
                 ResourceInStorage avatar300 = storageService.zoomImageTo(300, savedUser.originalAvatarKey());
-                Logs.debug(logger, "Asynchronously produced 300 px avatar for user: %s", savedUser.mobile());
+                logger.debug("Asynchronously produced 300 px avatar for user: {}", savedUser.mobile());
                 int radius = 30, segma = 20;
                 ResourceInStorage blurredAvatar = storageService.blurImageAccordingTo(radius, segma, savedUser.originalAvatarKey());
-                Logs.debug(logger, "Asynchronously produced blurred avatar background for user: %s", savedUser.mobile());
+                logger.debug("Asynchronously produced blurred avatar background for user: {}", savedUser.mobile());
                 savedUser.setMaxAvatar(avatar300, 300);
                 savedUser.setBlurredAvatar(blurredAvatar);
                 userRepo.merge(savedUser);
             }
         });
 
-        Logs.debug(logger, "signUp finally ok");
         return savedUser;
     }
 

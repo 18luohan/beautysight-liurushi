@@ -7,7 +7,6 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.Error;
-import com.beautysight.liurushi.common.utils.Logs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -36,12 +35,12 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver 
     @Override
     public ModelAndView resolveException(HttpServletRequest request,
                                          HttpServletResponse response, Object handler, Exception ex) {
-        Logs.error(logger, ex, "Error while processing request: {}", Requests.methodAndURI(request));
+        logger.error(String.format("Error while processing request: %s", Requests.methodAndURI(request)), ex);
         return modelAndView(error(ex));
     }
 
     private ModelAndView modelAndView(Error error) {
-        Map<String,Object> attributes = new HashMap<String,Object>();
+        Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put("id", error.getId());
         attributes.put("message", error.getMessage());
 

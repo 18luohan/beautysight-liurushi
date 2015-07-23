@@ -6,7 +6,6 @@ package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.ex.Error;
-import com.beautysight.liurushi.common.utils.Logs;
 import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import org.slf4j.Logger;
@@ -58,7 +57,7 @@ public class ErrorIdToHttpStatusMapping {
     public static HttpStatus correspondingStatus(Error.Id errorId) {
         HttpStatus status = MAPPING.get(errorId);
         if (status == null) {
-            Logs.error(logger, "No corresponding http status to error id: {}", errorId);
+            logger.error("No corresponding http status to error id: {}", errorId);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return status;
