@@ -67,6 +67,10 @@ public class User extends AbstractEntity {
         return (this.originalAvatar != null);
     }
 
+    public Avatar originalAvatar() {
+        return this.originalAvatar;
+    }
+
     public String originalAvatarKey() {
         return this.originalAvatar.key();
     }

@@ -114,7 +114,11 @@ public class UserApp {
     }
 
     private UserProfilePresentation translateToPresentationFrom(User user) {
-        String originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
+        String originalAvatarUrl = null;
+        if (user.originalAvatar() != null) {
+            originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
+        }
+
         String maxAvatarUrl = null;
         if (user.maxAvatar() != null) {
             maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
