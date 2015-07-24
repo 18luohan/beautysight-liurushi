@@ -77,6 +77,11 @@ public class UserApp {
         return new SignUpOrLoginPresentation(userProfilePresentation, accessTokenPresentation);
     }
 
+    public UserProfilePresentation getCurrentUserProfile(String type, String accessToken) {
+        User user = accessTokenService.getUserBy(type, accessToken);
+        return translateToPresentationFrom(user);
+    }
+
     public UserProfilePresentation getUserProfile(String userId) {
         User user = userRepo.findOne(userId);
         return translateToPresentationFrom(user);

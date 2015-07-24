@@ -63,12 +63,21 @@ public class UserRest {
 //                RequestContext.getAccessToken().accessToken));
     }
 
+    @RequestMapping(value = "/current", method = RequestMethod.GET)
+    @VisitorApiPermission(true)
+    public UserProfilePresentation getCurrentUserProfile() {
+        return userApp.getCurrentUserProfile(
+                RequestContext.getAccessToken().type.toString(),
+                RequestContext.getAccessToken().accessToken);
+    }
+
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
     @VisitorApiPermission(true)
     public UserProfilePresentation getUserProfile(String userId) {
         PreconditionUtils.checkRequired("url path variable userId", userId);
         return userApp.getUserProfile(userId);
     }
+
 
     @RequestMapping(value = "/current/avatar/max", method = RequestMethod.POST)
     public DownloadUrlPresentation issueDownloadUrlOfMaxAvatar() {
