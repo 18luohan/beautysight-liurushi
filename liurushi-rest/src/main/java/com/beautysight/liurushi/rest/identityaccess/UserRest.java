@@ -64,7 +64,6 @@ public class UserRest {
     }
 
     @RequestMapping(value = "/current", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
     public UserProfilePresentation getCurrentUserProfile() {
         return userApp.getCurrentUserProfile(
                 RequestContext.getAccessToken().type.toString(),
