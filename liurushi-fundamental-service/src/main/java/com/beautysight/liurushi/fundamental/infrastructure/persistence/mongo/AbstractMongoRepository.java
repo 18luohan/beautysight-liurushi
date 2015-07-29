@@ -193,15 +193,15 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     protected Optional<T> findOneBy(Conditions conditions) {
         Query<T> query = newQuery(conditions);
-        long count = query.countAll();
-        if (count > 1) {
-            throw new DuplicateEntityException(String.format(
-                    "Expected 1 %s, but actual %s, conditions: %s",
-                    entityClass().getSimpleName(), count, conditions));
-        }
-        if (count == 0) {
-            return Optional.absent();
-        }
+//        long count = query.countAll();
+//        if (count > 1) {
+//            throw new DuplicateEntityException(String.format(
+//                    "Expected 1 %s, but actual %s, conditions: %s",
+//                    entityClass().getSimpleName(), count, conditions));
+//        }
+//        if (count == 0) {
+//            return Optional.absent();
+//        }
         return Optional.fromNullable(query.get());
     }
 

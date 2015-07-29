@@ -6,13 +6,13 @@ package com.beautysight.liurushi.identityaccess.domain.model;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.domain.ValueObject;
+import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.Passwords;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.Date;
@@ -87,12 +87,12 @@ public class User extends AbstractEntity {
         return this.maxAvatar;
     }
 
-    public void setMaxAvatar(ResourceInStorage avatar, int spec) {
+    public void setMaxAvatar(ResourceInStorage avatar, Integer spec) {
         this.maxAvatar = new Avatar(avatar, spec);
     }
 
     public void setBlurredAvatar(ResourceInStorage avatar) {
-        this.blurredAvatar = new Avatar(avatar, 0);
+        this.blurredAvatar = new Avatar(avatar);
     }
 
     public String mobile() {
@@ -108,7 +108,9 @@ public class User extends AbstractEntity {
     }
 
     public UserProfile toUserProfile() {
-        return new UserProfile(this);
+        UserProfile userProfile = new UserProfile();
+        Beans.copyProperties(this, userProfile);
+        return userProfile;
     }
 
     public enum Type {
@@ -147,22 +149,18 @@ public class User extends AbstractEntity {
         public Avatar() {
         }
 
-        public Avatar(ResourceInStorage resource, int spec) {
-            this(resource.getKey(), resource.getHash(), spec);
+        public Avatar(ResourceInStorage resource) {
+            this(resource, null);
         }
 
-        public Avatar(String key, String hash, int spec) {
-            this.key = key;
-            this.hash = hash;
+        public Avatar(ResourceInStorage resource, Integer spec) {
+            this.key = resource.getKey();
+            this.hash = resource.getHash();
             this.spec = spec;
         }
 
         public String key() {
             return this.key;
-        }
-
-        public int spec() {
-            return this.spec;
         }
 
         public void validate() {
@@ -185,44 +183,6 @@ public class User extends AbstractEntity {
             PreconditionUtils.checkRequired("Avatar.hash", hash);
         }
 
-    }
-
-    public static class UserProfile extends ValueObject {
-
-        private ObjectId id;
-        private String nickname;
-        private Gender gender;
-        private String mobile;
-        private String email;
-
-        private Avatar originalAvatar;
-        private User.Avatar maxAvatar;
-
-        private UserProfile(User user) {
-            this.id = user.id;
-            this.nickname = user.nickname;
-            this.gender = user.gender;
-            this.mobile = user.mobile;
-            this.email = user.email;
-            this.originalAvatar = user.originalAvatar;
-            this.maxAvatar = user.maxAvatar;
-        }
-
-        public ObjectId id() {
-            return this.id;
-        }
-
-        public String mobile() {
-            return this.mobile;
-        }
-
-        public Avatar originalAvatar() {
-            return this.originalAvatar;
-        }
-
-        public Avatar maxAvatar() {
-            return this.maxAvatar;
-        }
     }
 
 }

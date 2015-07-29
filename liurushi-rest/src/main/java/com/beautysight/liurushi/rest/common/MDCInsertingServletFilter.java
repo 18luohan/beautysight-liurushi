@@ -4,10 +4,17 @@
 
 package com.beautysight.liurushi.rest.common;
 
+import com.beautysight.liurushi.common.utils.AsyncTasks;
+import com.beautysight.liurushi.common.utils.Beans;
+import com.beautysight.liurushi.common.utils.Logs;
+import com.beautysight.liurushi.common.utils.RequestLogContext;
+import com.beautysight.liurushi.identityaccess.domain.model.RequestLog;
+import com.beautysight.liurushi.identityaccess.domain.repo.RequestLogRepo;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -23,21 +30,23 @@ public class MDCInsertingServletFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(MDCInsertingServletFilter.class);
 
-    private static final String REQUEST_ID = "req.id";
+    private static RequestLogRepo requestLogRepo;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // do nothing
+        WebApplicationContext appCtx = WebApplicationContextUtils.getWebApplicationContext(
+                filterConfig.getServletContext());
+        requestLogRepo = appCtx.getBean("requestLogRepo", RequestLogRepo.class);
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        insertIntoMDC(request);
+        preHandle(request);
         try {
             chain.doFilter(request, response);
         } finally {
-            clearMDC();
+            postHandle();
         }
     }
 
@@ -46,48 +55,75 @@ public class MDCInsertingServletFilter implements Filter {
         // do nothing
     }
 
-    private void insertIntoMDC(ServletRequest request) {
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            Optional<String> requestId = Requests.requestIdOf(httpRequest);
-            String theId = requestId.isPresent() ? requestId.get() : "absent";
-            MDC.put(REQUEST_ID, theId);
-
-            if (logger.isInfoEnabled()) {
-                logger.info("Receive request id: {}, uri: {}",
-                        theId, Requests.methodAndURI(httpRequest));
-            }
+    private void preHandle(ServletRequest request) {
+        if (!isHttpReq(request)) {
+            String message = String.format("Expected http request, but actual not: %s", request.getClass());
+            logger.error(message);
+            throw new RuntimeException(message);
         }
-//        MDC.put(ClassicConstants.REQUEST_REMOTE_HOST_MDC_KEY, request
-//                .getRemoteHost());
-//
-//        if (request instanceof HttpServletRequest) {
-//            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-//            MDC.put(ClassicConstants.REQUEST_REQUEST_URI, httpServletRequest
-//                    .getRequestURI());
-//            StringBuffer requestURL = httpServletRequest.getRequestURL();
-//            if (requestURL != null) {
-//                MDC.put(ClassicConstants.REQUEST_REQUEST_URL, requestURL.toString());
-//            }
-//            MDC.put(ClassicConstants.REQUEST_METHOD, httpServletRequest.getMethod());
-//            MDC.put(ClassicConstants.REQUEST_QUERY_STRING, httpServletRequest.getQueryString());
-//            MDC.put(ClassicConstants.REQUEST_USER_AGENT_MDC_KEY, httpServletRequest
-//                    .getHeader("User-Agent"));
-//            MDC.put(ClassicConstants.REQUEST_X_FORWARDED_FOR, httpServletRequest
-//                    .getHeader("X-Forwarded-For"));
-//        }
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        insertIntoMDC(httpRequest);
+        putIntoReqLogContext(httpRequest);
+
+        final RequestLogContext context = RequestLogContext.copyReqLogCtxForCurrentReq();
+        AsyncTasks.submit(new Runnable() {
+            @Override
+            public void run() {
+                RequestLog targetRequestLog = new RequestLog();
+                Beans.copyProperties(context, targetRequestLog);
+                requestLogRepo.save(targetRequestLog);
+            }
+        });
+    }
+
+    private void postHandle() {
+        RequestLogContext.setCostOfTimeUntilNow();
+
+        final RequestLogContext context = RequestLogContext.copyReqLogCtxForCurrentReq();
+        AsyncTasks.submit(new Runnable() {
+            @Override
+            public void run() {
+                RequestLog targetRequestLog = requestLogRepo.getBy(context.reqId());
+                Beans.copyProperties(context, targetRequestLog);
+                requestLogRepo.merge(targetRequestLog);
+            }
+        });
+        clearMDC();
+        clearReqLogContext();
+    }
+
+    private void insertIntoMDC(HttpServletRequest httpRequest) {
+        String requestId = getRequestId(httpRequest);
+        Logs.putReqId(requestId);
+
+        if (logger.isInfoEnabled()) {
+            logger.info("Receive request id: {}, uri: {}",
+                    requestId, Requests.methodAndURI(httpRequest));
+        }
     }
 
     private void clearMDC() {
-        MDC.remove(REQUEST_ID);
-//        MDC.remove(ClassicConstants.REQUEST_REMOTE_HOST_MDC_KEY);
-//        MDC.remove(ClassicConstants.REQUEST_REQUEST_URI);
-//        MDC.remove(ClassicConstants.REQUEST_QUERY_STRING);
-//        // removing possibly inexistent item is OK
-//        MDC.remove(ClassicConstants.REQUEST_REQUEST_URL);
-//        MDC.remove(ClassicConstants.REQUEST_METHOD);
-//        MDC.remove(ClassicConstants.REQUEST_USER_AGENT_MDC_KEY);
-//        MDC.remove(ClassicConstants.REQUEST_X_FORWARDED_FOR);
+        Logs.clearMDC();
+    }
+
+    private void putIntoReqLogContext(HttpServletRequest httpRequest) {
+        RequestLogContext.putReqId(getRequestId(httpRequest));
+        RequestLogContext.putHttpInfo(Requests.methodAndURI(httpRequest),
+                httpRequest.getQueryString(), httpRequest.getProtocol());
+    }
+
+    private void clearReqLogContext() {
+        RequestLogContext.clear();
+    }
+
+    private String getRequestId(HttpServletRequest request) {
+        Optional<String> requestId = Requests.requestIdOf(request);
+        return requestId.isPresent() ? requestId.get() : "absent";
+    }
+
+    private boolean isHttpReq(ServletRequest request) {
+        return (request instanceof HttpServletRequest);
     }
 
 }

@@ -10,7 +10,7 @@
 
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{req.id}] %m%n</pattern>
+            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{user.id}] [%X{req.id}] %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
@@ -18,7 +18,7 @@
     <appender name="bizAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${app.logs.dir}/${app.name}-biz.log</File>
         <encoder>
-            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{req.id}] %m%n</pattern>
+            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{user.id}] [%X{req.id}] %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
 
@@ -31,7 +31,7 @@
     <appender name="springAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${app.logs.dir}/spring.log</File>
         <encoder>
-            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{req.id}] %m%n</pattern>
+            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{user.id}] [%X{req.id}] %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
 
@@ -44,7 +44,7 @@
     <appender name="mongoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${app.logs.dir}/mongo.log</File>
         <encoder>
-            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] [%X{req.id}] %m%n</pattern>
+            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
 
@@ -57,7 +57,7 @@
     <appender name="qiniuAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${app.logs.dir}/qiniu.log</File>
         <encoder>
-            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] [%X{req.id}] %m%n</pattern>
+            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] [%X{user.id}] [%X{req.id}] %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
 
@@ -70,7 +70,7 @@
     <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${app.logs.dir}/${app.name}-error.log</File>
         <encoder>
-            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] [%X{req.id}] %m%n</pattern>
+            <pattern>[%d] [%-5p] [%t] [%C.%M\(%file:%line\)] [%X{user.id}] [%X{req.id}] %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
 
@@ -107,7 +107,7 @@
     </logger>
 
     <!-- error log -->
-    <logger name="errorLogger" level="ERROR">
+    <logger name="com.beautysight" level="ERROR">
         <appender-ref ref="errorAppender"/>
     </logger>
 

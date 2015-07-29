@@ -4,7 +4,6 @@
 
 package com.beautysight.liurushi.interfaces.identityaccess.facade;
 
-import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
 
 /**
@@ -16,7 +15,6 @@ import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
  */
 public interface UserFacade {
 
-    UserDTO findUserByAccessToken(AccessTokenDTO accessTokenDTO);
     UserDTO getUserBy(String userId);
 
 }

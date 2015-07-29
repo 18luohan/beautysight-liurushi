@@ -6,6 +6,8 @@ package com.beautysight.liurushi.identityaccess.domain.model;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.ex.BusinessException;
+import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
+import com.beautysight.liurushi.common.utils.DateTimes;
 import com.google.common.base.Preconditions;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -21,15 +23,18 @@ import java.util.UUID;
 public class AccessToken extends AbstractEntity {
 
     private static final int ONE_HOUR_SECONDS = 3600;
-//    private static final int ONE_HOUR_SECONDS = 30;
     private static final int NEVER_EXPIRES = -1;
 
-    private String accessToken;
     private Type type;
+    private String accessToken;
+    private int expiresIn;
     private String refreshToken;
     private Date refreshedAt;
+    // 上一个access token
+    private String lastAccessToken;
 
-    private int expiresIn;
+    private Boolean isValid = true;
+    private Date modifiedAt;
 
     @Reference(value = "userId", lazy = true, idOnly = true)
     private User user;
@@ -51,6 +56,29 @@ public class AccessToken extends AbstractEntity {
         }
     }
 
+    public void refresh() {
+        if (this.type != Type.Bearer) {
+            throw new BusinessException("Can't refresh %s token", this.type);
+        }
+
+        // 先将当前access token另存为last access token
+        this.lastAccessToken = this.accessToken;
+        this.accessToken = generateToken();
+        this.isValid = Boolean.TRUE;
+        this.refreshedAt = new Date();
+        this.modifiedAt = this.refreshedAt;
+    }
+
+    public void invalidate() {
+        this.isValid = Boolean.FALSE;
+        this.modifiedAt = new Date();
+    }
+
+    public boolean isInvalid() {
+        // 是否过期是延迟计算的
+        return (!isValid || isExpired());
+    }
+
     public static AccessToken issueBasicTokenFor(Device device) {
         return new AccessToken(Type.Basic, null, device);
     }
@@ -61,36 +89,6 @@ public class AccessToken extends AbstractEntity {
 
     public boolean isBasic() {
         return (this.type == Type.Basic);
-    }
-
-    public boolean isBearer() {
-        return (this.type == Type.Bearer);
-    }
-
-    public void refresh() {
-        if (this.type != Type.Bearer) {
-            throw new BusinessException("Can't refresh %s token", this.type);
-        }
-
-        this.accessToken = generateToken();
-        this.refreshedAt = new Date();
-    }
-
-    public boolean isExpired() {
-        if (this.type == Type.Basic) {
-            // Basic token never expires
-            return false;
-        }
-
-        // TODO 为了测试方便，token永久有效
-        return false;
-
-//        if (this.type == Type.Bearer) {
-//            Date effectiveAt = (refreshedAt == null ? createdAt : refreshedAt);
-//            return DateTimes.beforeOrEqualNow(effectiveAt, expiresIn);
-//        }
-//
-//        throw new IllegalEntityStateException("Illegal token type, type: %s, token: %s", type, accessToken);
     }
 
     public String accessToken() {
@@ -115,6 +113,20 @@ public class AccessToken extends AbstractEntity {
 
     private String generateToken() {
         return UUID.randomUUID().toString();
+    }
+
+    private boolean isExpired() {
+        if (this.type == Type.Basic) {
+            // Basic token never expires
+            return false;
+        }
+
+        if (this.type == Type.Bearer) {
+            Date effectiveAt = (refreshedAt == null ? createdAt : refreshedAt);
+            return DateTimes.beforeOrEqualNow(effectiveAt, expiresIn);
+        }
+
+        throw new IllegalDomainStateException("Illegal token type, type: %s, token: %s", type, accessToken);
     }
 
     private int determineExpiry() {

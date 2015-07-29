@@ -5,7 +5,8 @@
 package com.beautysight.liurushi.rest.common;
 
 import com.beautysight.liurushi.common.ex.ApplicationException;
-import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
+import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
+import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,21 +18,21 @@ public class RequestContext {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestContext.class);
 
-    private static final ThreadLocal<AccessTokenDTO> accessToken = new ThreadLocal<AccessTokenDTO>() {
+    private static final ThreadLocal<AccessTokenDPO> accessToken = new ThreadLocal<AccessTokenDPO>() {
         @Override
-        protected AccessTokenDTO initialValue() {
+        protected AccessTokenDPO initialValue() {
             return null;
         }
     };
 
-    public static void putAccessToken(AccessTokenDTO theToken) {
+    public static void putAccessToken(AccessTokenDPO theToken) {
         accessToken.set(theToken);
         if (logger.isDebugEnabled()) {
             logger.debug("Put access token into request context: {}", accessToken);
         }
     }
 
-    public static AccessTokenDTO getAccessToken() {
+    public static AccessTokenDPO getAccessToken() {
         if (accessToken.get() == null) {
             throw new ApplicationException("Expected to get access token from request context, but actual not present");
         }
@@ -40,13 +41,13 @@ public class RequestContext {
 
     public static boolean isThisUserAMember() {
         return (accessToken.get() != null
-                && accessToken.get().type == AccessTokenDTO.Type.Bearer);
+                && accessToken.get().type == AccessToken.Type.Bearer);
     }
 
     public static void clear() {
         // TODO 是否真的有必要使用同步？
         synchronized (accessToken) {
-            AccessTokenDTO theToken = accessToken.get();
+            AccessTokenDPO theToken = accessToken.get();
             accessToken.remove();
             if (logger.isDebugEnabled()) {
                 logger.debug("Cleared access token from request context: {}", theToken);

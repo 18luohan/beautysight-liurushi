@@ -10,8 +10,10 @@ import com.beautysight.liurushi.community.app.command.FindWorkProfilesInRangeCom
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfilePresentation;
+import com.beautysight.liurushi.community.domain.model.content.Author;
 import com.beautysight.liurushi.community.domain.model.content.OffsetDirection;
-import com.beautysight.liurushi.community.domain.service.AuthorService;
+import com.beautysight.liurushi.identityaccess.app.UserApp;
+import com.beautysight.liurushi.identityaccess.app.presentation.UserProfilePresentation;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -29,11 +31,11 @@ public class WorkRest {
     @Autowired
     private WorkApp workApp;
     @Autowired
-    private AuthorService authorService;
+    private UserApp userApp;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void publishWork(@RequestBody PublishWorkCommand command) {
-        command.setAuthor(authorService.getAuthorBy(RequestContext.getAccessToken()));
+        command.setAuthor(currentAuthor());
         command.validate();
         workApp.publishWork(command);
     }
@@ -87,6 +89,14 @@ public class WorkRest {
         }
         command.validate();
         return command;
+    }
+
+    private Author currentAuthor() {
+        UserProfilePresentation currentUser = userApp.getCurrentUserProfilePresentation(
+                RequestContext.getAccessToken().type, RequestContext.getAccessToken().accessToken);
+        return new Author(currentUser.getId(), currentUser.getNickname(),
+                currentUser.getOriginalAvatarUrl(), currentUser.getMaxAvatarUrl(),
+                currentUser.getGroup());
     }
 
 }

@@ -19,7 +19,7 @@ import java.util.Date;
  * @author chenlong
  * @since 1.0
  */
-public abstract class AbstractEntity extends DomainModel implements Serializable {
+public abstract class AbstractEntity extends DomainModel implements JsonAnyFieldVisible, Serializable {
 
     private static final long serialVersionUID = -2361648049519441593L;
 

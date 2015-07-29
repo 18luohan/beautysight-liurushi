@@ -52,14 +52,20 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     public void uploadAvatar() throws IOException {
         UploadOptions uploadPolicy = uploadPolicyForTest();
         String uploadToken = storageService.issueUploadToken(uploadPolicy);
-        ResourceInStorage result = storageService.upload(Files.readFileInClassPathAsBytes("images/avatar2.png"), uploadToken);
+
+//        ResourceInStorage result = storageService.upload(Files.readFileInClassPathAsBytes("images/fecility.png"), uploadToken);
+//        // images/avatar2.jpg:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV, hash:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV
+//        System.out.println("images/avatar2.jpg:" + result.getKey() + ", hash:" + result.getHash());
+
+        ResourceInStorage result = storageService.upload(Files.readFileInClassPathAsBytes("images/heben.png"), uploadToken);
+        // images/avatar2.jpg:Fru9ofxwZe3XgCma6CB3rLccDK_P, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P
         System.out.println("images/avatar2.jpg:" + result.getKey() + ", hash:" + result.getHash());
 
-        result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"), uploadToken);
-        System.out.println("images/jessy.jpg:" + result.getKey() + ", hash:" + result.getHash());
-
-        result = storageService.upload(Files.readFileInClassPathAsBytes("images/avatar1-blur.png"), uploadToken);
-        System.out.println("images/avatar1-blur.png:" + result.getKey() + ", hash:" + result.getHash());
+//        result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"), uploadToken);
+//        System.out.println("images/jessy.jpg:" + result.getKey() + ", hash:" + result.getHash());
+//
+//        result = storageService.upload(Files.readFileInClassPathAsBytes("images/avatar1-blur.png"), uploadToken);
+//        System.out.println("images/avatar1-blur.png:" + result.getKey() + ", hash:" + result.getHash());
     }
 
     @Test

@@ -10,7 +10,6 @@ import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.UserFacade;
-import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,28 +27,6 @@ public class UserFacadeImpl implements UserFacade {
     private UserRepo userRepo;
     @Autowired
     private StorageService storageService;
-
-    @Override
-    public UserDTO findUserByAccessToken(AccessTokenDTO accessTokenDTO) {
-        PreconditionUtils.checkRequired("param accessTokenDTO", accessTokenDTO);
-        accessTokenDTO.validate();
-
-        User user = oAuthApp.getUserBy(accessTokenDTO.type.toString(), accessTokenDTO.accessToken);
-        UserDTO result = new UserDTO();
-        result.id = user.id().toString();
-        result.nickname = user.nickname();
-        result.group = UserDTO.Group.valueOf(user.group().toString());
-
-        if (user.hasAvatar()) {
-            result.originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
-        }
-
-        if (user.maxAvatar() != null) {
-            result.maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
-        }
-
-        return result;
-    }
 
     @Override
     public UserDTO getUserBy(String userId) {

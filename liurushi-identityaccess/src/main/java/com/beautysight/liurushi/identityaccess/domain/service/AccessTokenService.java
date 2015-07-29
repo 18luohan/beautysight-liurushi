@@ -10,9 +10,10 @@ import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.model.UserClient;
 import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
 import com.google.common.base.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,19 +24,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccessTokenService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AccessTokenService.class);
+
     @Autowired
     private AccessTokenRepo accessTokenRepo;
-
-    public AccessToken getIfAbsentIssueBasicTokenFor(Device device) {
-        Optional<AccessToken> theToken = accessTokenRepo.basicTokenIssuedFor(device);
-        if (theToken.isPresent()) {
-            return theToken.get();
-        }
-
-        AccessToken basicToken = AccessToken.issueBasicTokenFor(device);
-        accessTokenRepo.save(basicToken);
-        return basicToken;
-    }
 
     public AccessToken issueOrRefreshBearerTokenFor(User user, Device device) {
         Optional<AccessToken> accessToken = accessTokenRepo.bearerTokenIssuedFor(user.id(), device.id());
@@ -52,30 +44,31 @@ public class AccessTokenService {
         return currentToken;
     }
 
-    public AccessToken exchangeForBasicToken(AccessToken bearerToken) {
-        Optional<AccessToken> basicToken = accessTokenRepo.basicTokenIssuedFor(bearerToken.device());
-        if (basicToken.isPresent()) {
-            return basicToken.get();
-        }
-        throw new EntityNotFoundException("Expect basic token present, but actual absent");
-    }
-
-    public AccessToken checkValidityAndLoad(String accessToken, AccessToken.Type type) {
-        Optional<AccessToken> theToken = accessTokenRepo.accessTokenOf(accessToken, type);
-        if (!theToken.isPresent()) {
+    public AccessToken checkAndLoad(String accessToken, AccessToken.Type type) {
+        // 检查是否是曾经使用过但已无效的token
+        Optional<AccessToken> lastToken = accessTokenRepo.lastAccessTokenOf(accessToken, type);
+        if (lastToken.isPresent()) {
             throw new AuthException(AuthErrorId.invalid_access_token, "Invalid %s token: %s", type, accessToken);
         }
 
+        // 检查是否是不存在的token，即伪造的token
+        Optional<AccessToken> theToken = accessTokenRepo.accessTokenOf(accessToken, type);
+        if (!theToken.isPresent()) {
+            throw new AuthException(AuthErrorId.illegal_access_token, "Illegal %s token: %s", type, accessToken);
+        }
         return theToken.get();
     }
 
-    public UserClient getUserClientBy(AccessToken.Type type, String accessToken) {
+    public void invalidate(String accessToken, AccessToken.Type type) {
         Optional<AccessToken> theToken = accessTokenRepo.accessTokenOf(accessToken, type);
         if (!theToken.isPresent()) {
-            throw new EntityNotFoundException("Not found %s token: %s", type, accessToken);
+            throw new EntityNotFoundException(
+                    "Expected access token present, but actual absent: %s", accessToken);
         }
 
-        return UserClient.newInstanceBy(theToken.get());
+        theToken.get().invalidate();
+        accessTokenRepo.merge(theToken.get());
+        logger.debug("Invalidate access token");
     }
 
     public User getUserBy(String type, String accessToken) {

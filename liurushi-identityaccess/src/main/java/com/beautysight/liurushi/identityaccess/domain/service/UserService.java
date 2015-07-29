@@ -6,6 +6,7 @@ package com.beautysight.liurushi.identityaccess.domain.service;
 
 import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
+import com.beautysight.liurushi.common.utils.AsyncTasks;
 import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
@@ -18,9 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Here is Javadoc.
@@ -42,8 +40,6 @@ public class UserService {
     @Autowired
     private StorageService storageService;
 
-    private static final ExecutorService executor = Executors.newCachedThreadPool();
-
     public User signUp(final User newUser) {
         Optional<User> theUser = userRepo.withMobile(newUser.mobile());
         if (theUser.isPresent()) {
@@ -54,7 +50,7 @@ public class UserService {
         newUser.setLastLoginToNow();
         final User savedUser = userRepo.save(newUser);
 
-        executor.submit(new Runnable() {
+        AsyncTasks.submit(new Runnable() {
             @Override
             public void run() {
                 ResourceInStorage avatar300 = storageService.zoomImageTo(300, savedUser.originalAvatarKey());
@@ -71,15 +67,15 @@ public class UserService {
         return savedUser;
     }
 
-    public User login(User loggingInUser, String plainPwd) {
-        Optional<User> theUser = userRepo.withMobile(loggingInUser.mobile());
+    public User login(String mobile, String plainPwd) {
+        Optional<User> theUser = userRepo.withMobile(mobile);
         if (!theUser.isPresent() || !theUser.get().isGivenPwdCorrect(plainPwd)) {
             throw new EntityNotFoundException(UserErrorId.user_not_exist_or_pwd_incorrect,
                     "user not exist or pwd incorrect");
         }
 
-        loggingInUser.setLastLoginToNow();
-        userRepo.updateLastLoginTime(loggingInUser);
+        theUser.get().setLastLoginToNow();
+        userRepo.updateLastLoginTime(theUser.get());
         return theUser.get();
     }
 

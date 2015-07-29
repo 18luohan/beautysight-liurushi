@@ -43,6 +43,12 @@ public class AccessTokenRepoImpl extends AbstractMongoRepository<AccessToken> im
     }
 
     @Override
+    public Optional<AccessToken> lastAccessTokenOf(String token, AccessToken.Type type) {
+        return findOneBy(Conditions.of("type", type)
+                .and("lastAccessToken", token));
+    }
+
+    @Override
     protected Class<AccessToken> entityClass() {
         return AccessToken.class;
     }

@@ -5,7 +5,7 @@
 package com.beautysight.liurushi.community.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
-import com.beautysight.liurushi.common.ex.IllegalDomainModelStateException;
+import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.dpo.ContentSectionDPO;
 import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
@@ -67,7 +67,7 @@ public class PublishWorkCommand implements Command {
         } else if (author.group == Author.Group.amateur) {
             source = Work.Source.ugc;
         } else {
-            throw new IllegalDomainModelStateException("Author.group:" + author.group);
+            throw new IllegalDomainStateException("Author.group:" + author.group);
         }
         this.presentation.source = source;
         this.pictureStory.source = source;

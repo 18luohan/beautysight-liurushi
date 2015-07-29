@@ -5,7 +5,6 @@
 package com.beautysight.liurushi.community.domain.service;
 
 import com.beautysight.liurushi.community.domain.model.content.Author;
-import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessTokenDTO;
 
 /**
  * @author chenlong
@@ -13,7 +12,6 @@ import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.AccessToken
  */
 public interface AuthorService {
 
-    Author getAuthorBy(AccessTokenDTO accessToken);
     Author getAuthorBy(String authorId);
 
 }

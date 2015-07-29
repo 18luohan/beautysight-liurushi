@@ -4,7 +4,6 @@
 
 package com.beautysight.liurushi.identityaccess.common;
 
-
 import com.beautysight.liurushi.common.ex.Error;
 
 /**
@@ -18,8 +17,8 @@ import com.beautysight.liurushi.common.ex.Error;
 public enum AuthErrorId implements Error.Id {
 
     invalid_app_id,
-    invalid_access_token,
-    expired_access_token;
+    illegal_access_token,
+    invalid_access_token;
 
     @Override
     public String get() {

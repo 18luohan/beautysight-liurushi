@@ -39,8 +39,8 @@ public class ErrorIdToHttpStatusMapping {
         MAPPING.put(CommonErrorId.business_constraint_violated, HttpStatus.UNPROCESSABLE_ENTITY);
 
         MAPPING.put(AuthErrorId.invalid_app_id, HttpStatus.UNAUTHORIZED);
+        MAPPING.put(AuthErrorId.illegal_access_token, HttpStatus.UNAUTHORIZED);
         MAPPING.put(AuthErrorId.invalid_access_token, HttpStatus.UNAUTHORIZED);
-        MAPPING.put(AuthErrorId.expired_access_token, HttpStatus.UNAUTHORIZED);
 
         MAPPING.put(UserErrorId.password_confirmpwd_not_equal, HttpStatus.UNPROCESSABLE_ENTITY);
         MAPPING.put(UserErrorId.user_already_exist, HttpStatus.CONFLICT);

@@ -12,13 +12,13 @@ package com.beautysight.liurushi.common.ex;
  * @author chenlong
  * @since 1.0
  */
-public class IllegalDomainModelStateException extends BusinessException {
+public class IllegalDomainStateException extends BusinessException {
 
-    public IllegalDomainModelStateException(String message) {
+    public IllegalDomainStateException(String message) {
         super(CommonErrorId.server_data_stale, message);
     }
 
-    public IllegalDomainModelStateException(String msgFormat, Object... msgArgs) {
+    public IllegalDomainStateException(String msgFormat, Object... msgArgs) {
         super(CommonErrorId.server_data_stale, msgFormat, msgArgs);
     }
 

@@ -22,4 +22,6 @@ public interface AccessTokenRepo extends MongoRepository<AccessToken> {
 
     Optional<AccessToken> accessTokenOf(String token, AccessToken.Type type);
 
+    Optional<AccessToken> lastAccessTokenOf(String token, AccessToken.Type type);
+
 }

@@ -4,12 +4,13 @@
 
 package com.beautysight.liurushi.identityaccess.app;
 
-import com.beautysight.liurushi.common.ex.EntityNotFoundException;
-import com.beautysight.liurushi.common.ex.IllegalDomainModelStateException;
+import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
 import com.beautysight.liurushi.common.utils.Regexp;
 import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
+import com.beautysight.liurushi.identityaccess.app.cache.UserProfileCache;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
+import com.beautysight.liurushi.identityaccess.app.command.LogoutCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.SignUpOrLoginPresentation;
@@ -18,7 +19,7 @@ import com.beautysight.liurushi.identityaccess.app.presentation.UserProfilePrese
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.model.UserClient;
+import com.beautysight.liurushi.identityaccess.domain.model.UserProfile;
 import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
 import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.beautysight.liurushi.identityaccess.domain.service.AccessTokenService;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * @author chenlong
@@ -52,6 +54,10 @@ public class UserApp {
     private UserRepo userRepo;
     @Autowired
     private AccessTokenRepo accessTokenRepo;
+    @Autowired
+    private OAuthApp oAuthApp;
+
+    private UserProfileCache userProfileCache = new UserProfileCache();
 
     public UserExistPresentation checkIfUserExistWith(String mobile) {
         return new UserExistPresentation(userRepo.withMobile(mobile).isPresent());
@@ -60,52 +66,61 @@ public class UserApp {
     public SignUpOrLoginPresentation signUp(SignUpCommand command) {
         User user = userService.signUp(command.user.toUser());
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
-        AccessToken bearerToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
-        AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(bearerToken);
+        AccessToken accessToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
+        AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(accessToken);
         // 再次查询以获取最新的User对象
         user = userRepo.findOne(user.id());
-        UserProfilePresentation userProfilePresentation = translateToPresentationFrom(user);
+        UserProfilePresentation userProfilePresentation = translateToPresentationFrom(user.toUserProfile());
+        cacheUserProfileForNewSession(accessToken, user.toUserProfile());
         return new SignUpOrLoginPresentation(userProfilePresentation, accessTokenPresentation);
     }
 
     public SignUpOrLoginPresentation login(LoginCommand command) {
-        User theUser = userService.login(command.user.toUser(), command.user.password);
+        User theUser = userService.login(command.user.mobile, command.user.password);
         Device theDevice = userService.saveOrAddUserToDevice(command.device.toDevice(), theUser);
         AccessToken accessToken = accessTokenService.issueOrRefreshBearerTokenFor(theUser, theDevice);
         AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(accessToken);
-        UserProfilePresentation userProfilePresentation = translateToPresentationFrom(theUser);
+        UserProfilePresentation userProfilePresentation = translateToPresentationFrom(theUser.toUserProfile());
+        cacheUserProfileForNewSession(accessToken, theUser.toUserProfile());
         return new SignUpOrLoginPresentation(userProfilePresentation, accessTokenPresentation);
     }
 
-    public UserProfilePresentation getCurrentUserProfile(String type, String accessToken) {
-        User user = accessTokenService.getUserBy(type, accessToken);
-        return translateToPresentationFrom(user);
+    public void logout(LogoutCommand command) {
+        accessTokenService.invalidate(command.accessToken, command.type);
+        // 从缓存中删除已失效的token
+        oAuthApp.evictAccessToken(command.accessToken, command.type);
+        // 删除缓存的用户个人资料
+        userProfileCache.evictBy(command.accessToken, command.type);
     }
 
-    public UserProfilePresentation getUserProfile(String userId) {
+    public UserProfilePresentation getCurrentUserProfilePresentation(AccessToken.Type type, String accessToken) {
+        UserProfile userProfile = getCurrentUserProfile(type, accessToken);
+        return translateToPresentationFrom(userProfile);
+    }
+
+    public UserProfilePresentation getGivenUserProfile(String userId) {
         User user = userRepo.findOne(userId);
-        return translateToPresentationFrom(user);
+        return translateToPresentationFrom(user.toUserProfile());
     }
 
-    public AccessTokenPresentation logout(UserClient userClient) {
-        Optional<AccessToken> theToken = accessTokenRepo.bearerTokenIssuedFor(userClient.userId(), userClient.deviceId());
-        if (theToken.isPresent()) {
-            return AccessTokenPresentation.from(accessTokenService.exchangeForBasicToken(theToken.get()));
-        }
-        throw new EntityNotFoundException("Expect bearer token present, but actual absent");
+    public UserProfile getCurrentUserProfile(final AccessToken.Type type, final String accessToken) {
+        return userProfileCache.getIfAbsentLoad(accessToken, type, new Callable<UserProfile>() {
+            @Override
+            public UserProfile call() throws Exception {
+                User user = accessTokenService.getUserBy(type.toString(), accessToken);
+                return user.toUserProfile();
+            }
+        });
     }
 
-    public DownloadUrlPresentation issueDownloadUrlOfMaxAvatar(UserClient thisUserClient) {
-        User.Avatar theAvatar = thisUserClient.user().maxAvatar();
-
-        String downloadUrl;
-        if (theAvatar != null) {
-            downloadUrl = storageService.issueDownloadUrl(theAvatar.key());
-            // TODO 更新 request context或缓存
-            return DownloadUrlPresentation.from(downloadUrl);
+    public DownloadUrlPresentation issueDownloadUrlOfMaxAvatar(AccessToken.Type type, String accessToken) {
+        UserProfile userProfile = getCurrentUserProfile(type, accessToken);
+        Optional<String> maxAvatarKey = userProfile.maxAvatarKey();
+        if (maxAvatarKey.isPresent()) {
+            return DownloadUrlPresentation.from(storageService.issueDownloadUrl(maxAvatarKey.get()));
         }
 
-        throw new IllegalDomainModelStateException("User has no max avatar, mobile: %s", thisUserClient.user().mobile());
+        throw new IllegalDomainStateException("User has no max avatar, mobile: %s", userProfile.mobile());
     }
 
     public void setUsersGroupToProfessional(List<String> mobiles) {
@@ -118,17 +133,30 @@ public class UserApp {
         userRepo.setUsersGroupToProfessional(mobilesWithCallingCode);
     }
 
-    private UserProfilePresentation translateToPresentationFrom(User user) {
+    private UserProfilePresentation translateToPresentationFrom(UserProfile userProfile) {
         String originalAvatarUrl = null;
-        if (user.originalAvatar() != null) {
-            originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
+        Optional<String> originalAvatarKey = userProfile.originalAvatarKey();
+        if (originalAvatarKey.isPresent()) {
+            originalAvatarUrl = storageService.issueDownloadUrl(originalAvatarKey.get());
         }
 
         String maxAvatarUrl = null;
-        if (user.maxAvatar() != null) {
-            maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
+        Optional<String> maxAvatarKey = userProfile.maxAvatarKey();
+        if (maxAvatarKey.isPresent()) {
+            maxAvatarUrl = storageService.issueDownloadUrl(maxAvatarKey.get());
         }
-        return UserProfilePresentation.from(user.toUserProfile(), originalAvatarUrl, maxAvatarUrl);
+        return UserProfilePresentation.from(userProfile, originalAvatarUrl, maxAvatarUrl);
     }
+
+    /**
+     * 为新开始的会话缓存用户个人资料
+     *
+     * @param accessToken
+     * @param userProfile
+     */
+    private void cacheUserProfileForNewSession(AccessToken accessToken, UserProfile userProfile) {
+        userProfileCache.put(accessToken.accessToken(), accessToken.type(), userProfile);
+    }
+
 
 }

@@ -8,7 +8,6 @@ import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CacheException;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.GuavaCaches;
-import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.google.common.cache.Cache;
 
@@ -21,12 +20,12 @@ import java.util.concurrent.Callable;
  */
 public class AccessTokenCache {
 
-    private final Cache<CacheKey, CacheValue> userClientCache = GuavaCaches.createCache();
+    private final Cache<AccessTokenAsCacheKey, CacheValue> userClientCache = GuavaCaches.createCache();
 
-    public AccessToken getIfAbsentLoad(final AuthCommand authCommand, final Callable<AccessToken> loader) {
+    public AccessToken getIfAbsentLoad(final String accessToken, final AccessToken.Type type, final Callable<AccessToken> loader) {
         try {
             CacheValue value = userClientCache.get(
-                    new CacheKey(authCommand),
+                    new AccessTokenAsCacheKey(accessToken, type),
                     new Callable<CacheValue>() {
                         @Override
                         public CacheValue call() throws Exception {
@@ -40,8 +39,8 @@ public class AccessTokenCache {
         }
     }
 
-    public void evictBy(final AuthCommand authCommand) {
-        userClientCache.invalidate(new CacheKey(authCommand));
+    public void evictBy(String accessToken, AccessToken.Type type) {
+        userClientCache.invalidate(new AccessTokenAsCacheKey(accessToken, type));
     }
 
     private ApplicationException handleException(final Exception ex) {
@@ -51,43 +50,7 @@ public class AccessTokenCache {
         return new CacheException("Unexpected error", ex);
     }
 
-    /**
-     * 用作缓存的key，包含 access toke 信息。
-     * @author chenlong
-     * @since 1.0
-     */
-    public static final class CacheKey {
-
-        private AccessToken.Type type;
-        private String token;
-
-        public CacheKey(AuthCommand dto) {
-            this.type = dto.type;
-            this.token = dto.accessToken;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            CacheKey that = (CacheKey) o;
-
-            if (type != that.type) return false;
-            return token.equals(that.token);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = type.hashCode();
-            result = 31 * result + token.hashCode();
-            return result;
-        }
-
-    }
-
     public static class CacheValue {
-
         private AccessToken.Type type;
         private String accessToken;
         private Date createdAt;
@@ -105,7 +68,6 @@ public class AccessTokenCache {
             Beans.copyProperties(this, target);
             return target;
         }
-
     }
 
 }
