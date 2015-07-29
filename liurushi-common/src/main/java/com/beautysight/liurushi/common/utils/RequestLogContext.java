@@ -40,11 +40,6 @@ public final class RequestLogContext {
         reqLogCtxForCurrentReq().protocolVersion = protocolVersion;
     }
 
-    public static void setCostOfTimeUntilNow() {
-        reqLogCtxForCurrentReq().costOfTime =
-                (int) (System.currentTimeMillis() - reqLogCtxForCurrentReq().reqTime.getTime());
-    }
-
     public static void putUserId(String userId) {
         reqLogCtxForCurrentReq().userId = userId;
     }
@@ -52,6 +47,11 @@ public final class RequestLogContext {
     public static void putReqId(String reqId) {
         reqLogCtxForCurrentReq().reqId = reqId;
         putRequestTime(new Date());
+    }
+
+    public static void setCostOfTimeUntilNow() {
+        reqLogCtxForCurrentReq().costOfTime =
+                (int) (System.currentTimeMillis() - reqLogCtxForCurrentReq().reqTime.getTime());
     }
 
 //    public static String reqId() {
@@ -87,8 +87,8 @@ public final class RequestLogContext {
     private Integer costOfTime;
     private String userId = "visitor";
 
-    public String reqId() {
-        return this.reqId;
-    }
+//    public String reqId() {
+//        return this.reqId;
+//    }
 
 }

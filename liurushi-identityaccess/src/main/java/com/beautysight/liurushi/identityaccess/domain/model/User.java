@@ -42,7 +42,6 @@ public class User extends AbstractEntity {
     private Group group = Group.amateur;
 
     public User() {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
 
     public User(String nickname, Gender gender, String mobile, String email, String plainPwd, Avatar originalAvatar) {

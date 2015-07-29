@@ -4,8 +4,9 @@
 
 package com.beautysight.liurushi.identityaccess.domain.model;
 
-import com.beautysight.liurushi.common.domain.AbstractEntity;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
 
 import java.util.Date;
 
@@ -14,8 +15,10 @@ import java.util.Date;
  * @since 1.0
  */
 @Entity(value = "request_logs", noClassnameStored = true)
-public class RequestLog extends AbstractEntity {
+public class RequestLog {
 
+    @Id
+    protected ObjectId id;
     private String uri;
     private String queryString;
     private String protocolVersion;

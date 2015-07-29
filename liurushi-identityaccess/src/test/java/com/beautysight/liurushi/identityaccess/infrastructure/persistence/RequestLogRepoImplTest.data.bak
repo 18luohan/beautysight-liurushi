@@ -1,9 +1,0 @@
-// # request_logs
-{
-    uri: "PUT /v1/users/actions/login",
-    protocolVersion: "HTTP/1.1",
-    reqId: "x-req-001",
-    reqTime: "2015-08-01T12:00:00.000Z",
-    userId: "visitor",
-    createdAt: "2015-08-01T12:00:00.000Z"
-}

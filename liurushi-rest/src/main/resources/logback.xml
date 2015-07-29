@@ -94,7 +94,10 @@
     </logger>
 
     <!-- mongo log -->
-    <logger name="com.mongodb" level="${app.log.level}">
+    <logger name="com.mongodb" level="${app.log.level}" additivity="false">
+        <appender-ref ref="mongoAppender"/>
+    </logger>
+    <logger name="org.mongodb" level="${app.log.level}" additivity="false">
         <appender-ref ref="mongoAppender"/>
     </logger>
 

@@ -12,7 +12,4 @@ import com.beautysight.liurushi.identityaccess.domain.model.RequestLog;
  * @since 1.0
  */
 public interface RequestLogRepo extends MongoRepository<RequestLog> {
-
-    RequestLog getBy(String reqId);
-
 }

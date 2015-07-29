@@ -66,15 +66,17 @@ public class MDCInsertingServletFilter implements Filter {
         insertIntoMDC(httpRequest);
         putIntoReqLogContext(httpRequest);
 
-        final RequestLogContext context = RequestLogContext.copyReqLogCtxForCurrentReq();
-        AsyncTasks.submit(new Runnable() {
-            @Override
-            public void run() {
-                RequestLog targetRequestLog = new RequestLog();
-                Beans.copyProperties(context, targetRequestLog);
-                requestLogRepo.save(targetRequestLog);
-            }
-        });
+//        final RequestLogContext context = RequestLogContext.copyReqLogCtxForCurrentReq();
+//        AsyncTasks.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                RequestLog targetRequestLog = new RequestLog();
+//                Beans.copyProperties(context, targetRequestLog);
+//                RequestLog savedLog = requestLogRepo.save(targetRequestLog);
+//                // 不能在这里操作当前请求日志上下文，因为它绑定在容器worker线程中，而不是这个线程
+//                //RequestLogContext.setId(savedLog.idString());
+//            }
+//        });
     }
 
     private void postHandle() {
@@ -84,9 +86,9 @@ public class MDCInsertingServletFilter implements Filter {
         AsyncTasks.submit(new Runnable() {
             @Override
             public void run() {
-                RequestLog targetRequestLog = requestLogRepo.getBy(context.reqId());
+                RequestLog targetRequestLog = new RequestLog();
                 Beans.copyProperties(context, targetRequestLog);
-                requestLogRepo.merge(targetRequestLog);
+                requestLogRepo.save(targetRequestLog);
             }
         });
         clearMDC();
