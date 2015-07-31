@@ -70,7 +70,8 @@ public class PresentationDPO extends DPO {
         }
 
         PresentationDPO target = new PresentationDPO();
-        Beans.copyProperties(source, target);
+        Beans.copyProperties(source, target, "slides");
+        target.slides = slideDTOs;
         return target;
     }
 

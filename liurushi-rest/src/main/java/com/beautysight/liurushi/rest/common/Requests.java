@@ -4,8 +4,8 @@
 
 package com.beautysight.liurushi.rest.common;
 
-import com.beautysight.liurushi.common.ex.AuthException;
 import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
+import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;

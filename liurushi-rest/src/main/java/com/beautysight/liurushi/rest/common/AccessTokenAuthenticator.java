@@ -7,7 +7,6 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.utils.Logs;
-import com.beautysight.liurushi.common.utils.RequestLogContext;
 import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.identityaccess.app.UserApp;
 import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
@@ -67,7 +66,7 @@ public class AccessTokenAuthenticator extends HandlerInterceptorAdapter {
             return false;
         } catch (Exception ex) {
             logger.error("Error while authenticate", ex);
-            Responses.setStatusAndWriteTo(response, CommonErrorId.unauthorized, ex.getMessage());
+            Responses.setStatusAndWriteTo(response, CommonErrorId.internal_server_error, ex.getMessage());
             return false;
         } finally {
             if (logger.isInfoEnabled()) {

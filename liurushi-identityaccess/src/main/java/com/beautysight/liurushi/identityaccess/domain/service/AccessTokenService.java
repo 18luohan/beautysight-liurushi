@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.domain.service;
 
-import com.beautysight.liurushi.common.ex.AuthException;
+import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;

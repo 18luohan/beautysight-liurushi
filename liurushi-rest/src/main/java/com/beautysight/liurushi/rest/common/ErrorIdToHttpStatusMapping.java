@@ -34,11 +34,10 @@ public class ErrorIdToHttpStatusMapping {
         // 4xx Client Error
         MAPPING.put(CommonErrorId.bad_request, HttpStatus.BAD_REQUEST);
         MAPPING.put(CommonErrorId.invalid_params, HttpStatus.UNPROCESSABLE_ENTITY);
-        MAPPING.put(CommonErrorId.unauthorized, HttpStatus.UNAUTHORIZED);
         MAPPING.put(CommonErrorId.no_permission_for_this_api, HttpStatus.FORBIDDEN);
         MAPPING.put(CommonErrorId.business_constraint_violated, HttpStatus.UNPROCESSABLE_ENTITY);
 
-        MAPPING.put(AuthErrorId.invalid_app_id, HttpStatus.UNAUTHORIZED);
+        MAPPING.put(AuthErrorId.illegal_app_id, HttpStatus.UNAUTHORIZED);
         MAPPING.put(AuthErrorId.illegal_access_token, HttpStatus.UNAUTHORIZED);
         MAPPING.put(AuthErrorId.invalid_access_token, HttpStatus.UNAUTHORIZED);
 

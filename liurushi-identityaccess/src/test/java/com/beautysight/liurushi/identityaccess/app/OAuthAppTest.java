@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.app;
 
-import com.beautysight.liurushi.common.ex.AuthException;
+import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.beautysight.liurushi.common.utils.Jsons;
 import com.beautysight.liurushi.identityaccess.app.cache.AccessTokenCache;
 import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
