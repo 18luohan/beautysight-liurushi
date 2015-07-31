@@ -4,13 +4,13 @@
 
 package com.beautysight.liurushi.identityaccess.domain.service;
 
-import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
+import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +44,12 @@ public class AccessTokenService {
         return currentToken;
     }
 
-    public AccessToken checkAndLoad(String accessToken, AccessToken.Type type) {
+    public AccessToken loadAccessTokenBy(String accessToken, AccessToken.Type type) {
         // 检查是否是曾经使用过但已无效的token
         Optional<AccessToken> lastToken = accessTokenRepo.lastAccessTokenOf(accessToken, type);
         if (lastToken.isPresent()) {
-            throw new AuthException(AuthErrorId.invalid_access_token, "Invalid %s token: %s", type, accessToken);
+            throw new AuthException(AuthErrorId.invalid_access_token,
+                    "Invalid %s token: %s, because it's refreshed", type, accessToken);
         }
 
         // 检查是否是不存在的token，即伪造的token
@@ -71,8 +72,14 @@ public class AccessTokenService {
         logger.debug("Invalidate access token");
     }
 
-    public User getUserBy(String type, String accessToken) {
-        Optional<AccessToken> theToken = accessTokenRepo.accessTokenOf(accessToken, AccessToken.Type.valueOf(type));
+    // TODO bad smell 跟 loadAccessTokenBy 有点重复
+    public User getUserBy(String accessToken, AccessToken.Type type) {
+        Optional<AccessToken> theToken = accessTokenRepo.lastAccessTokenOf(accessToken, type);
+        if (theToken.isPresent()) {
+            return theToken.get().user();
+        }
+
+        theToken = accessTokenRepo.accessTokenOf(accessToken, type);
         if (!theToken.isPresent()) {
             throw new EntityNotFoundException("Not found %s token: %s", type, accessToken);
         }

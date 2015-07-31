@@ -107,7 +107,7 @@ public class UserApp {
         return userProfileCache.getIfAbsentLoad(accessToken, type, new Callable<UserProfile>() {
             @Override
             public UserProfile call() throws Exception {
-                User user = accessTokenService.getUserBy(type.toString(), accessToken);
+                User user = accessTokenService.getUserBy(accessToken, type);
                 return user.toUserProfile();
             }
         });
@@ -157,6 +157,5 @@ public class UserApp {
     private void cacheUserProfileForNewSession(AccessToken accessToken, UserProfile userProfile) {
         userProfileCache.put(accessToken.accessToken(), accessToken.type(), userProfile);
     }
-
 
 }

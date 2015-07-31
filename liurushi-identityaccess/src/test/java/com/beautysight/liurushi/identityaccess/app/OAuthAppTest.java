@@ -49,7 +49,7 @@ public class OAuthAppTest {
     @Test
     public void notCachedSoComputeAndCacheAndReturn() {
         new Expectations() {{
-            accessTokenService.checkAndLoad(anyString, (AccessToken.Type) any);
+            accessTokenService.loadAccessTokenBy(anyString, (AccessToken.Type) any);
             result = accessToken;
         }};
 
@@ -64,7 +64,7 @@ public class OAuthAppTest {
 //                });
 
         new Verifications() {{
-            accessTokenService.checkAndLoad(anyString, AccessToken.Type.Bearer);
+            accessTokenService.loadAccessTokenBy(anyString, AccessToken.Type.Bearer);
             times = 1;
 //            assertEquals(command.type, theCachedToken.type());
 //            assertEquals(command.accessToken, theCachedToken.accessToken());
@@ -74,7 +74,7 @@ public class OAuthAppTest {
     @Test
     public void cachedSoNotComputeJustReturn() {
         new Expectations() {{
-            accessTokenService.checkAndLoad(anyString, (AccessToken.Type) any);
+            accessTokenService.loadAccessTokenBy(anyString, (AccessToken.Type) any);
             result = accessToken;
         }};
 
@@ -83,7 +83,7 @@ public class OAuthAppTest {
         oAuthApp.authenticate(command);
 
         new Verifications() {{
-            accessTokenService.checkAndLoad(anyString, (AccessToken.Type) any);
+            accessTokenService.loadAccessTokenBy(anyString, (AccessToken.Type) any);
             times = 1;
         }};
     }

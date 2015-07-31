@@ -4,7 +4,6 @@
 
 package com.beautysight.liurushi.identityaccess.app;
 
-import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.identityaccess.app.cache.AccessTokenCache;
 import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
@@ -12,9 +11,8 @@ import com.beautysight.liurushi.identityaccess.app.command.RefreshAccessTokenCom
 import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
 import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
-import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
 import com.beautysight.liurushi.identityaccess.domain.service.AccessTokenService;
-import com.google.common.base.Optional;
+import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +30,6 @@ public class OAuthApp {
     private static final Logger logger = LoggerFactory.getLogger(OAuthApp.class);
 
     @Autowired
-    private AccessTokenRepo accessTokenRepo;
-    @Autowired
     private AccessTokenService accessTokenService;
 
     private final AccessTokenCache accessTokenCache = new AccessTokenCache();
@@ -44,7 +40,7 @@ public class OAuthApp {
                     @Override
                     public AccessToken call() throws Exception {
                         logger.debug("Access token absent in cache, so load");
-                        return accessTokenService.checkAndLoad(
+                        return accessTokenService.loadAccessTokenBy(
                                 authCommand.accessToken, authCommand.type);
                     }
                 });
@@ -61,24 +57,19 @@ public class OAuthApp {
     }
 
     public AccessTokenPresentation refreshBearerToken(RefreshAccessTokenCommand command) {
-        Optional<AccessToken> theToken = accessTokenRepo.accessTokenOf(
-                command.bearerToken, AccessToken.Type.Bearer);
-        if (!theToken.isPresent()) {
-            throw new AuthException(AuthErrorId.illegal_access_token, "Illegal bearer token: %s", command.bearerToken);
-        }
-
-        if (!theToken.get().refreshToken().equals(command.refreshToken)) {
+        AccessToken theToken = accessTokenService.loadAccessTokenBy(command.bearerToken, AccessToken.Type.Bearer);
+        if (!theToken.refreshToken().equals(command.refreshToken)) {
             throw new IllegalParamException("refreshToken illegal");
         }
 
-        if (theToken.get().isInvalid()) {
-            AccessToken newToken = accessTokenService.refreshBearerToken(theToken.get());
+        if (theToken.isInvalid()) {
+            AccessToken newToken = accessTokenService.refreshBearerToken(theToken);
             logger.info("Access token is invalid, so refresh");
             return AccessTokenPresentation.from(newToken);
         }
 
         logger.info("Access token is still valid, so not refresh and return current token");
-        return AccessTokenPresentation.from(theToken.get());
+        return AccessTokenPresentation.from(theToken);
     }
 
     public void evictAccessToken(String accessToken, AccessToken.Type type) {
