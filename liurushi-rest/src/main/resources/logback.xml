@@ -8,13 +8,28 @@
 
     <contextName>${app_name}</contextName>
 
+    <!--
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{user.id}] [%X{req.id}] %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    
+    -->
+
+    <appender name="allAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${app.logs.dir}/${app.name}.log</File>
+        <encoder>
+            <pattern>[%d] [%-5p] [%t] [%r] [%C.%M\(%file:%line\)] [%X{user.id}] [%X{req.id}] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.logs.dir}/${app.name}.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+    </appender>
+
     <appender name="bizAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${app.logs.dir}/${app.name}-biz.log</File>
         <encoder>
@@ -115,7 +130,7 @@
     </logger>
 
     <root level="${app.log.level}">
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="allAppender"/>
     </root>
 
 </configuration>
