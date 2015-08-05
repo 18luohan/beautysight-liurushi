@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+
+    <!--
+        Sets the id of this assembly. This is a symbolic name for a particular assembly of files from this project.
+        Also, aside from being used to distinctly name the assembled package by attaching its value to the generated archive,
+        the id is used as your artifact's classifier when deploying.
+    -->
+    <id>tgz</id>
+
+    <!--
+        Sets the base directory of the resulting assembly archive.
+        If this is not set and includeBaseDirectory == true,
+        ${project.build.finalName} will be used instead. (Since 2.2-beta-1)
+        指定装配输出包内的根目录
+    -->
+    <baseDirectory>liurushi-rest.war</baseDirectory>
+    <!--
+        Includes a base directory in the final archive. For example, if you are creating an assembly named "your-app",
+        setting includeBaseDirectory to true will create an archive that includes this base directory.
+        If this option is set to false the archive created will unzip its content to the current directory.
+        是否将baseDirectory元素指定的目录作为装配输出包内的根目录
+    -->
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+ 
+    <fileSets>
+        <fileSet>
+            <!--
+                Sets the absolute or relative location from the module's directory.
+                For example, "src/main/bin" would select this subdirectory of the project in which this dependency is defined.
+            -->
+            <directory>target/liurushi-rest</directory>
+            <!--
+                Sets the output directory relative to the root of the root directory of the assembly.
+                For example, "log" will put the specified files in the log directory.
+                指定装配时要将 directory元素指定目录下的所有文件(不包括目录本身) 放置到装配输出包内的哪个目录下，
+                指定的路径相对于装配输出包内的baseDirectory。本例中，"/"表示放置到装配输出包内的liurushi-rest.war目录下
+            -->
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/**</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
