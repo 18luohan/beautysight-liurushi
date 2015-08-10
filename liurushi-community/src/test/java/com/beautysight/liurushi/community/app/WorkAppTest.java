@@ -7,7 +7,6 @@ package com.beautysight.liurushi.community.app;
 import com.beautysight.liurushi.common.utils.Jsons;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
-import com.beautysight.liurushi.test.mongo.Cleanup;
 import com.beautysight.liurushi.test.utils.Files;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class WorkAppTest extends SpringBasedAppTest {
     private WorkApp workApp;
 
     @Test
-    public void publishWork() throws Exception {
+    public void saveWork() throws Exception {
         PublishWorkCommand command = Jsons.toObject(
                 Files.fileInSameDirWith(WorkAppTest.class, "PublishWorkCommand.json"),
                 PublishWorkCommand.class);

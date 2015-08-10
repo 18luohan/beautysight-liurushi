@@ -12,10 +12,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-08.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -31,4 +27,7 @@ public abstract class AbstractEntity extends DomainModel implements JsonAnyField
         return id;
     }
 
+    public String idAsStr() {
+        return id.toHexString();
+    }
 }

@@ -7,6 +7,7 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
+import com.beautysight.liurushi.identityaccess.domain.model.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,13 @@ public class RequestContext {
         }
     };
 
+    private static final ThreadLocal<UserProfile> userProfile = new ThreadLocal<UserProfile>() {
+        @Override
+        protected UserProfile initialValue() {
+            return null;
+        }
+    };
+
     public static void putAccessToken(AccessTokenDPO theToken) {
         accessToken.set(theToken);
         if (logger.isDebugEnabled()) {
@@ -39,6 +47,20 @@ public class RequestContext {
         return accessToken.get();
     }
 
+    public static void putUserProfile(UserProfile theUser) {
+        userProfile.set(theUser);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Put user profile into request context: {}", theUser);
+        }
+    }
+
+    public static UserProfile getUserProfile() {
+        if (userProfile.get() == null) {
+            throw new ApplicationException("Expected to get current user profile from request context, but actual not present");
+        }
+        return userProfile.get();
+    }
+
     public static boolean isThisUserAMember() {
         return (accessToken.get() != null
                 && accessToken.get().type == AccessToken.Type.Bearer);
@@ -51,6 +73,12 @@ public class RequestContext {
             accessToken.remove();
             if (logger.isDebugEnabled()) {
                 logger.debug("Cleared access token from request context: {}", theToken);
+            }
+
+            UserProfile theUser = userProfile.get();
+            userProfile.remove();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cleared user profile from request context: {}", theUser);
             }
         }
     }

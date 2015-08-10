@@ -2,9 +2,12 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.community.domain.model.content;
+package com.beautysight.liurushi.community.domain.model.work;
 
 import com.beautysight.liurushi.common.domain.ValueObject;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
 import org.mongodb.morphia.annotations.Reference;
 
 /**
@@ -29,6 +32,10 @@ public abstract class Control extends ValueObject {
 
     public ContentSection content() {
         return content;
+    }
+
+    public Integer order() {
+        return this.order;
     }
 
 }

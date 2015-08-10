@@ -2,16 +2,13 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.community.domain.model.content;
+package com.beautysight.liurushi.community.domain.model.work.cs;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
-import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.mongodb.DBObject;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.StaticFactoryMethod;
 import org.mongodb.morphia.mapping.MappingException;
-
-import java.lang.reflect.Method;
 
 /**
  * @author chenlong
@@ -25,6 +22,10 @@ public abstract class ContentSection extends AbstractEntity {
 
     public Type type() {
         return this.type;
+    }
+
+    public boolean isImage() {
+        return (this.type == Type.image);
     }
 
     public static ContentSection newInstanceByType(DBObject dbObject) {
@@ -45,11 +46,6 @@ public abstract class ContentSection extends AbstractEntity {
             throw new MappingException("Can't mapping dbObject to specific entity by type filed:" + typeValue, ex);
         }
     }
-
-    // TODO 待删除
-//    public void validate() {
-//        PreconditionUtils.checkRequired(format("%s.type"), type);
-//    }
 
     public enum Type {
         image, text

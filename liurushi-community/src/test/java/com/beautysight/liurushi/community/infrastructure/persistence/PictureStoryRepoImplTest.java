@@ -4,15 +4,9 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.community.domain.model.content.PictureStory;
-import com.beautysight.liurushi.community.domain.model.content.PictureStoryRepo;
+import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStoryRepo;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
-import org.bson.types.ObjectId;
-import org.junit.Assert;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * @author chenlong

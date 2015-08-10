@@ -15,15 +15,15 @@ public class Location extends ValueObject {
     /**
      * 与一个宽度相比的百分点数，而非像素数。
      */
-    private Integer xPercentage;
+    private Integer xPct;
     /**
      * 与一个高度相比的百分点数，而非像素数。
      */
-    private Integer yPercentage;
+    private Integer yPct;
 
     public void validate() {
-        PreconditionUtils.checkGreaterThanOrEqZero("location.xPercentage", xPercentage);
-        PreconditionUtils.checkGreaterThanOrEqZero("location.yPercentage", yPercentage);
+        PreconditionUtils.checkGreaterThanOrEqZero("location.xPct", xPct);
+        PreconditionUtils.checkGreaterThanOrEqZero("location.yPct", yPct);
     }
 
 }

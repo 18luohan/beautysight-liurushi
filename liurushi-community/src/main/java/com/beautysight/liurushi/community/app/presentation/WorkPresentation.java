@@ -7,8 +7,8 @@ package com.beautysight.liurushi.community.app.presentation;
 import com.beautysight.liurushi.common.app.PresentationModel;
 import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
 import com.beautysight.liurushi.community.app.dpo.PresentationDPO;
-import com.beautysight.liurushi.community.domain.model.content.PictureStory;
-import com.beautysight.liurushi.community.domain.model.content.Presentation;
+import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
 
 import java.util.Map;
 

@@ -2,7 +2,7 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.community.domain.model.content;
+package com.beautysight.liurushi.community.domain.model.work;
 
 /**
  * @author chenlong

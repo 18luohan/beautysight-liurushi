@@ -8,14 +8,12 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.WorkApp;
 import com.beautysight.liurushi.community.app.command.FindWorkProfilesInRangeCommand;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
+import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfilePresentation;
-import com.beautysight.liurushi.community.domain.model.content.Author;
-import com.beautysight.liurushi.community.domain.model.content.OffsetDirection;
-import com.beautysight.liurushi.identityaccess.app.UserApp;
-import com.beautysight.liurushi.identityaccess.app.presentation.UserProfilePresentation;
+import com.beautysight.liurushi.community.domain.model.work.OffsetDirection;
+import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.rest.common.APIs;
-import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,14 +28,20 @@ public class WorkRest {
 
     @Autowired
     private WorkApp workApp;
-    @Autowired
-    private UserApp userApp;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void publishWork(@RequestBody PublishWorkCommand command) {
-        command.setAuthor(currentAuthor());
+    public PublishWorkPresentation publishWork(@RequestBody PublishWorkCommand command) {
+        command.setAuthor(Authors.currentAuthor());
         command.validate();
-        workApp.publishWork(command);
+        return workApp.publishWork(command);
+    }
+
+    @RequestMapping(value = "/{workId}/content_sections/{picSectionId}", method = RequestMethod.PUT)
+    public void notifyThatPicUploaded(@PathVariable("workId") String workId,
+                                      @PathVariable("picSectionId") String picSectionId,
+                                      @RequestBody NotifyPicUploadedCommand command) {
+        command.validate();
+        workApp.onPicSectionUploaded(workId, picSectionId, command);
     }
 
     @RequestMapping(value = "/{workId}", method = RequestMethod.GET)
@@ -89,14 +93,6 @@ public class WorkRest {
         }
         command.validate();
         return command;
-    }
-
-    private Author currentAuthor() {
-        UserProfilePresentation currentUser = userApp.getCurrentUserProfilePresentation(
-                RequestContext.getAccessToken().type, RequestContext.getAccessToken().accessToken);
-        return new Author(currentUser.getId(), currentUser.getNickname(),
-                currentUser.getOriginalAvatarUrl(), currentUser.getMaxAvatarUrl(),
-                currentUser.getGroup());
     }
 
 }

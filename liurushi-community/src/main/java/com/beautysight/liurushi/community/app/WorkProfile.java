@@ -5,9 +5,8 @@
 package com.beautysight.liurushi.community.app;
 
 import com.beautysight.liurushi.common.app.PresentationModel;
-import com.beautysight.liurushi.common.utils.Beans;
-import com.beautysight.liurushi.community.domain.model.content.Author;
-import com.beautysight.liurushi.community.domain.model.content.PictureStory;
+import com.beautysight.liurushi.community.domain.model.work.Author;
+import com.beautysight.liurushi.community.domain.model.work.Work;
 
 import java.util.Date;
 
@@ -22,15 +21,16 @@ public class WorkProfile implements PresentationModel {
     private String id;
     private String title;
     private String coverPictureUrl;
-    private Date publishedAt;
     private Author author;
+    private Date publishedAt;
 
-    public static WorkProfile from(PictureStory pictureStory, String coverPictureUrl, Author author) {
+    public static WorkProfile from(Work work, String coverPictureUrl, Author author) {
         WorkProfile workProfile = new WorkProfile();
-        Beans.copyProperties(pictureStory, workProfile);
-        workProfile.id = pictureStory.id().toString();
+        workProfile.id = work.id().toString();
+        workProfile.title = work.title();
         workProfile.coverPictureUrl = coverPictureUrl;
         workProfile.author = author;
+        workProfile.publishedAt = work.publishedAt();
         return workProfile;
     }
 

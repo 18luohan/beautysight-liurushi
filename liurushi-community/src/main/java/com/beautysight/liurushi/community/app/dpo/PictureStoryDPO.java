@@ -7,7 +7,13 @@ package com.beautysight.liurushi.community.app.dpo;
 import com.beautysight.liurushi.common.app.DPO;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.community.domain.model.content.*;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.model.work.cs.TextBlock;
+import com.beautysight.liurushi.community.domain.model.work.picstory.Cover;
+import com.beautysight.liurushi.community.domain.model.work.picstory.PictureArea;
+import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.model.work.picstory.Shot;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -19,14 +25,12 @@ import java.util.Map;
  * @since 1.0
  */
 public class PictureStoryDPO extends DPO {
-    
+
     public String title;
     public String subtitle;
     public PictureStory.Layout layout;
     public CoverDPO cover;
     public List<ShotDPO> shots;
-    public Author author;
-    public Work.Source source;
 
     public void validate() {
         PreconditionUtils.checkRequired("pictureStory.title", title);
@@ -35,18 +39,15 @@ public class PictureStoryDPO extends DPO {
         PreconditionUtils.checkRequired("pictureStory.shots", shots);
         cover.validate();
         ControlDPO.validate(shots);
-
-        PreconditionUtils.checkRequired("pictureStory.author", author);
-        PreconditionUtils.checkRequired("pictureStory.source", source);
     }
 
     public PictureStory toPictureStory() {
         ControlDPO.sortByOrderAsc(shots);
-        List<PictureStory.Shot> shotList = Lists.newArrayListWithCapacity(shots.size());
+        List<Shot> shotList = Lists.newArrayListWithCapacity(shots.size());
         for (ShotDPO dto : shots) {
             shotList.add(dto.toShot());
         }
-        return new PictureStory(title, subtitle, layout, cover.toCover(), shotList, author, source);
+        return new PictureStory(title, subtitle, layout, cover.toCover(), shotList);
     }
 
     public static PictureStoryDPO from(PictureStory source, Map<String, String> keyToDownloadUrlMapping) {
@@ -57,7 +58,7 @@ public class PictureStoryDPO extends DPO {
 
         // translate shot list
         List<ShotDPO> shotDTOs = new ArrayList<>();
-        for (PictureStory.Shot shot : source.componentParts()) {
+        for (Shot shot : source.controls()) {
 
             // translate shot
             ShotDPO targetShotDTO = new ShotDPO();
@@ -92,49 +93,51 @@ public class PictureStoryDPO extends DPO {
 
     public static class CoverDPO {
         public String sectionId;
-        public int whPercentage;
-        public PictureStory.VisibleArea visibleArea;
+        public PictureArea picArea;
 
         public String pictureUrl;
 
         public void validate() {
             PreconditionUtils.checkRequired("cover.sectionId", sectionId);
-            PreconditionUtils.checkGreaterThanZero("cover.whPercentage", whPercentage);
-            if (visibleArea != null) {
-                visibleArea.validate();
+            if (picArea != null) {
+                picArea.validate();
             }
         }
 
-        public PictureStory.Cover toCover() {
-            PictureStory.Cover target = new PictureStory.Cover();
+        public Cover toCover() {
+            Cover target = new Cover();
             Beans.copyProperties(this, target);
             return target;
         }
     }
 
     public static class ShotDPO extends ControlDPO {
-
-        public PictureStory.ControlSize size;
-        public PictureStory.VisibleArea visibleArea;
+        public Shot.Size size;
+        public PictureArea picAreaInShot;
+        public PictureArea picVisibleArea;
 
         @Override
         public void validate() {
             super.validate();
-            PreconditionUtils.checkRequired("shot.size", size);
-            size.validate();
 
-            // TODO visibleArea 目前可选
-            //PreconditionUtils.checkRequired("shot.visibleArea", visibleArea);
-            if (visibleArea != null) {
-                visibleArea.validate();
+            if (this.content instanceof ContentSectionDPO.PictureDPO) {
+                PreconditionUtils.checkRequired("shot.size", size);
+                size.validate();
+
+                if (picAreaInShot != null) {
+                    picAreaInShot.validate();
+                }
+
+                if (picVisibleArea != null) {
+                    picVisibleArea.validate();
+                }
             }
         }
 
-        public PictureStory.Shot toShot() {
-            PictureStory.Shot target = new PictureStory.Shot();
+        public Shot toShot() {
+            Shot target = new Shot();
             Beans.copyProperties(this, target);
             return target;
         }
-
     }
 }

@@ -17,25 +17,33 @@ public class ResourceInStorage extends ValueObject {
     private String hash;
     private String url;
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getKey() {
         return key;
     }
 
-    public String getUrl() {
-        return url;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getHash() {
         return hash;
     }
 
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public void validate() {
-        PreconditionUtils.checkRequired("ResourceInStorage.key", key);
-        PreconditionUtils.checkRequired("ResourceInStorage.hash", hash);
+        PreconditionUtils.checkRequired("resource.key", key);
+        PreconditionUtils.checkRequired("resource.hash", hash);
     }
 
 }

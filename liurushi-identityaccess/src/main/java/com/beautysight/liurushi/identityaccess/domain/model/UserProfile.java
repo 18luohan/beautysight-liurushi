@@ -20,16 +20,28 @@ public class UserProfile extends ValueObject {
     private Gender gender;
     private String mobile;
     private String email;
+    private User.Group group;
     private User.Avatar originalAvatar;
     private User.Avatar maxAvatar;
-    private User.Group group;
 
     public ObjectId id() {
         return this.id;
     }
 
+    public String nickname() {
+        return this.nickname;
+    }
+
+    public Gender gender() {
+        return this.gender;
+    }
+
     public String mobile() {
         return this.mobile;
+    }
+
+    public String email() {
+        return this.email;
     }
 
     public User.Group group() {
@@ -50,6 +62,15 @@ public class UserProfile extends ValueObject {
             return Optional.absent();
         }
         return Optional.of(this.maxAvatar.key());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("{id:").append(id)
+                .append(",mobile:").append(mobile)
+                .append(",...}");
+        return strBuilder.toString();
     }
 
 }

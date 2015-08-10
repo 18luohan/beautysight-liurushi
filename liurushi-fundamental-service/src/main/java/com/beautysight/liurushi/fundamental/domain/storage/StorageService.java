@@ -10,6 +10,8 @@ package com.beautysight.liurushi.fundamental.domain.storage;
  */
 public interface StorageService {
 
+    String issueUploadToken();
+
     String issueUploadToken(UploadOptions options);
 
     String issueDownloadUrl(String key);

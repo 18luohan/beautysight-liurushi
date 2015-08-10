@@ -5,13 +5,12 @@
 package com.beautysight.liurushi.community.app.dpo;
 
 import com.beautysight.liurushi.common.app.DPO;
-import com.beautysight.liurushi.common.domain.Dimensions;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.community.domain.model.content.ContentSection;
-import com.beautysight.liurushi.community.domain.model.content.Picture;
-import com.beautysight.liurushi.community.domain.model.content.TextBlock;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.model.work.cs.TextBlock;
 import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 1.0
  */
 public abstract class ContentSectionDPO extends DPO {
+
     public String id;
     public ContentSection.Type type;
 
@@ -43,26 +43,14 @@ public abstract class ContentSectionDPO extends DPO {
     public abstract ContentSection toDomainModel();
 
     public static class PictureDPO extends ContentSectionDPO {
-        public String name;
         public Picture.Format format;
-        public Dimensions dimensions;
-        public Integer size;
-        public String signature;
-        public ResourceInStorage resource;
+
+        //下面的字段在展现时使用
+        private ResourceInStorage resource;
         public String pictureUrl;
 
         public PictureDPO() {
             this.type = ContentSection.Type.image;
-        }
-
-        public void validate() {
-            super.validate();
-            PreconditionUtils.checkRequired("Picture.resource", resource);
-            resource.validate();
-
-            if (this.dimensions != null) {
-                dimensions.validate();
-            }
         }
 
         @Override

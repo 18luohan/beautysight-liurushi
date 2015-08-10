@@ -42,6 +42,20 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     }
 
     @Test
+    public void issueUploadTokensWithDiffKeys() {
+        UploadOptions uploadPolicy = uploadPolicyForTest();
+
+        uploadPolicy.key("55baf21e8bb5e6731f94d564" + "01");
+        String uploadToken = storageService.issueUploadToken(uploadPolicy);
+        uploadPolicy.key("55bb05f58bb5e6731f94d56f" + "02");
+        String uploadToken2 = storageService.issueUploadToken(uploadPolicy);
+
+        System.out.println(">>>>>>>>>>>>>>>>>1:" + uploadToken);
+        System.out.println(">>>>>>>>>>>>>>>>>2:" + uploadToken2);
+        assertNotEquals(uploadToken, uploadToken2);
+    }
+
+    @Test
     public void issueDownloadUrl() {
         String result = storageService.issueDownloadUrl(key);
         assertTrue(StringUtils.isNotBlank(result));
@@ -94,14 +108,6 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
         url = url + UriUtils.encodeQuery(queryString, "UTF-8");
         ResourceInStorage resource = Https.request(url, ResourceInStorage.class);
 //        System.out.println("error:" + resource.error + ", key:" + resource.key + ", hash:" + resource.hash);
-    }
-
-    @Test
-    public void uploadToken() {
-        UploadOptions uploadPolicy = uploadPolicyForTest().deadline(System.currentTimeMillis() / 1000 + 3600 * 12);
-        String token = storageService.issueUploadToken(uploadPolicy);
-        assertTrue(StringUtils.isNotBlank(token));
-        System.out.println("token:" + token);
     }
 
     @Test

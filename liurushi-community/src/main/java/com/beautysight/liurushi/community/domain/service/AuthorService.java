@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.service;
 
-import com.beautysight.liurushi.community.domain.model.content.Author;
+import com.beautysight.liurushi.community.domain.model.work.Author;
 
 /**
  * @author chenlong

@@ -47,6 +47,28 @@ public class QiniuStorageService implements StorageService {
         this.auth = Auth.create(qiniuConfig.accessKey, qiniuConfig.secretKey);
     }
 
+    public String issueUploadToken() {
+        return issueUploadToken(UploadOptions.newInstance());
+    }
+
+    @Override
+    public String issueUploadToken(final UploadOptions options) {
+        if (!options.isBucketGiven()) {
+            options.scope(qiniuConfig.bucket);
+        }
+
+        return QiniuServiceTemplate.executeAuthService("issue upload token", new AuthServiceExecutor<String>() {
+            @Override
+            String execute() {
+                return auth.uploadToken(options.scope().bucket(),
+                        options.scope().key(),
+                        options.timeOfValidity(),
+                        options.toStringMap()
+                );
+            }
+        });
+    }
+
     @Override
     public ResourceInStorage zoomImageTo(int expectedWidth, String imageKey) {
         String fileOps = String.format("imageMogr2/thumbnail/%dx", expectedWidth);
@@ -81,24 +103,6 @@ public class QiniuStorageService implements StorageService {
                 });
         resource.setUrl(this.issueDownloadUrl(resource.getKey()));
         return resource;
-    }
-
-    @Override
-    public String issueUploadToken(final UploadOptions options) {
-        if (!options.isBucketGiven()) {
-            options.scope(qiniuConfig.bucket);
-        }
-
-        return QiniuServiceTemplate.executeAuthService("issue upload token", new AuthServiceExecutor<String>() {
-            @Override
-            String execute() {
-                return auth.uploadToken(options.scope().bucket(),
-                        options.scope().key(),
-                        options.deadline(),
-                        options.toStringMap()
-                );
-            }
-        });
     }
 
     @Override

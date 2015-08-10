@@ -5,8 +5,8 @@
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
-import com.beautysight.liurushi.community.domain.model.content.ContentSection;
-import com.beautysight.liurushi.community.domain.model.content.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRepo;
 import org.springframework.stereotype.Repository;
 
 /**

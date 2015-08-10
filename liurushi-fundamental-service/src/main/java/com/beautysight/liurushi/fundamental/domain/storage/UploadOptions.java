@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 public class UploadOptions {
 
     private Scope scope;
-    private long deadline = unixTime() + 3600;
+    private long timeOfValidity = 3600;
     private Switch insertOnly = Switch.disabled;
     private String endUser;
 
@@ -121,8 +121,8 @@ public class UploadOptions {
         return this.scope;
     }
 
-    public long deadline() {
-        return this.deadline;
+    public long timeOfValidity() {
+        return this.timeOfValidity;
     }
 
     public UploadOptions key(String key) {
@@ -146,8 +146,8 @@ public class UploadOptions {
         return (scope != null && StringUtils.isNotBlank(scope.bucket));
     }
 
-    public UploadOptions deadline(long deadline) {
-        this.deadline = deadline;
+    public UploadOptions timeOfValidity(long timeOfValidity) {
+        this.timeOfValidity = timeOfValidity;
         return this;
     }
 
@@ -238,7 +238,7 @@ public class UploadOptions {
         StringMap stringMap = new StringMap();
 
         putFieldTo(stringMap, "scope", this.scope);
-        putFieldTo(stringMap, "deadline", this.deadline);
+        putFieldTo(stringMap, "deadline", this.unixTime() + this.timeOfValidity);
         putFieldTo(stringMap, "insertOnly", this.insertOnly);
         putFieldTo(stringMap, "endUser", this.endUser);
 

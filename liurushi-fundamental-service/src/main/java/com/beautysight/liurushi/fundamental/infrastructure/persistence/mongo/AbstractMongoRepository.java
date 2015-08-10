@@ -4,12 +4,12 @@
 
 package com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo;
 
-import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Key;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     @Override
     public boolean exists(ObjectId id) {
         Assert.notNull(id, "The given id must not be null!");
-//        Key<?> key = datastore.exists(new Key(entityClass(), id));
+//        Key<?> key = datastore.exists(new Key<T>(entityClass(), id));
 //        // TODO 需要确认这样判断是否存在靠不靠谱？
 //        return (key != null);
         return false;

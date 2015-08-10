@@ -4,14 +4,12 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.community.domain.model.content.ContentSection;
-import com.beautysight.liurushi.community.domain.model.content.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRepo;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.Assert.*;
 
 /**
  * Here is Javadoc.
