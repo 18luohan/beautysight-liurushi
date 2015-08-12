@@ -46,7 +46,7 @@ public class UserService {
     @Autowired
     private FileMetadataRepo fileMetadataRepo;
 
-    public User signUp(final User newUser, User.Avatar uploadedAvatar) {
+    public User signUp(final User newUser, Optional<User.Avatar> uploadedAvatar) {
         Optional<User> theUser = userRepo.withMobile(newUser.mobile());
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
@@ -54,8 +54,10 @@ public class UserService {
         }
 
         newUser.setLastLoginToNow();
-        updateOriginalAvatarWith(uploadedAvatar, newUser);
-        createMaxAvatarFor(newUser);
+        if (uploadedAvatar.isPresent()) {
+            updateOriginalAvatarWith(uploadedAvatar.get(), newUser);
+            createMaxAvatarFor(newUser);
+        }
         return userRepo.save(newUser);
     }
 
@@ -99,7 +101,7 @@ public class UserService {
             }
         });
     }
-    
+
     private void updateOriginalAvatarWith(User.Avatar uploadedAvatar, User user) {
         FileMetadata theFile = fileMetadataRepo.findOne(uploadedAvatar.file().id());
         theFile.setHash(uploadedAvatar.file().hash());
