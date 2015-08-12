@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository;
  * @since 1.0
  */
 @Repository
-public class PublishingPublishingWorkRepoImpl extends AbstractMongoRepository<PublishingWork> implements PublishingWorkRepo {
+public class PublishingWorkRepoImpl extends AbstractMongoRepository<PublishingWork> implements PublishingWorkRepo {
 
     @Override
-    public PublishingWork getAllContentSectionsIn(String id) {
-        Query<PublishingWork> query = newQuery().retrievedFields(true, "contentSections")
-                .field("id").equal(new ObjectId(id));
+    public PublishingWork getAllFilesIn(String workId) {
+        Query<PublishingWork> query = newQuery().retrievedFields(true, "files")
+                .field("id").equal(new ObjectId(workId));
         return query.get();
     }
 

@@ -4,10 +4,11 @@
 
 package com.beautysight.liurushi.community.app.presentation;
 
-import com.beautysight.liurushi.common.app.DPO;
 import com.beautysight.liurushi.common.app.PresentationModel;
 import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
+import com.beautysight.liurushi.fundamental.app.FileMetadataDPO;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,33 +21,26 @@ public class PublishWorkPresentation implements PresentationModel {
 
     private String workId;
     private String uploadToken;
-    private Map<String, PictureDPO> picturesMap;
+    private Map<String, FileMetadataDPO> filesMap;
 
     public PublishWorkPresentation(String workId, String uploadToken, Map<String, ContentSection> contentSections) {
         this.workId = workId;
         this.uploadToken = uploadToken;
-        this.picturesMap = transformToPicturesMap(contentSections);
+        this.filesMap = transformToFilesMap(contentSections);
     }
 
-    private Map<String, PictureDPO> transformToPicturesMap(Map<String, ContentSection> contentSections) {
-        Map<String, PictureDPO> picturesMap = new HashMap<>();
+    private Map<String, FileMetadataDPO> transformToFilesMap(Map<String, ContentSection> contentSections) {
+        Map<String, FileMetadataDPO> filesMap = new HashMap<>();
         for (Map.Entry<String, ContentSection> entry : contentSections.entrySet()) {
             if (!(entry.getValue() instanceof Picture)) {
                 continue;
             }
 
-            Picture pic = (Picture) entry.getValue();
-            PictureDPO picDPO = new PictureDPO();
-            picDPO.id = pic.idAsStr();
-            picDPO.key = pic.key();
-            picturesMap.put(entry.getKey(), picDPO);
+            FileMetadata file = ((Picture) entry.getValue()).file();
+            FileMetadataDPO fileDPO = new FileMetadataDPO(file.idAsStr(), file.key());
+            filesMap.put(entry.getKey(), fileDPO);
         }
-        return picturesMap;
-    }
-
-    private static class PictureDPO extends DPO {
-        private String id;
-        private String key;
+        return filesMap;
     }
 
 }

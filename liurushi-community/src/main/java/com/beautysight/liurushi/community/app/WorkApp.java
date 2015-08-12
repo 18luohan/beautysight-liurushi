@@ -22,10 +22,12 @@ import com.beautysight.liurushi.community.domain.model.work.picstory.Shot;
 import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.google.common.base.Optional;
 import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,10 @@ public class WorkApp {
     private StorageService storageService;
     @Autowired
     private AuthorService authorService;
+    @Autowired
+    private FileMetadataService fileMetadataService;
+    @Autowired
+    private FileMetadataRepo fileMetadataRepo;
 
     public PublishWorkPresentation publishWork(PublishWorkCommand command) {
         Map<String, ContentSection> savedContentSections = saveContentSections(command.contentSectionsMap());
@@ -66,38 +72,36 @@ public class WorkApp {
         return new PublishWorkPresentation(publishingWork.idAsStr(), uploadToken, savedContentSections);
     }
 
-    public void onPicSectionUploaded(String publishingWorkId, String contentSectionId, NotifyPicUploadedCommand command) {
-        ContentSection contentSection = contentSectionRepo.findOne(contentSectionId);
-        if (!contentSection.isImage()) {
+    public void onPicSectionUploaded(String publishingWorkId, String fileId, NotifyPicUploadedCommand command) {
+        FileMetadata theFile = fileMetadataRepo.findOne(fileId);
+
+        if (theFile.isUploaded()) {
             throw new IllegalParamException(
-                    "Content section is not picture, publishingWorkId:%s, contentSectionId:%s",
-                    publishingWorkId, contentSectionId);
+                    "Picture is already uploaded, publishingWorkId:%s, fileId:%s",
+                    publishingWorkId, fileId);
         }
 
-        Picture picture = (Picture) contentSection;
-        if (picture.isUploaded()) {
-            throw new IllegalParamException(
-                    "Picture is already uploaded, publishingWorkId:%s, contentSectionId:%s",
-                    publishingWorkId, contentSectionId);
-        }
+        theFile.setHash(command.hash);
+        fileMetadataRepo.merge(theFile);
+        logger.info("Set picture to uploaded, publishingWorkId:{}, fileId:{}",
+                publishingWorkId, fileId);
 
-        picture.setHash(command.hash);
-        contentSectionRepo.merge(picture);
-        logger.info("Set picture to uploaded, publishingWorkId:{}, contentSectionId:{}",
-                publishingWorkId, contentSectionId);
-
-        PublishingWork workOnlyWithContentSections = publishingWorkRepo.getAllContentSectionsIn(publishingWorkId);
         boolean isAllUploaded = true;
-        for (ContentSection section : workOnlyWithContentSections.contentSections()) {
-            if (section.isImage() && !((Picture) section).isUploaded()) {
+        PublishingWork workOnlyWithFiles = publishingWorkRepo.getAllFilesIn(publishingWorkId);
+        for (FileMetadata file : workOnlyWithFiles.files()) {
+            if (!file.isUploaded()) {
                 isAllUploaded = false;
+                break;
             }
         }
 
         if (isAllUploaded) {
             PublishingWork publishingWork = publishingWorkRepo.findOne(publishingWorkId);
             Work theWork = workRepo.save(publishingWork.transformToWork());
-            logger.info("All pictures uploaded, so transform work draft to work, publishingWorkId:{}, workId:{}",
+            logger.info("All pictures uploaded, so transform publishing-work to work, publishingWorkId:{}, workId:{}",
+                    publishingWorkId, theWork.idAsStr());
+            publishingWorkRepo.delete(publishingWork.id());
+            logger.info("Transformed publishing-work to work, so delete publishing-work, publishingWorkId:{}, workId:{}",
                     publishingWorkId, theWork.idAsStr());
         }
     }
@@ -178,7 +182,7 @@ public class WorkApp {
         for (Map.Entry<String, ContentSection> entry : newSections.entrySet()) {
             if (entry.getValue() instanceof Picture) {
                 Picture pic = (Picture) entry.getValue();
-                pic.setKey(new ObjectId().toHexString());
+                pic.setFile(fileMetadataService.createOneLogicFile(FileMetadata.Type.image));
             }
             ContentSection section = contentSectionRepo.save(entry.getValue());
             entry.setValue(section);
@@ -189,10 +193,20 @@ public class WorkApp {
     private PublishingWork translateToPublishingWork(PublishWorkCommand command, Map<String, ContentSection> contentSections) {
         PictureStory pictureStory = command.pictureStory.toPictureStory();
         Presentation presentation = command.presentation.toPresentation();
+
         setCover(pictureStory, contentSections, command);
         setContentSections(pictureStory, contentSections, command.pictureStory.shots);
         setContentSections(presentation, contentSections, command.presentation.slides);
-        return new PublishingWork(pictureStory, presentation, command.author, new ArrayList<>(contentSections.values()));
+
+        List<FileMetadata> files = new ArrayList<>(contentSections.size());
+        for (ContentSection section : contentSections.values()) {
+            if (section instanceof Picture) {
+                Picture pic = (Picture) section;
+                files.add(pic.file());
+            }
+        }
+
+        return new PublishingWork(pictureStory, presentation, command.author, files);
     }
 
     private void setCover(PictureStory pictureStory, Map<String, ContentSection> contentSections, PublishWorkCommand command) {

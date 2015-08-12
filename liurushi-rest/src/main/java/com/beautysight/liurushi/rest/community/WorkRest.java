@@ -36,12 +36,12 @@ public class WorkRest {
         return workApp.publishWork(command);
     }
 
-    @RequestMapping(value = "/{workId}/content_sections/{picSectionId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{workId}/files/{fileId}", method = RequestMethod.PUT)
     public void notifyThatPicUploaded(@PathVariable("workId") String workId,
-                                      @PathVariable("picSectionId") String picSectionId,
+                                      @PathVariable("fileId") String fileId,
                                       @RequestBody NotifyPicUploadedCommand command) {
         command.validate();
-        workApp.onPicSectionUploaded(workId, picSectionId, command);
+        workApp.onPicSectionUploaded(workId, fileId, command);
     }
 
     @RequestMapping(value = "/{workId}", method = RequestMethod.GET)

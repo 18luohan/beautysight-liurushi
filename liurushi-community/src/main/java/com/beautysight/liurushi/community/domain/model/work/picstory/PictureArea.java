@@ -8,6 +8,8 @@ import com.beautysight.liurushi.common.domain.Location;
 import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 
+import java.util.UUID;
+
 /**
  * @author chenlong
  * @since 1.0
@@ -26,6 +28,10 @@ public class PictureArea extends ValueObject {
         PreconditionUtils.checkRequired("PictureArea.endLoc", endLoc);
         startLoc.validate();
         endLoc.validate();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(UUID.randomUUID());
     }
 
 }

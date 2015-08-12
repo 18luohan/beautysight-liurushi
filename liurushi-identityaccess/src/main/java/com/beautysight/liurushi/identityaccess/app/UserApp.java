@@ -7,6 +7,7 @@ package com.beautysight.liurushi.identityaccess.app;
 import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
 import com.beautysight.liurushi.common.utils.Regexp;
 import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.app.cache.UserProfileCache;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
@@ -64,7 +65,7 @@ public class UserApp {
     }
 
     public SignUpOrLoginPresentation signUp(SignUpCommand command) {
-        User user = userService.signUp(command.user.toUser());
+        User user = userService.signUp(command.user.toUser(), command.user.avatar.toAvatar());
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
         AccessToken accessToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
         AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(accessToken);

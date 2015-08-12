@@ -22,8 +22,8 @@ public class Location extends ValueObject {
     private Integer yPct;
 
     public void validate() {
-        PreconditionUtils.checkGreaterThanOrEqZero("location.xPct", xPct);
-        PreconditionUtils.checkGreaterThanOrEqZero("location.yPct", yPct);
+        PreconditionUtils.checkGreaterThanOrEq(-1, "location.xPct", xPct);
+        PreconditionUtils.checkGreaterThanOrEq(-1, "location.yPct", yPct);
     }
 
 }

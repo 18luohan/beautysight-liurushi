@@ -24,10 +24,6 @@ public abstract class ContentSection extends AbstractEntity {
         return this.type;
     }
 
-    public boolean isImage() {
-        return (this.type == Type.image);
-    }
-
     public static ContentSection newInstanceByType(DBObject dbObject) {
         String typeValue = (String) dbObject.get("type");
 

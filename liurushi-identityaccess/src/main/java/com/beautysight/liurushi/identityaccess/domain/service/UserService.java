@@ -7,7 +7,9 @@ package com.beautysight.liurushi.identityaccess.domain.service;
 import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.utils.AsyncTasks;
-import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
@@ -39,8 +41,12 @@ public class UserService {
     private DeviceRepo deviceRepo;
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private FileMetadataService fileMetadataService;
+    @Autowired
+    private FileMetadataRepo fileMetadataRepo;
 
-    public User signUp(final User newUser) {
+    public User signUp(final User newUser, User.Avatar uploadedAvatar) {
         Optional<User> theUser = userRepo.withMobile(newUser.mobile());
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
@@ -48,23 +54,9 @@ public class UserService {
         }
 
         newUser.setLastLoginToNow();
-        final User savedUser = userRepo.save(newUser);
-
-        AsyncTasks.submit(new Runnable() {
-            @Override
-            public void run() {
-                ResourceInStorage avatar300 = storageService.zoomImageTo(300, savedUser.originalAvatarKey());
-                logger.debug("Asynchronously produced 300 px avatar for user: {}", savedUser.mobile());
-                int radius = 30, segma = 20;
-                ResourceInStorage blurredAvatar = storageService.blurImageAccordingTo(radius, segma, savedUser.originalAvatarKey());
-                logger.debug("Asynchronously produced blurred avatar background for user: {}", savedUser.mobile());
-                savedUser.setMaxAvatar(avatar300, 300);
-                savedUser.setBlurredAvatar(blurredAvatar);
-                userRepo.merge(savedUser);
-            }
-        });
-
-        return savedUser;
+        updateOriginalAvatarWith(uploadedAvatar, newUser);
+        createMaxAvatarFor(newUser);
+        return userRepo.save(newUser);
     }
 
     public User login(String mobile, String plainPwd) {
@@ -89,12 +81,30 @@ public class UserService {
         return deviceRepo.save(device);
     }
 
-//    public void avatarDownloadUrl(User.UserLite userLite, int size) {
-//        User.Avatar avatar = userLite.avatar();
-//    }
-//
-//    private void produceAvatarThumbnail(String originalAvatarKey, int thumbnailSize) {
-//        storageService.issueDownloadUrl()
-//    }
+    private void createMaxAvatarFor(final User user) {
+        final FileMetadata theLogicFile = fileMetadataService.createOneLogicFile(FileMetadata.Type.image);
+        final User.Avatar maxAvatar = new User.Avatar(theLogicFile, 300);
+        user.setMaxAvatar(maxAvatar);
+        AsyncTasks.submit(new Runnable() {
+            @Override
+            public void run() {
+                FileMetadata zoomedFile = storageService.zoomImageTo(maxAvatar.spec(), user.originalAvatarKey(), maxAvatar.key());
+                logger.debug("Asynchronously produced {} px avatar for user: {}", maxAvatar.spec(), user.mobile());
+                theLogicFile.setHash(zoomedFile.hash());
+                fileMetadataRepo.merge(theLogicFile);
+//                int radius = 30, segma = 20;
+//                FileMetadata blurredAvatar = storageService.blurImageAccordingTo(radius, segma, savedUser.originalAvatarKey());
+//                logger.debug("Asynchronously produced blurred avatar background for user: {}", savedUser.mobile());
+//                savedUser.setBlurredAvatar(blurredAvatar);
+            }
+        });
+    }
+    
+    private void updateOriginalAvatarWith(User.Avatar uploadedAvatar, User user) {
+        FileMetadata theFile = fileMetadataRepo.findOne(uploadedAvatar.file().id());
+        theFile.setHash(uploadedAvatar.file().hash());
+        fileMetadataRepo.merge(theFile);
+        user.setOriginalAvatar(new User.Avatar(theFile));
+    }
 
 }

@@ -18,8 +18,8 @@ public interface StorageService {
 
     String issueDownloadUrlWithFileOps(final String key, final int expiry, final String instructions, final String savedAsKey);
 
-    ResourceInStorage zoomImageTo(int expectedWidth, String imageKey);
+    FileMetadata zoomImageTo(int expectedWidth, String originImageKey, String zoomedImageKey);
 
-    ResourceInStorage blurImageAccordingTo(int radius, int sigma, String originalKey);
+    FileMetadata blurImageAccordingTo(int radius, int sigma, String originalKey);
 
 }

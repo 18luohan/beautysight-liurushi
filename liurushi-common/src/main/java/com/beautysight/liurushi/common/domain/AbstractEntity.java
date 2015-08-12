@@ -23,6 +23,10 @@ public abstract class AbstractEntity extends DomainModel implements JsonAnyField
     protected ObjectId id;
     protected Date createdAt = new Date();
 
+    public void setId(String idString) {
+        this.id = new ObjectId(idString);
+    }
+
     public ObjectId id() {
         return id;
     }
@@ -30,4 +34,5 @@ public abstract class AbstractEntity extends DomainModel implements JsonAnyField
     public String idAsStr() {
         return id.toHexString();
     }
+
 }

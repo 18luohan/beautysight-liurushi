@@ -11,7 +11,7 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.model.work.cs.TextBlock;
-import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -46,7 +46,7 @@ public abstract class ContentSectionDPO extends DPO {
         public Picture.Format format;
 
         //下面的字段在展现时使用
-        private ResourceInStorage resource;
+        private FileMetadata resource;
         public String pictureUrl;
 
         public PictureDPO() {

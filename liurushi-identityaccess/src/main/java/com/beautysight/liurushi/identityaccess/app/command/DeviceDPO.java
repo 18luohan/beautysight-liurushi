@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.app.command;
 
+import com.beautysight.liurushi.common.app.DPO;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.Resolution;
@@ -16,7 +17,7 @@ import com.beautysight.liurushi.identityaccess.domain.model.Resolution;
  * @author chenlong
  * @since 1.0
  */
-public class DeviceDTO {
+public class DeviceDPO extends DPO {
 
     public Device.Type type;
     public String model;

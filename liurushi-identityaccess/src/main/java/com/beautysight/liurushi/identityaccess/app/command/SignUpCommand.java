@@ -20,8 +20,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SignUpCommand implements Command {
 
-    public UserDTO user;
-    public DeviceDTO device;
+    public UserDPO user;
+    public DeviceDPO device;
 
     public void validate() {
         PreconditionUtils.checkRequired("user", user);
@@ -36,11 +36,6 @@ public class SignUpCommand implements Command {
         PreconditionUtils.checkRequired("user.password", user.password);
         PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
 
-        // 用户头像可选
-        if (user.avatar != null) {
-            user.avatar.validateAsOriginal();
-        }
-
         if (!user.password.equals(user.confirmPassword)) {
             throw new IllegalParamException(UserErrorId.password_confirmpwd_not_equal,
                     "user password not equal to confirmPassword");
@@ -48,6 +43,11 @@ public class SignUpCommand implements Command {
 
         if (StringUtils.isNotBlank(user.email)) {
             PreconditionUtils.checkEmail("user.email", user.email);
+        }
+
+        // 用户头像可选
+        if (user.avatar != null) {
+            user.avatar.validate();
         }
     }
 

@@ -6,8 +6,8 @@ package com.beautysight.liurushi.fundamental.infrastructure.storage;
 
 import com.beautysight.liurushi.common.ex.StorageException;
 import com.beautysight.liurushi.common.utils.Https;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.beautysight.liurushi.fundamental.domain.storage.QiniuConfig;
-import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.fundamental.domain.storage.UploadOptions;
 import com.qiniu.common.QiniuException;
@@ -47,6 +47,7 @@ public class QiniuStorageService implements StorageService {
         this.auth = Auth.create(qiniuConfig.accessKey, qiniuConfig.secretKey);
     }
 
+    @Override
     public String issueUploadToken() {
         return issueUploadToken(UploadOptions.newInstance());
     }
@@ -70,12 +71,11 @@ public class QiniuStorageService implements StorageService {
     }
 
     @Override
-    public ResourceInStorage zoomImageTo(int expectedWidth, String imageKey) {
+    public FileMetadata zoomImageTo(int expectedWidth, String originImageKey, String zoomedImageKey) {
         String fileOps = String.format("imageMogr2/thumbnail/%dx", expectedWidth);
-        String savedAsKey = imageKey + expectedWidth;
         int expiry = 0;
-        final String zoomingImageUrl = this.issueDownloadUrlWithFileOps(imageKey, expiry, fileOps, savedAsKey);
-        ResourceInStorage resource = QiniuServiceTemplate.request(
+        final String zoomingImageUrl = this.issueDownloadUrlWithFileOps(originImageKey, expiry, fileOps, zoomedImageKey);
+        FileMetadata resource = QiniuServiceTemplate.request(
                 String.format("download & %s", fileOps),
                 new RequestExecutor() {
                     @Override
@@ -83,17 +83,17 @@ public class QiniuStorageService implements StorageService {
                         return client.get(zoomingImageUrl);
                     }
                 });
-        resource.setUrl(this.issueDownloadUrl(resource.getKey()));
+        resource.setUrl(this.issueDownloadUrl(resource.key()));
         return resource;
     }
 
     @Override
-    public ResourceInStorage blurImageAccordingTo(int radius, int sigma, String originalKey) {
+    public FileMetadata blurImageAccordingTo(int radius, int sigma, String originalKey) {
         String fileOps = String.format("imageMogr2/blur/%dx%d", radius, sigma);
         String savedAsKey = originalKey + String.format("blur%dx%d", radius, sigma);
         int expiry = 0;
         final String gettingThumbnailInfoUrl = this.issueDownloadUrlWithFileOps(originalKey, expiry, fileOps, savedAsKey);
-        ResourceInStorage resource = QiniuServiceTemplate.request(
+        FileMetadata resource = QiniuServiceTemplate.request(
                 String.format("download & %s", fileOps),
                 new RequestExecutor() {
                     @Override
@@ -101,7 +101,7 @@ public class QiniuStorageService implements StorageService {
                         return client.get(gettingThumbnailInfoUrl);
                     }
                 });
-        resource.setUrl(this.issueDownloadUrl(resource.getKey()));
+        resource.setUrl(this.issueDownloadUrl(resource.key()));
         return resource;
     }
 
@@ -150,29 +150,33 @@ public class QiniuStorageService implements StorageService {
                 });
     }
 
-    public ResourceInStorage upload(final byte[] fileBytes, final String uploadToken) {
+    public FileMetadata upload(final byte[] fileBytes, final String uploadToken) {
+        return upload(fileBytes, null, uploadToken);
+    }
+
+    public FileMetadata upload(final byte[] fileBytes, final String key, final String uploadToken) {
         return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
             @Override
             public Response execute() throws QiniuException {
-                return uploadManager.put(fileBytes, null, uploadToken);
+                return uploadManager.put(fileBytes, key, uploadToken);
             }
         });
     }
 
-    public ResourceInStorage upload(final byte[] fileBytes, final String uploadToke, final StringMap params) {
+    public FileMetadata upload(final byte[] fileBytes, final String uploadToken, final StringMap params) {
         return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
             @Override
             public Response execute() throws QiniuException {
                 String key = null;
                 String mime = null;
                 boolean checkCrc = false;
-                return uploadManager.put(fileBytes, key, uploadToke, params, mime, checkCrc);
+                return uploadManager.put(fileBytes, key, uploadToken, params, mime, checkCrc);
             }
         });
     }
 
     private static class QiniuServiceTemplate {
-        public static ResourceInStorage request(String apiDesc, RequestExecutor executor) {
+        public static FileMetadata request(String apiDesc, RequestExecutor executor) {
             try {
                 Response response = executor.execute();
 
@@ -182,7 +186,7 @@ public class QiniuStorageService implements StorageService {
                 }
 
                 if (response.isOK()) {
-                    return response.jsonToObject(ResourceInStorage.class);
+                    return response.jsonToObject(FileMetadata.class);
                 } else {
                     throw new StorageException("Qiniu responded with error, api: %s, error: %s",
                             apiDesc, response.error);

@@ -7,7 +7,7 @@ echo off
 mvn clean package -DskipTests  -Dautoconfig.interactive=false -Dautoconfig.userProperties=antx-dev.properties
 mvn clean install -DskipTests  -Dautoconfig.interactive=false -Dautoconfig.userProperties=antx-test-qing.properties
 mvn clean install -DskipTests  -Dautoconfig.interactive=false -Dautoconfig.userProperties=antx-prd.properties
-#nohup sh ~/app_run_env/apache-tomcat-8.0.24/bin/catalina.sh run > deploy.log &
+nohup sh ~/app_run_env/apache-tomcat-8.0.24/bin/catalina.sh run &> deploy.log &
 sh apache-tomcat-8.0.24/bin/catalina.sh run &> deploy.log &
 sh apache-tomcat-8.0.22/bin/catalina.sh run &> deploy.log &
 

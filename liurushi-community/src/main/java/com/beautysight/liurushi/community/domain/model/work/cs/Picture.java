@@ -4,10 +4,8 @@
 
 package com.beautysight.liurushi.community.domain.model.work.cs;
 
-import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Date;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import org.mongodb.morphia.annotations.Reference;
 
 /**
  * 图片
@@ -17,35 +15,23 @@ import java.util.Date;
  */
 public class Picture extends ContentSection {
 
-    private ResourceInStorage resource;
-    protected Date modifiedAt;
+    @Reference(value = "fileId", idOnly = true)
+    private FileMetadata file;
 
     public Picture() {
-        this.resource = new ResourceInStorage();
-        this.initialize();
-    }
-
-    private void initialize() {
         this.type = Type.image;
     }
 
-    public void setKey(String key) {
-        this.resource.setKey(key);
+    public void setFile(FileMetadata file) {
+        this.file = file;
+    }
+
+    public FileMetadata file() {
+        return this.file;
     }
 
     public String key() {
-        return resource.getKey();
-    }
-
-    public void setHash(String hash) {
-        this.resource.setHash(hash);
-        this.modifiedAt = new Date();
-    }
-
-    public boolean isUploaded() {
-        return (resource != null
-                && StringUtils.isNotBlank(resource.getKey())
-                && StringUtils.isNotBlank(resource.getHash()));
+        return file.key();
     }
 
     public enum Format {

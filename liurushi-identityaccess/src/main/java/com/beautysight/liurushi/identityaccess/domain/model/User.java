@@ -8,15 +8,12 @@ import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.Passwords;
-import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.fundamental.domain.storage.ResourceInStorage;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import org.apache.commons.lang3.StringUtils;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * @author chenlong
@@ -36,7 +33,6 @@ public class User extends AbstractEntity {
 
     private Avatar originalAvatar;
     private Avatar maxAvatar;
-    private Avatar blurredAvatar;
 
     // 默认组别为业余组
     private Group group = Group.amateur;
@@ -44,13 +40,12 @@ public class User extends AbstractEntity {
     public User() {
     }
 
-    public User(String nickname, Gender gender, String mobile, String email, String plainPwd, Avatar originalAvatar) {
+    public User(String nickname, Gender gender, String mobile, String email, String plainPwd) {
         this.nickname = nickname;
         this.gender = gender;
         this.mobile = mobile;
         this.email = email;
         this.password = new Password(plainPwd);
-        this.originalAvatar = originalAvatar;
 
         // 如果nickname为空，就将手机号作为昵称
         if (StringUtils.isBlank(this.nickname)) {
@@ -66,8 +61,8 @@ public class User extends AbstractEntity {
         return (this.originalAvatar != null);
     }
 
-    public Avatar originalAvatar() {
-        return this.originalAvatar;
+    public void setOriginalAvatar(Avatar originalAvatar) {
+        this.originalAvatar = originalAvatar;
     }
 
     public String originalAvatarKey() {
@@ -86,12 +81,8 @@ public class User extends AbstractEntity {
         return this.maxAvatar;
     }
 
-    public void setMaxAvatar(ResourceInStorage avatar, Integer spec) {
-        this.maxAvatar = new Avatar(avatar, spec);
-    }
-
-    public void setBlurredAvatar(ResourceInStorage avatar) {
-        this.blurredAvatar = new Avatar(avatar);
+    public void setMaxAvatar(Avatar maxAvatar) {
+        this.maxAvatar = maxAvatar;
     }
 
     public String mobile() {
@@ -124,7 +115,7 @@ public class User extends AbstractEntity {
         private String cipherPwd;
         private String salt;
 
-        private Password() {
+        public Password() {
         }
 
         private Password(String plainPwd) {
@@ -139,47 +130,32 @@ public class User extends AbstractEntity {
 
     public static class Avatar extends ValueObject {
 
-        private static final Set<Integer> avatarSpecs = Sets.newHashSet(300, 270, 210, 108, 96, 66, 110, 180);
-
-        private String key;
-        private String hash;
+        @Reference(value = "fileId", idOnly = true)
+        private FileMetadata file;
         private Integer spec;
 
         public Avatar() {
         }
 
-        public Avatar(ResourceInStorage resource) {
-            this(resource, null);
+        public Avatar(FileMetadata file) {
+            this(file, null);
         }
 
-        public Avatar(ResourceInStorage resource, Integer spec) {
-            this.key = resource.getKey();
-            this.hash = resource.getHash();
+        public Avatar(FileMetadata file, Integer spec) {
+            this.file = file;
             this.spec = spec;
         }
 
+        public FileMetadata file() {
+            return this.file;
+        }
+
         public String key() {
-            return this.key;
+            return this.file.key();
         }
 
-        public void validate() {
-            commonValidate();
-            validateSpec(this.spec);
-        }
-
-        public void validateAsOriginal() {
-            commonValidate();
-        }
-
-        public static void validateSpec(int spec) {
-            Preconditions.checkArgument(avatarSpecs.contains(spec),
-                    String.format("Expected avatar.spec: %s, but actual %s",
-                            avatarSpecs, spec));
-        }
-
-        private void commonValidate() {
-            PreconditionUtils.checkRequired("Avatar.key", key);
-            PreconditionUtils.checkRequired("Avatar.hash", hash);
+        public Integer spec() {
+            return this.spec;
         }
 
     }

@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.fundamental.domain.storage;
 
+import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.qiniu.util.StringMap;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class UploadOptions {
 
-    private Scope scope;
+    private Scope scope = new Scope();
     private long timeOfValidity = 3600;
     private Switch insertOnly = Switch.disabled;
     private String endUser;
@@ -126,19 +127,13 @@ public class UploadOptions {
     }
 
     public UploadOptions key(String key) {
-        if (StringUtils.isBlank(key)) {
-            return this;
-        }
-        return scope(null, key);
-    }
-
-    public UploadOptions scope(String bucket) {
-        this.scope = new Scope(bucket);
+        PreconditionUtils.checkRequired("key", key);
+        this.scope.setKey(key);
         return this;
     }
 
-    public UploadOptions scope(String bucket, String key) {
-        this.scope = new Scope(bucket, key);
+    public UploadOptions scope(String bucket) {
+        this.scope.setBucket(bucket);
         return this;
     }
 
@@ -237,7 +232,7 @@ public class UploadOptions {
     public StringMap toStringMap() {
         StringMap stringMap = new StringMap();
 
-        putFieldTo(stringMap, "scope", this.scope);
+//        putFieldTo(stringMap, "scope", this.scope);
         putFieldTo(stringMap, "deadline", this.unixTime() + this.timeOfValidity);
         putFieldTo(stringMap, "insertOnly", this.insertOnly);
         putFieldTo(stringMap, "endUser", this.endUser);
@@ -296,15 +291,13 @@ public class UploadOptions {
         private String bucket;
         private String key;
 
-        private Scope(String bucket) {
-            this(bucket, null);
+        public void setBucket(String bucket) {
+            this.bucket = bucket;
         }
 
-        private Scope(String bucket, String key) {
-            this.bucket = bucket;
+        public void setKey(String key) {
             this.key = key;
         }
-
 
         public String bucket() {
             return this.bucket;

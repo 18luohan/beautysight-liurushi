@@ -24,6 +24,13 @@ public class StorageRest {
     @Autowired
     private StorageApp storageApp;
 
+    @RequestMapping(value = "/actions/prepare_for_upload", method = RequestMethod.POST)
+    @VisitorApiPermission(true)
+    public PrepareForUploadPresentation prepareForUpload(@RequestBody PrepareForUploadCommand command) {
+        command.validate();
+        return storageApp.prepareForUpload(command);
+    }
+
     @RequestMapping(value = "/upload_token", method = RequestMethod.POST)
     @VisitorApiPermission(true)
     public UploadTokenPresentation issueUploadToken(
