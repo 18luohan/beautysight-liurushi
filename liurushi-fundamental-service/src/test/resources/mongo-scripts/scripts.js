@@ -1,6 +1,6 @@
 //var mongo = new Mongo();
-var mongo = new Mongo("localhost:27017");
-var db = mongo.getDB("shaimei-test");
+//var mongo = new Mongo("localhost:27017");
+//var db = mongo.getDB("shaimei-test");
 
 var sourceVal = "pgc";
 for (var i=1; i<=1000; i++) {
@@ -34,20 +34,18 @@ for (var i=1; i<=1000; i++) {
         seconds = "0" + seconds;
     }
 
-    var docId = ObjectId();
     var dateTime = ISODate("2015-"+month+"-"+day+"T"+hour+":"+minutes+":"+seconds+".229Z");
-    var pictureStoryJson = { "_id" : ObjectId("55af48f207962dbaad9fd5cf"), "title" : "最西藏的季节", "subtitle" : "聆听自然的脉动", "layout" : { "cols" : 6 }, "cover" : { "sectionId" : ObjectId("55af10547671d31cec8a3b90") }, "shots" : [ { "size" : { "rowSpan" : 5, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b97"), "order" : 1 }, { "size" : { "rowSpan" : 5, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b92"), "order" : 2 }, { "size" : { "rowSpan" : 5, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b99"), "order" : 3 }, { "size" : { "rowSpan" : 4, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9c"), "order" : 4 }, { "size" : { "rowSpan" : 5, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b98"), "order" : 5 }, { "size" : { "rowSpan" : 2, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b93"), "order" : 6 }, { "size" : { "rowSpan" : 2, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b96"), "order" : 7 }, { "size" : { "rowSpan" : 2, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9d"), "order" : 8 }, { "size" : { "rowSpan" : 4, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9e"), "order" : 9 }, { "size" : { "rowSpan" : 4, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9a"), "order" : 10 }, { "size" : { "rowSpan" : 2, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9b"), "order" : 11 }, { "size" : { "rowSpan" : 3, "colSpan" : 2 }, "sectionId" : ObjectId("55af10547671d31cec8a3b95"), "order" : 12 }, { "size" : { "rowSpan" : 3, "colSpan" : 4 }, "sectionId" : ObjectId("55af10547671d31cec8a3b94"), "order" : 13 }, { "size" : { "rowSpan" : 3, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b91"), "order" : 14 } ], "authorId" : ObjectId("55af02a17671d31cec8a3b7d"), "publishedAt" : ISODate("2015-07-22T03:39:00.229Z"), "createdAt" : ISODate("2015-07-22T03:39:00.229Z"), "source" : "ugc" };
-    pictureStoryJson._id = docId;
+    var pictureStoryJson = { "title" : "最西藏的季节", "subtitle" : "聆听自然的脉动", "layout" : { "cols" : 6 }, "cover" : { "sectionId" : ObjectId("55af10547671d31cec8a3b90") }, "shots" : [ { "size" : { "rowSpan" : 5, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b97"), "order" : 1 }, { "size" : { "rowSpan" : 5, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b92"), "order" : 2 }, { "size" : { "rowSpan" : 5, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b99"), "order" : 3 }, { "size" : { "rowSpan" : 4, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9c"), "order" : 4 }, { "size" : { "rowSpan" : 5, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b98"), "order" : 5 }, { "size" : { "rowSpan" : 2, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b93"), "order" : 6 }, { "size" : { "rowSpan" : 2, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b96"), "order" : 7 }, { "size" : { "rowSpan" : 2, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9d"), "order" : 8 }, { "size" : { "rowSpan" : 4, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9e"), "order" : 9 }, { "size" : { "rowSpan" : 4, "colSpan" : 3 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9a"), "order" : 10 }, { "size" : { "rowSpan" : 2, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b9b"), "order" : 11 }, { "size" : { "rowSpan" : 3, "colSpan" : 2 }, "sectionId" : ObjectId("55af10547671d31cec8a3b95"), "order" : 12 }, { "size" : { "rowSpan" : 3, "colSpan" : 4 }, "sectionId" : ObjectId("55af10547671d31cec8a3b94"), "order" : 13 }, { "size" : { "rowSpan" : 3, "colSpan" : 6 }, "sectionId" : ObjectId("55af10547671d31cec8a3b91"), "order" : 14 } ] };
     pictureStoryJson.title = pictureStoryJson.title + i;
-    pictureStoryJson.createdAt = dateTime;
-    pictureStoryJson.publishedAt = dateTime;
-    pictureStoryJson.source = sourceVal;
-    db.picture_stories.insert(pictureStoryJson);
+    var presentationJson = { "slides" : [ { "sectionId" : ObjectId("55af10547671d31cec8a3b90"), "order" : 0 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b97"), "order" : 1 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b92"), "order" : 2 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b99"), "order" : 3 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9c"), "order" : 4 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b98"), "order" : 5 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b93"), "order" : 6 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b96"), "order" : 7 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9d"), "order" : 8 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9e"), "order" : 9 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9a"), "order" : 10 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9b"), "order" : 11 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b95"), "order" : 12 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b94"), "order" : 13 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b91"), "order" : 14 } ]};
 
-    var presentationJson = { "_id" : ObjectId("55af48f207962dbaad9fd5cf"), "slides" : [ { "sectionId" : ObjectId("55af10547671d31cec8a3b90"), "order" : 0 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b97"), "order" : 1 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b92"), "order" : 2 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b99"), "order" : 3 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9c"), "order" : 4 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b98"), "order" : 5 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b93"), "order" : 6 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b96"), "order" : 7 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9d"), "order" : 8 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9e"), "order" : 9 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9a"), "order" : 10 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b9b"), "order" : 11 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b95"), "order" : 12 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b94"), "order" : 13 }, { "sectionId" : ObjectId("55af10547671d31cec8a3b91"), "order" : 14 } ], "authorId" : ObjectId("55af02a17671d31cec8a3b7d"), "publishedAt" : ISODate("2015-07-22T03:39:00.245Z"), "createdAt" : ISODate("2015-07-22T03:39:00.245Z"), "source" : "ugc" };
-    presentationJson._id = docId;
-    presentationJson.createdAt = dateTime;
-    presentationJson.publishedAt = dateTime;
-    presentationJson.source = sourceVal;
-    db.presentations.insert(presentationJson);
+    var work = {};
+    work._id = ObjectId();
+    work.pictureStory = pictureStoryJson;
+    work.presentation = presentationJson;
+    work.authorId = ObjectId("55cc0c867671d326b0988866");
+    work.source = sourceVal;
+    work.createdAt = dateTime;
+    work.publishedAt = dateTime;
+    db.works.insert(work);
 }

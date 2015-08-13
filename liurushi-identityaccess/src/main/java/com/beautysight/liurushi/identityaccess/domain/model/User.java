@@ -34,6 +34,9 @@ public class User extends AbstractEntity {
     private Avatar originalAvatar;
     private Avatar maxAvatar;
 
+//    @Reference(idOnly = true)
+//    private FileMetadata cover;
+
     // 默认组别为业余组
     private Group group = Group.amateur;
 

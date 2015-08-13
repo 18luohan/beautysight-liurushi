@@ -5,9 +5,7 @@
 package com.beautysight.liurushi.fundamental.app;
 
 import com.beautysight.liurushi.common.app.Command;
-import com.beautysight.liurushi.common.utils.Jsons;
 import com.beautysight.liurushi.fundamental.domain.storage.UploadOptions;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
 
@@ -27,12 +25,7 @@ public class IssueUploadTokenCommand implements Command {
     public String checksum;
 
     public UploadOptions toUploadOptions() {
-        UploadOptions options = UploadOptions.newInstance().key(key)
-                .saveKey(keyExpr).checksum(checksum);
-        if (!CollectionUtils.isEmpty(returnBody)) {
-            options.returnBody(Jsons.toJsonString(returnBody));
-        }
-        return options;
+        return UploadOptions.newInstance();
     }
 
 }
