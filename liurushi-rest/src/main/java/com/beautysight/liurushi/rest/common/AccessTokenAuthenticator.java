@@ -11,7 +11,7 @@ import com.beautysight.liurushi.identityaccess.app.OAuthApp;
 import com.beautysight.liurushi.identityaccess.app.UserApp;
 import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
 import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
-import com.beautysight.liurushi.identityaccess.domain.model.UserProfile;
+import com.beautysight.liurushi.identityaccess.domain.model.UserLite;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +56,10 @@ public class AccessTokenAuthenticator extends HandlerInterceptorAdapter {
                 }
 
                 RequestContext.putAccessToken(accessToken.get());
-                UserProfile userProfile = userApp.getCurrentUserProfile(accessToken.get().type, accessToken.get().accessToken);
-                RequestContext.putUserProfile(userProfile);
+                UserLite userLite = userApp.getCurrentUserProfile(accessToken.get().type, accessToken.get().accessToken);
+                RequestContext.putUserProfile(userLite);
                 // 将当前会话所属用户的id放入请求日志上下文中
-                Logs.putUserId(userProfile.id().toString());
+                Logs.putUserId(userLite.id().toString());
             }
         } catch (ApplicationException ex) {
             logger.error("Error while authenticate", ex);

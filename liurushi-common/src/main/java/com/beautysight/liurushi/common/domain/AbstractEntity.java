@@ -22,6 +22,7 @@ public abstract class AbstractEntity extends DomainModel implements JsonAnyField
     @Id
     protected ObjectId id;
     protected Date createdAt = new Date();
+    protected Date modifiedAt;
 
     public void setId(String idString) {
         this.id = new ObjectId(idString);

@@ -39,11 +39,8 @@ public class UserFacadeImpl implements UserFacade {
         result.group = UserDTO.Group.valueOf(user.group().toString());
 
         if (user.hasAvatar()) {
-            result.originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatarKey());
-        }
-
-        if (user.maxAvatar() != null) {
-            result.maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().key());
+            result.originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatar().get().key());
+            result.maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().get().key());
         }
 
         return result;

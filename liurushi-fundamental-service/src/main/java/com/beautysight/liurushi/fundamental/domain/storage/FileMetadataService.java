@@ -35,4 +35,17 @@ public class FileMetadataService {
         return files;
     }
 
+    public FileMetadata updateFileHash(FileMetadata uploadedFile) {
+        FileMetadata theFile = fileMetadataRepo.findOne(uploadedFile.id());
+        theFile.setHash(uploadedFile.hash());
+        fileMetadataRepo.merge(theFile);
+        return theFile;
+    }
+
+    public void delete(FileMetadata file) {
+        FileMetadata theFile = fileMetadataRepo.findOne(file.id());
+        theFile.delete();
+        fileMetadataRepo.merge(theFile);
+    }
+
 }

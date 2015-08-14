@@ -46,7 +46,7 @@ public class UserService {
     @Autowired
     private FileMetadataRepo fileMetadataRepo;
 
-    public User signUp(final User newUser, Optional<User.Avatar> uploadedAvatar) {
+    public User signUp(final User newUser) {
         Optional<User> theUser = userRepo.withMobile(newUser.mobile());
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
@@ -54,10 +54,10 @@ public class UserService {
         }
 
         newUser.setLastLoginToNow();
-        if (uploadedAvatar.isPresent()) {
-            updateOriginalAvatarWith(uploadedAvatar.get(), newUser);
-            createMaxAvatarFor(newUser);
+        if (newUser.hasAvatar()) {
+            setNewAvatarFor(newUser, newUser.originalAvatar().get());
         }
+
         return userRepo.save(newUser);
     }
 
@@ -83,6 +83,42 @@ public class UserService {
         return deviceRepo.save(device);
     }
 
+    public User changeUserOriginalAvatar(String userId, FileMetadata newAvatar) {
+        User user = userRepo.findOne(userId);
+
+        if (user.hasAvatar()) {
+            // 删除当前头像
+            fileMetadataService.delete(user.originalAvatar().get());
+            fileMetadataService.delete(user.maxAvatar().get().file());
+        }
+
+        // 设置新头像
+        setNewAvatarFor(user, newAvatar);
+
+        userRepo.merge(user);
+        return user;
+    }
+
+    public FileMetadata changeUserHeaderPhoto(String userId, FileMetadata newHeaderPhoto) {
+        User user = userRepo.findOne(userId);
+
+        if (user.headerPhoto().isPresent()) {
+            // 删除当前 header photo
+            fileMetadataService.delete(user.headerPhoto().get());
+        }
+
+        FileMetadata theNewFile = fileMetadataService.updateFileHash(newHeaderPhoto);
+        user.changeHeaderPhoto(theNewFile);
+        userRepo.merge(user);
+        return theNewFile;
+    }
+
+    private void setNewAvatarFor(User user, FileMetadata newOriginalAvatar) {
+        FileMetadata theNewFile = fileMetadataService.updateFileHash(newOriginalAvatar);
+        user.changeOriginalAvatar(theNewFile);
+        createMaxAvatarFor(user);
+    }
+
     private void createMaxAvatarFor(final User user) {
         final FileMetadata theLogicFile = fileMetadataService.createOneLogicFile(FileMetadata.Type.image);
         final User.Avatar maxAvatar = new User.Avatar(theLogicFile, 300);
@@ -90,7 +126,8 @@ public class UserService {
         AsyncTasks.submit(new Runnable() {
             @Override
             public void run() {
-                FileMetadata zoomedFile = storageService.zoomImageTo(maxAvatar.spec(), user.originalAvatarKey(), maxAvatar.key());
+                FileMetadata zoomedFile = storageService.zoomImageTo(
+                        maxAvatar.spec(), user.originalAvatar().get().key(), maxAvatar.key());
                 logger.debug("Asynchronously produced {} px avatar for user: {}", maxAvatar.spec(), user.mobile());
                 theLogicFile.setHash(zoomedFile.hash());
                 fileMetadataRepo.merge(theLogicFile);
@@ -100,13 +137,6 @@ public class UserService {
 //                savedUser.setBlurredAvatar(blurredAvatar);
             }
         });
-    }
-
-    private void updateOriginalAvatarWith(User.Avatar uploadedAvatar, User user) {
-        FileMetadata theFile = fileMetadataRepo.findOne(uploadedAvatar.file().id());
-        theFile.setHash(uploadedAvatar.file().hash());
-        fileMetadataRepo.merge(theFile);
-        user.setOriginalAvatar(new User.Avatar(theFile));
     }
 
 }

@@ -9,6 +9,8 @@ import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.Passwords;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import com.beautysight.liurushi.identityaccess.app.presentation.UserDPO;
+import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -31,11 +33,12 @@ public class User extends AbstractEntity {
     private Password password;
     private Date lastLogin;
 
-    private Avatar originalAvatar;
-    private Avatar maxAvatar;
+    @Reference(idOnly = true)
+    private FileMetadata originalAvatar;
+    @Reference(idOnly = true)
+    private FileMetadata headerPhoto;
 
-//    @Reference(idOnly = true)
-//    private FileMetadata cover;
+    private Avatar maxAvatar;
 
     // 默认组别为业余组
     private Group group = Group.amateur;
@@ -43,16 +46,20 @@ public class User extends AbstractEntity {
     public User() {
     }
 
-    public User(String nickname, Gender gender, String mobile, String email, String plainPwd) {
-        this.nickname = nickname;
+    public User(Optional<String> nickname, Gender gender, String mobile, String email, String plainPwd, Optional<FileMetadata> avatar) {
         this.gender = gender;
         this.mobile = mobile;
         this.email = email;
         this.password = new Password(plainPwd);
 
-        // 如果nickname为空，就将手机号作为昵称
-        if (StringUtils.isBlank(this.nickname)) {
+        if (nickname.isPresent()) {
+            this.nickname = nickname.get();
+        } else {
             this.nickname = mobile;
+        }
+
+        if (avatar.isPresent()) {
+            this.originalAvatar = avatar.get();
         }
     }
 
@@ -64,12 +71,28 @@ public class User extends AbstractEntity {
         return (this.originalAvatar != null);
     }
 
-    public void setOriginalAvatar(Avatar originalAvatar) {
-        this.originalAvatar = originalAvatar;
+    public Optional<FileMetadata> originalAvatar() {
+        return Optional.fromNullable(originalAvatar);
     }
 
-    public String originalAvatarKey() {
-        return this.originalAvatar.key();
+    public void changeOriginalAvatar(FileMetadata newAvatar) {
+        this.originalAvatar = newAvatar;
+    }
+
+    public Optional<FileMetadata> headerPhoto() {
+        return Optional.fromNullable(headerPhoto);
+    }
+
+    public void changeHeaderPhoto(FileMetadata newHeaderPhoto) {
+        this.headerPhoto = newHeaderPhoto;
+    }
+
+    public Optional<Avatar> maxAvatar() {
+        return Optional.fromNullable(maxAvatar);
+    }
+
+    public void setMaxAvatar(Avatar maxAvatar) {
+        this.maxAvatar = maxAvatar;
     }
 
     public String nickname() {
@@ -78,14 +101,6 @@ public class User extends AbstractEntity {
 
     public Group group() {
         return this.group;
-    }
-
-    public Avatar maxAvatar() {
-        return this.maxAvatar;
-    }
-
-    public void setMaxAvatar(Avatar maxAvatar) {
-        this.maxAvatar = maxAvatar;
     }
 
     public String mobile() {
@@ -100,10 +115,23 @@ public class User extends AbstractEntity {
         return this.lastLogin;
     }
 
-    public UserProfile toUserProfile() {
-        UserProfile userProfile = new UserProfile();
-        Beans.copyProperties(this, userProfile);
-        return userProfile;
+    public void edit(UserDPO userDPO) {
+        if (StringUtils.isNotBlank(userDPO.nickname)) {
+            this.nickname = userDPO.nickname;
+        }
+        if (StringUtils.isNotBlank(userDPO.email)) {
+            this.email = userDPO.email;
+        }
+        if (userDPO.gender != null) {
+            this.gender = userDPO.gender;
+        }
+        this.modifiedAt = new Date();
+    }
+
+    public UserLite toUserLite() {
+        UserLite userLite = new UserLite();
+        Beans.copyProperties(this, userLite);
+        return userLite;
     }
 
     public enum Type {

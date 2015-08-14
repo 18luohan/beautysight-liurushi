@@ -8,7 +8,7 @@ import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CacheException;
 import com.beautysight.liurushi.common.utils.GuavaCaches;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
-import com.beautysight.liurushi.identityaccess.domain.model.UserProfile;
+import com.beautysight.liurushi.identityaccess.domain.model.UserLite;
 import com.google.common.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +23,15 @@ public class UserProfileCache {
 
     private static final Logger logger = LoggerFactory.getLogger(UserProfileCache.class);
 
-    private final Cache<AccessTokenAsCacheKey, UserProfile> userProfileCache = GuavaCaches.createCache();
+    private final Cache<AccessTokenAsCacheKey, UserLite> userProfileCache = GuavaCaches.createCache();
 
-    public UserProfile getIfAbsentLoad(final String accessToken, final AccessToken.Type type, final Callable<UserProfile> loader) {
+    public UserLite getIfAbsentLoad(final String accessToken, final AccessToken.Type type, final Callable<UserLite> loader) {
         try {
             return userProfileCache.get(
                     new AccessTokenAsCacheKey(accessToken, type),
-                    new Callable<UserProfile>() {
+                    new Callable<UserLite>() {
                         @Override
-                        public UserProfile call() throws Exception {
+                        public UserLite call() throws Exception {
                             return loader.call();
                         }
                     });
@@ -40,8 +40,8 @@ public class UserProfileCache {
         }
     }
 
-    public void put(String accessToken, AccessToken.Type type, UserProfile userProfile) {
-        userProfileCache.put(new AccessTokenAsCacheKey(accessToken, type), userProfile);
+    public void put(String accessToken, AccessToken.Type type, UserLite userLite) {
+        userProfileCache.put(new AccessTokenAsCacheKey(accessToken, type), userLite);
         logger.debug("Put user profile into cache");
     }
 

@@ -16,10 +16,10 @@ import com.beautysight.liurushi.common.app.PresentationModel;
  */
 public class SignUpOrLoginPresentation implements PresentationModel {
 
-    private UserProfilePresentation userProfile;
+    private UserDPO userProfile;
     private AccessTokenPresentation accessToken;
 
-    public SignUpOrLoginPresentation(UserProfilePresentation userProfile, AccessTokenPresentation accessToken) {
+    public SignUpOrLoginPresentation(UserDPO userProfile, AccessTokenPresentation accessToken) {
         this.userProfile = userProfile;
         this.accessToken = accessToken;
     }

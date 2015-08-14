@@ -7,14 +7,11 @@ package com.beautysight.liurushi.identityaccess.app.command;
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
+import com.beautysight.liurushi.identityaccess.app.presentation.UserDPO;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-08.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -47,7 +44,8 @@ public class SignUpCommand implements Command {
 
         // 用户头像可选
         if (user.avatar != null) {
-            user.avatar.validate();
+            PreconditionUtils.checkRequired("user.avatar.id", user.avatar.id);
+            PreconditionUtils.checkRequired("user.avatar.hash", user.avatar.hash);
         }
     }
 

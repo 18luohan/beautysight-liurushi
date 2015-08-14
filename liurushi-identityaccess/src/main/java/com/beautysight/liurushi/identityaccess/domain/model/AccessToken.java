@@ -34,7 +34,6 @@ public class AccessToken extends AbstractEntity {
     private String lastAccessToken;
 
     private Boolean isValid = true;
-    private Date modifiedAt;
 
     @Reference(value = "userId", lazy = true, idOnly = true)
     private User user;

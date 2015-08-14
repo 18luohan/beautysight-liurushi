@@ -7,7 +7,7 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
-import com.beautysight.liurushi.identityaccess.domain.model.UserProfile;
+import com.beautysight.liurushi.identityaccess.domain.model.UserLite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +26,9 @@ public class RequestContext {
         }
     };
 
-    private static final ThreadLocal<UserProfile> userProfile = new ThreadLocal<UserProfile>() {
+    private static final ThreadLocal<UserLite> user = new ThreadLocal<UserLite>() {
         @Override
-        protected UserProfile initialValue() {
+        protected UserLite initialValue() {
             return null;
         }
     };
@@ -47,18 +47,18 @@ public class RequestContext {
         return accessToken.get();
     }
 
-    public static void putUserProfile(UserProfile theUser) {
-        userProfile.set(theUser);
+    public static void putUserProfile(UserLite theUser) {
+        user.set(theUser);
         if (logger.isDebugEnabled()) {
             logger.debug("Put user profile into request context: {}", theUser);
         }
     }
 
-    public static UserProfile getUserProfile() {
-        if (userProfile.get() == null) {
+    public static UserLite getUser() {
+        if (user.get() == null) {
             throw new ApplicationException("Expected to get current user profile from request context, but actual not present");
         }
-        return userProfile.get();
+        return user.get();
     }
 
     public static boolean isThisUserAMember() {
@@ -75,8 +75,8 @@ public class RequestContext {
                 logger.debug("Cleared access token from request context: {}", theToken);
             }
 
-            UserProfile theUser = userProfile.get();
-            userProfile.remove();
+            UserLite theUser = user.get();
+            user.remove();
             if (logger.isDebugEnabled()) {
                 logger.debug("Cleared user profile from request context: {}", theUser);
             }

@@ -64,24 +64,20 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 
     @Test
     public void uploadAvatar() throws IOException {
-//        String key = UUID.randomUUID().toString().replaceAll("-", "");
-//        UploadOptions uploadPolicy = uploadPolicyForTest();
-//        uploadPolicy.key(key);
-//        String uploadToken = storageService.issueUploadToken(uploadPolicy);
-//
-//        System.out.println(uploadToken);
+        String key = UUID.randomUUID().toString().replaceAll("-", "");
+        UploadOptions uploadPolicy = uploadPolicyForTest();
+        uploadPolicy.key(key);
+        String uploadToken = storageService.issueUploadToken(uploadPolicy);
 
-        String uploadToken = "9AUEFpoKA-n2AZBWOwDrBvfFLQyqoG99S7-0HzjX:IWZi_XXtwmHQCQk18PYlryIH7Kc=:eyJzY29wZSI6ImJlYXV0eXNpZ2h0LXRlc3QiLCJjYWxsYmFja0ZldGNoS2V5IjowLCJpbnNlcnRPbmx5IjowLCJkZXRlY3RNaW1lIjowLCJkZWFkbGluZSI6MTQzOTM2Mjk1N30=";
-        String key = "dc7a166f03ef4433803fb0b792fbde46";
+        System.out.println(uploadToken);
 
-
-//        ResourceInStorage result = storageService.upload(Files.readFileInClassPathAsBytes("images/fecility.png"), uploadToken);
-//        // images/avatar2.jpg:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV, hash:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV
-//        System.out.println("images/avatar2.jpg:" + result.key() + ", hash:" + result.hash());
-
-        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/heben.png"), key, uploadToken);
-        //images/avatar2.jpg:Fru9ofxwZe3XgCma6CB3rLccDK_P, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P
+        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/fecility.png"), uploadToken);
+        // images/avatar2.jpg:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV, hash:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV
         System.out.println("images/avatar2.jpg:" + result.key() + ", hash:" + result.hash());
+
+//        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/heben.png"), key, uploadToken);
+//        //images/avatar2.jpg:Fru9ofxwZe3XgCma6CB3rLccDK_P, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P
+//        System.out.println("images/avatar2.jpg:" + result.key() + ", hash:" + result.hash());
 
 //        result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"), uploadToken);
 //        System.out.println("images/jessy.jpg:" + result.key() + ", hash:" + result.hash());
@@ -90,7 +86,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 //        System.out.println("images/avatar1-blur.png:" + result.key() + ", hash:" + result.hash());
 
 //        images/avatar2.jpg:c97898f360fd418c8d5c6c1874e0de63, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P
-//        images/avatar2.jpg:dc7a166f03ef4433803fb0b792fbde46, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P
+//        images/avatar2.jpg:dc7a166f03ef4433803fb0b792fbde46, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P heben
     }
 
     @Test

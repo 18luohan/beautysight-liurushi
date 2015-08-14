@@ -24,7 +24,7 @@ public class FileMetadata extends AbstractEntity {
     private String key;
     private String hash;
     private Type type;
-    private Date modifiedAt;
+    private Boolean isDeleted = Boolean.FALSE;
 
     private String url;
 
@@ -70,6 +70,11 @@ public class FileMetadata extends AbstractEntity {
 
     public void setHash(String hash) {
         this.hash = hash;
+        this.modifiedAt = new Date();
+    }
+
+    public void delete() {
+        this.isDeleted = Boolean.TRUE;
         this.modifiedAt = new Date();
     }
 
