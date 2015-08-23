@@ -3,7 +3,7 @@
 # @Created at 2015.07.30
 
 if [ $# -le 0 ]; then
-  echo "Usage: sh init_server.sh <user name>"
+  echo "Usage: sh $0 <user name>"
   # Incorrect usage
   exit 2
 fi
