@@ -18,6 +18,8 @@ public interface UserRepo extends MongoRepository<User> {
 
     Optional<User> withMobile(String mobile);
 
+    Optional<User> withGlobalId(String globalId);
+
     void updateLastLoginTime(User loggingInUser);
 
     void setUsersGroupToProfessional(List<String> mobiles);

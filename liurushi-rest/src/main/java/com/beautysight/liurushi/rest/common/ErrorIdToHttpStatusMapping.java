@@ -44,6 +44,7 @@ public class ErrorIdToHttpStatusMapping {
         MAPPING.put(UserErrorId.password_confirmpwd_not_equal, HttpStatus.UNPROCESSABLE_ENTITY);
         MAPPING.put(UserErrorId.user_already_exist, HttpStatus.CONFLICT);
         MAPPING.put(UserErrorId.user_not_exist_or_pwd_incorrect, HttpStatus.UNPROCESSABLE_ENTITY);
+        MAPPING.put(UserErrorId.user_not_exist, HttpStatus.UNPROCESSABLE_ENTITY);
 
         // 5xx Server Error
         MAPPING.put(CommonErrorId.internal_server_error, HttpStatus.INTERNAL_SERVER_ERROR);

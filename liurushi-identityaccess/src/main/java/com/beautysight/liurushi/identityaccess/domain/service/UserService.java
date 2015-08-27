@@ -47,7 +47,7 @@ public class UserService {
     private FileMetadataRepo fileMetadataRepo;
 
     public User signUp(final User newUser) {
-        Optional<User> theUser = userRepo.withMobile(newUser.mobile());
+        Optional<User> theUser = userRepo.withGlobalId(newUser.globalId());
         if (theUser.isPresent()) {
             throw new DuplicateEntityException(UserErrorId.user_already_exist,
                     "user already exist with mobile: " + newUser.mobile());

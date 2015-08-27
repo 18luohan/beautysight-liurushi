@@ -18,7 +18,8 @@ public enum UserErrorId implements Error.Id {
 
     user_already_exist,
     password_confirmpwd_not_equal,
-    user_not_exist_or_pwd_incorrect;
+    user_not_exist_or_pwd_incorrect,
+    user_not_exist;
 
     @Override
     public String get() {

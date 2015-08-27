@@ -28,14 +28,17 @@ public class SignUpCommand implements Command {
     }
 
     private void validateUser() {
-        // nickname 可选
-        PreconditionUtils.checkRequiredMobile("user.mobile", user.mobile);
-        PreconditionUtils.checkRequired("user.password", user.password);
-        PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
-
-        if (!user.password.equals(user.confirmPassword)) {
-            throw new IllegalParamException(UserErrorId.password_confirmpwd_not_equal,
-                    "user password not equal to confirmPassword");
+        // 如果user.origin为空或self，就表明用户是通过我们自己的app注册
+        if (user.origin == null || user.origin.isSelf()) {
+            PreconditionUtils.checkRequiredMobile("user.mobile", user.mobile);
+            PreconditionUtils.checkRequired("user.password", user.password);
+            PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
+            if (!user.password.equals(user.confirmPassword)) {
+                throw new IllegalParamException(UserErrorId.password_confirmpwd_not_equal,
+                        "user password not equal to confirmPassword");
+            }
+        } else {
+            PreconditionUtils.checkRequired("user.unionId", user.unionId);
         }
 
         if (StringUtils.isNotBlank(user.email)) {

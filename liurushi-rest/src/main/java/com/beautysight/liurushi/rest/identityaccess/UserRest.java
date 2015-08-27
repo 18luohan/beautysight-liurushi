@@ -8,9 +8,11 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.identityaccess.app.UserApp;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.LogoutCommand;
+import com.beautysight.liurushi.identityaccess.app.command.ResetPasswordCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.SignUpOrLoginPresentation;
 import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
+import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -41,6 +43,14 @@ public class UserRest {
         return userApp.checkIfUserExistWith(mobile);
     }
 
+    @RequestMapping(value = "/{mobileOrUnionId}/actions/exist", method = RequestMethod.GET)
+    @VisitorApiPermission(true)
+    public UserExistPresentation checkIfUserExistWith(@PathVariable("mobileOrUnionId") String mobileOrUnionId,
+                                                      @RequestParam(required = false) User.Origin origin) {
+        PreconditionUtils.checkRequired("path variable mobileOrUnionId", mobileOrUnionId);
+        return userApp.checkIfUserExistWith(mobileOrUnionId, origin);
+    }
+
     @RequestMapping(value = "", method = RequestMethod.POST)
     @VisitorApiPermission(true)
     public SignUpOrLoginPresentation signUp(@RequestBody SignUpCommand signUpCommand) {
@@ -63,6 +73,14 @@ public class UserRest {
         userApp.logout(new LogoutCommand(
                 RequestContext.getAccessToken().type.toString(),
                 RequestContext.getAccessToken().accessToken));
+    }
+
+    @RequestMapping(value = "/{mobile}/actions/reset_pwd", method = RequestMethod.PUT)
+    @VisitorApiPermission(true)
+    public void resetPassword(@PathVariable("mobile") String mobile, @RequestBody ResetPasswordCommand command) {
+        command.mobile = mobile;
+        command.validate();
+        userApp.resetPassword(command);
     }
 
     @RequestMapping(value = "/actions/set_grp_to_pro", method = RequestMethod.PUT)

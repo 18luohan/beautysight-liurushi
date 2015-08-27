@@ -27,6 +27,11 @@ public class UserRepoImpl extends AbstractMongoRepository<User> implements UserR
     }
 
     @Override
+    public Optional<User> withGlobalId(String globalId) {
+        return findOneBy(Conditions.of("globalId", globalId));
+    }
+
+    @Override
     public void updateLastLoginTime(User loggingInUser) {
         UpdateOperations<User> updateOps = newUpdateOps().set("lastLogin", loggingInUser.lastLogin());
         datastore.update(loggingInUser, updateOps);

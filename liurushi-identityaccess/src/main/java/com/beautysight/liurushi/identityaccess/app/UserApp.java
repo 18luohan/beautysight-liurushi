@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.identityaccess.app;
 
+import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.utils.Regexp;
 import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
 import com.beautysight.liurushi.fundamental.app.FileMetadataDPO;
@@ -12,8 +13,10 @@ import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.app.cache.UserProfileCache;
 import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.LogoutCommand;
+import com.beautysight.liurushi.identityaccess.app.command.ResetPasswordCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
 import com.beautysight.liurushi.identityaccess.app.presentation.*;
+import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
@@ -22,6 +25,7 @@ import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
 import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.beautysight.liurushi.identityaccess.domain.service.AccessTokenService;
 import com.beautysight.liurushi.identityaccess.domain.service.UserService;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +62,19 @@ public class UserApp {
 
     public UserExistPresentation checkIfUserExistWith(String mobile) {
         return new UserExistPresentation(userRepo.withMobile(mobile).isPresent());
+    }
+
+    public UserExistPresentation checkIfUserExistWith(String mobileOrUnionId, User.Origin origin) {
+        origin = (origin == null ? User.Origin.self : origin);
+        String globalId;
+        if (origin.isSelf()) {
+            String mobile = mobileOrUnionId;
+            globalId = User.calculateGlobalId(null, origin, mobile);
+        } else {
+            String unionId = mobileOrUnionId;
+            globalId = User.calculateGlobalId(unionId, origin, null);
+        }
+        return new UserExistPresentation(userRepo.withGlobalId(globalId).isPresent());
     }
 
     public SignUpOrLoginPresentation signUp(SignUpCommand command) {
@@ -135,6 +152,17 @@ public class UserApp {
     public PersonalCenter getUserPersonalCenter(String userId) {
         User user = userRepo.findOne(userId);
         return PersonalCenter.from(translateToDPOFrom(user));
+    }
+
+    public void resetPassword(ResetPasswordCommand command) {
+        Optional<User> user = userRepo.withMobile(command.mobile);
+        if (!user.isPresent()) {
+            throw new EntityNotFoundException(UserErrorId.user_not_exist,
+                    "user with mobile(%s) not exist", command.mobile);
+        }
+
+        user.get().resetPassword(command.password);
+        userRepo.merge(user.get());
     }
 
     private UserDPO translateToDPOFrom(User user) {

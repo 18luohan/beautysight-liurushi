@@ -36,4 +36,8 @@ public class EntityNotFoundException extends ApplicationException {
         super(errorId, message);
     }
 
+    public EntityNotFoundException(Error.Id errorId, String msgFormat, Object... msgArgs) {
+        super(errorId, msgFormat, msgArgs);
+    }
+
 }

@@ -26,6 +26,7 @@ public class User extends AbstractEntity {
 
     private static final long serialVersionUID = -5710604955737349787L;
 
+    private String globalId;
     private String nickname;
     private Gender gender;
     private String mobile;
@@ -42,25 +43,24 @@ public class User extends AbstractEntity {
 
     // 默认组别为业余组
     private Group group = Group.amateur;
+    private Origin origin;
 
     public User() {
     }
 
-    public User(Optional<String> nickname, Gender gender, String mobile, String email, String plainPwd, Optional<FileMetadata> avatar) {
-        this.gender = gender;
-        this.mobile = mobile;
-        this.email = email;
-        this.password = new Password(plainPwd);
-
-        if (nickname.isPresent()) {
-            this.nickname = nickname.get();
-        } else {
-            this.nickname = mobile;
+    public static String calculateGlobalId(String unionId, Origin origin, String mobile) {
+        if (origin.isSelf()) {
+            return mobile;
         }
+        return origin + ":" + unionId;
+    }
 
-        if (avatar.isPresent()) {
-            this.originalAvatar = avatar.get();
-        }
+    public void setGlobalId(String globalId, Origin origin, String mobile) {
+        this.globalId = calculateGlobalId(globalId, origin, mobile);
+    }
+
+    public String globalId() {
+        return this.globalId;
     }
 
     public boolean isGivenPwdCorrect(String plainPwd) {
@@ -128,6 +128,10 @@ public class User extends AbstractEntity {
         this.modifiedAt = new Date();
     }
 
+    public void resetPassword(String plainPwd) {
+        this.password = new Password(plainPwd);
+    }
+
     public UserLite toUserLite() {
         UserLite userLite = new UserLite();
         Beans.copyProperties(this, userLite);
@@ -140,6 +144,14 @@ public class User extends AbstractEntity {
 
     public enum Group {
         professional, amateur
+    }
+
+    public enum Origin {
+        weixin, sina_weibo, self;
+
+        public boolean isSelf() {
+            return (this == self);
+        }
     }
 
     private static class Password {
