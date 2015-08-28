@@ -25,8 +25,12 @@ public class LoginCommand implements Command {
     }
 
     private void validateUser() {
-        PreconditionUtils.checkRequiredMobile("user.mobile", user.mobile);
-        PreconditionUtils.checkRequired("user.password", user.password);
+        if (user.origin == null || user.origin.isSelf()) {
+            PreconditionUtils.checkRequiredMobile("user.mobile", user.mobile);
+            PreconditionUtils.checkRequired("user.password", user.password);
+        } else {
+            PreconditionUtils.checkRequired("user.unionId", user.unionId);
+        }
     }
 
 }

@@ -61,9 +61,15 @@ public class UserService {
         return userRepo.save(newUser);
     }
 
-    public User login(String mobile, String plainPwd) {
-        Optional<User> theUser = userRepo.withMobile(mobile);
-        if (!theUser.isPresent() || !theUser.get().isGivenPwdCorrect(plainPwd)) {
+    public User login(User.Origin origin, String mobile, String plainPwd, String unionId) {
+        String globalId = User.calculateGlobalId(unionId, origin, mobile);
+        Optional<User> theUser = userRepo.withGlobalId(globalId);
+        if (!theUser.isPresent()) {
+            throw new EntityNotFoundException(UserErrorId.user_not_exist_or_pwd_incorrect,
+                    "user not exist or pwd incorrect");
+        }
+
+        if (origin.isSelf() && !theUser.get().isGivenPwdCorrect(plainPwd)) {
             throw new EntityNotFoundException(UserErrorId.user_not_exist_or_pwd_incorrect,
                     "user not exist or pwd incorrect");
         }

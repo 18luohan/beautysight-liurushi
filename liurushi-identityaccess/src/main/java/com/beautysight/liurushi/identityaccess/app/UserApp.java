@@ -89,7 +89,8 @@ public class UserApp {
     }
 
     public SignUpOrLoginPresentation login(LoginCommand command) {
-        User user = userService.login(command.user.mobile, command.user.password);
+        command.user.defaultToSelfIfOriginAbsent();
+        User user = userService.login(command.user.origin, command.user.mobile, command.user.password, command.user.unionId);
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
         AccessToken accessToken = accessTokenService.issueOrRefreshBearerTokenFor(user, device);
 
