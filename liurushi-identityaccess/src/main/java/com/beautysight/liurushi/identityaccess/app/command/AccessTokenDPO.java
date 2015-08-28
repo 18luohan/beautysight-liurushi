@@ -23,8 +23,8 @@ public class AccessTokenDPO extends DPO {
     }
 
     public void validate() {
-        PreconditionUtils.checkRequired("", type);
-        PreconditionUtils.checkRequired("", type);
+        PreconditionUtils.checkRequired("access token type", type);
+        PreconditionUtils.checkRequired("access token", accessToken);
     }
 
 }
