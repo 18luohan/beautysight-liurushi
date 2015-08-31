@@ -10,6 +10,8 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.model.work.cs.TextBlock;
+import com.beautysight.liurushi.community.domain.model.work.layout.Block;
+import com.beautysight.liurushi.community.domain.model.work.layout.Layout;
 import com.beautysight.liurushi.community.domain.model.work.picstory.Cover;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureArea;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
@@ -28,7 +30,7 @@ public class PictureStoryDPO extends DPO {
 
     public String title;
     public String subtitle;
-    public PictureStory.Layout layout;
+    public Layout layout;
     public CoverDPO cover;
     public List<ShotDPO> shots;
 
@@ -112,7 +114,10 @@ public class PictureStoryDPO extends DPO {
     }
 
     public static class ShotDPO extends ControlDPO {
-        public Shot.Size size;
+
+        // 目前位置属性未要求客户端提供
+        public Block.Position position;
+        public Block.Size size;
         public PictureArea picAreaInShot;
         public PictureArea picVisibleArea;
 

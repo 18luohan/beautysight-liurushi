@@ -29,10 +29,10 @@ public class AppConfigRepoImplTest extends SpringBasedAppTest {
     @Cleanup
     public void withName() {
         Optional<AppConfig> appConfig = appConfigRepo.withName(
-                AppConfig.ConfigItemName.sms_android_credential.toString());
+                AppConfig.ItemName.sms_android_credential.toString());
         assertTrue(appConfig.isPresent());
         assertEquals("App config item name not equal",
-                AppConfig.ConfigItemName.sms_android_credential,
+                AppConfig.ItemName.sms_android_credential,
                 Reflections.getField(appConfig.get(), "name"));
     }
 

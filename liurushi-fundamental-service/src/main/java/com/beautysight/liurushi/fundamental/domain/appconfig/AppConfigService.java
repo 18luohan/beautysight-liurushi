@@ -22,17 +22,18 @@ import java.util.Map;
 @Service
 public class AppConfigService {
 
-    private static final Map<AppConfig.ConfigItemName, Class> configItemToValModelMapping = new HashMap<>();
+    private static final Map<AppConfig.ItemName, Class> configItemToValModelMapping = new HashMap<>();
 
     @Autowired
     private AppConfigRepo appConfigRepo;
 
     static {
-        configItemToValModelMapping.put(AppConfig.ConfigItemName.sms_android_credential, AppCredentialInThirdParty.class);
-        configItemToValModelMapping.put(AppConfig.ConfigItemName.sms_ios_credential, AppCredentialInThirdParty.class);
+        configItemToValModelMapping.put(AppConfig.ItemName.sms_android_credential, AppCredentialInThirdParty.class);
+        configItemToValModelMapping.put(AppConfig.ItemName.sms_ios_credential, AppCredentialInThirdParty.class);
+        configItemToValModelMapping.put(AppConfig.ItemName.sms_ios_credential, AppCredentialInThirdParty.class);
     }
 
-    public <T> T getConfigItemValue(AppConfig.ConfigItemName itemName) {
+    public <T> T getItemValue(AppConfig.ItemName itemName) {
         Optional<AppConfig> configItem = appConfigRepo.withName(itemName.toString());
         if (configItem.isPresent()) {
             return (T) Jsons.toObject(configItem.get().value(), configItemToValModelMapping.get(itemName));

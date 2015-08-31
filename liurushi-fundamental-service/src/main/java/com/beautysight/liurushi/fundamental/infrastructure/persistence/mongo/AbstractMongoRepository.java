@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Key;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +18,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-12.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -316,4 +312,34 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     }
 
+    protected static class Fields {
+
+        private List<String> fields;
+
+        private Fields(int capacity) {
+            this.fields = new ArrayList<>(capacity);
+        }
+
+        public static Fields newInstance(Integer... fieldsCount) {
+            int capacity = 10;
+            if (!ObjectUtils.isEmpty(fieldsCount)) {
+                capacity = fieldsCount[0].intValue();
+            }
+            return new Fields(capacity);
+        }
+
+        public Fields append(String... fieldNames) {
+            Assert.notEmpty(fieldNames, "fieldNames must not be blank");
+            for (String field : fieldNames) {
+                fields.add(field);
+            }
+            return this;
+        }
+
+        public String[] toArray() {
+            Preconditions.checkState(!CollectionUtils.isEmpty(fields), "fields must not be blank");
+            return fields.toArray(new String[fields.size()]);
+        }
+
+    }
 }

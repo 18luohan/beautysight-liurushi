@@ -25,7 +25,9 @@ import java.util.List;
 @Repository
 public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkRepo {
 
-    private static final String[] workProfileFields = {"id", "pictureStory.title", "pictureStory.cover.picture", "authorId", "publishedAt"};
+    private static final Fields workBasicFields = Fields.newInstance().append("id", "authorId", "source", "publishedAt");
+    private static final String[] workProfileFields = workBasicFields.append("pictureStory.title", "pictureStory.cover.picture").toArray();
+    private static final String[] pictureStoryFields = workBasicFields.append("pictureStory").toArray();
 
     @Override
     public List<Work> getLatestWorks(Work.Source source, int count) {
@@ -82,6 +84,14 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
         }
 
         return result;
+    }
+
+    @Override
+    public Work getPictureStoryOf(String workId) {
+        Query<Work> query = newQuery();
+        query.retrievedFields(true, pictureStoryFields)
+                .field("id").equal(new ObjectId(workId));
+        return query.get();
     }
 
     @Override

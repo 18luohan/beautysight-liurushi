@@ -21,11 +21,11 @@ public class AppConfigApp {
     private AppConfigService appConfigService;
 
     public AppCredentialInThirdParty smsAndroidCredential() {
-        return appConfigService.getConfigItemValue(AppConfig.ConfigItemName.sms_android_credential);
+        return appConfigService.getItemValue(AppConfig.ItemName.sms_android_credential);
     }
 
     public AppCredentialInThirdParty smsIOSCredential() {
-        return appConfigService.getConfigItemValue(AppConfig.ConfigItemName.sms_ios_credential);
+        return appConfigService.getItemValue(AppConfig.ItemName.sms_ios_credential);
     }
 
 }

@@ -14,6 +14,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface MongoRepository<T> extends PagingAndSortingRepository<T, ObjectId> {
 
     T findOne(String id);
+
     void merge(T entity);
 
 }

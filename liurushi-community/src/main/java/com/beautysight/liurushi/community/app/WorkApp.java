@@ -8,6 +8,7 @@ import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.community.app.command.FindWorkProfilesInRangeCommand;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.dpo.ControlDPO;
+import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfilePresentation;
@@ -17,11 +18,14 @@ import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRep
 import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.model.work.draft.PublishingWork;
 import com.beautysight.liurushi.community.domain.model.work.draft.PublishingWorkRepo;
+import com.beautysight.liurushi.community.domain.model.work.layout.BlockLocator;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.model.work.picstory.Shot;
 import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
+import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfig;
+import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
@@ -63,6 +67,8 @@ public class WorkApp {
     private FileMetadataService fileMetadataService;
     @Autowired
     private FileMetadataRepo fileMetadataRepo;
+    @Autowired
+    private AppConfigService appConfigService;
 
     public PublishWorkPresentation publishWork(PublishWorkCommand command) {
         Map<String, ContentSection> savedContentSections = saveContentSections(command.contentSectionsMap());
@@ -124,6 +130,34 @@ public class WorkApp {
         }
 
         return WorkPresentation.from(pictureStory, presentation, keyToDownloadUrlMapping);
+    }
+
+    public PictureStoryDPO h5SharingOf(String workId) {
+        Work workOnlyWithPictureStory = workRepo.getPictureStoryOf(workId);
+        PictureStory pictureStory = workOnlyWithPictureStory.pictureStory();
+
+        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
+        String coverPictureKey = pictureStory.cover().pictureKey();
+        String downloadUrl = storageService.issueDownloadUrl(coverPictureKey);
+        keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
+
+        Integer shotsNum = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
+        BlockLocator locator = pictureStory.layout().generateBlockLocator();
+        for (int i = 0; i < pictureStory.controls().size(); i++) {
+            if ((i + 1) > shotsNum) {
+                break;
+            }
+
+            Shot shot = pictureStory.controls().get(i);
+            shot.calculatePosition(locator);
+            if (shot.content() instanceof Picture) {
+                Picture picture = (Picture) shot.content();
+                downloadUrl = storageService.issueDownloadUrl(picture.key());
+                keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
+            }
+        }
+
+        return PictureStoryDPO.from(pictureStory, keyToDownloadUrlMapping);
     }
 
     public WorkProfilePresentation getPgcLatestWorkProfiles(int count) {

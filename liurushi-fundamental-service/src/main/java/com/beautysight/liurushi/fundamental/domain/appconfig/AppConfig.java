@@ -16,15 +16,15 @@ import org.mongodb.morphia.annotations.Entity;
 @Entity("app_config")
 public class AppConfig extends AbstractEntity {
 
-    private ConfigItemName name;
+    private ItemName name;
     private String value;
 
     public String value() {
         return this.value;
     }
 
-    public enum ConfigItemName {
-        sms_android_credential, sms_ios_credential;
+    public enum ItemName {
+        sms_android_credential, sms_ios_credential, sharing_h5_shots_num;
     }
 
 }

@@ -20,4 +20,6 @@ public interface WorkRepo extends MongoRepository<Work> {
     List<Work> findWorksInRange(
             Work.Source source, Optional<String> referenceWorkId, int offset, OffsetDirection direction);
 
+    Work getPictureStoryOf(String workId);
+
 }

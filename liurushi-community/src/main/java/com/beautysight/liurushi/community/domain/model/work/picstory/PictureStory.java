@@ -4,9 +4,8 @@
 
 package com.beautysight.liurushi.community.domain.model.work.picstory;
 
-import com.beautysight.liurushi.common.domain.ValueObject;
-import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.domain.model.work.WorkPart;
+import com.beautysight.liurushi.community.domain.model.work.layout.Layout;
 
 import java.util.List;
 
@@ -48,14 +47,8 @@ public class PictureStory extends WorkPart<Shot> {
         return this.title;
     }
 
-    public static class Layout extends ValueObject {
-        private Integer rows;
-        private Integer cols;
-
-        public void validate() {
-            PreconditionUtils.checkGreaterThanZero("Layout.rows", rows);
-            PreconditionUtils.checkGreaterThanZero("Layout.cols", cols);
-        }
+    public Layout layout() {
+        return this.layout;
     }
 
 }

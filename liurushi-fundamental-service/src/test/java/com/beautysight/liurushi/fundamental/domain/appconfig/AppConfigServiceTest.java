@@ -43,13 +43,13 @@ public class AppConfigServiceTest {
 //                    Files.fileInSameDirWith(this.getClass(), "sms_android_credential.json"),
 //                    AppConfig.class);
             AppConfig appConfig = new AppConfig();
-            Reflections.setField(appConfig, "name", AppConfig.ConfigItemName.sms_android_credential);
+            Reflections.setField(appConfig, "name", AppConfig.ItemName.sms_android_credential);
             Reflections.setField(appConfig, "value", "{ \"appKey\":\"here is appKey\", \"appSecret\":\"here is appSecret\" }");
             result = Optional.of(appConfig);
         }};
 
-        final AppCredentialInThirdParty credential = appConfigService.getConfigItemValue(
-                AppConfig.ConfigItemName.sms_android_credential);
+        final AppCredentialInThirdParty credential = appConfigService.getItemValue(
+                AppConfig.ItemName.sms_android_credential);
 
         new Verifications() {{
             assertNotNull(credential);
@@ -66,8 +66,8 @@ public class AppConfigServiceTest {
             result = Optional.absent();
         }};
 
-        appConfigService.getConfigItemValue(
-                AppConfig.ConfigItemName.sms_android_credential);
+        appConfigService.getItemValue(
+                AppConfig.ItemName.sms_android_credential);
     }
 
 }
