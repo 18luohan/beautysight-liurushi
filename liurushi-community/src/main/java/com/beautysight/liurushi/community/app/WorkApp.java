@@ -144,8 +144,10 @@ public class WorkApp {
 
         IntegerVal shotsNum = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
         BlockLocator locator = pictureStory.layout().generateBlockLocator();
+        int endIndex = 0;
         for (int i = 0; i < pictureStory.controls().size(); i++) {
             if ((i + 1) > shotsNum.val()) {
+                endIndex = i;
                 break;
             }
 
@@ -157,6 +159,7 @@ public class WorkApp {
                 keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
             }
         }
+        pictureStory.sliceShots(0, endIndex);
 
         return PictureStoryDPO.from(pictureStory, keyToDownloadUrlMapping);
     }

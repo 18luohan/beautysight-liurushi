@@ -39,6 +39,10 @@ public class PictureStory extends WorkPart<Shot> {
         return shots;
     }
 
+    public void sliceShots(int fromIndex, int toIndex) {
+        this.shots = this.shots.subList(fromIndex, toIndex);
+    }
+
     public Cover cover() {
         return cover;
     }
