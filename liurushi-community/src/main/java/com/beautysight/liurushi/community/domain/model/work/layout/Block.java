@@ -71,7 +71,7 @@ public class Block extends ValueObject {
     /**
      * 块在布局中的位置
      */
-    public static class Position {
+    public static class Position extends ValueObject {
         int colIndex;
         int rowIndex;
 
