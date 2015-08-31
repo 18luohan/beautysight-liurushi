@@ -25,9 +25,9 @@ import java.util.List;
 @Repository
 public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkRepo {
 
-    private static final Fields workBasicFields = Fields.newInstance().append("id", "authorId", "source", "publishedAt");
-    private static final String[] workProfileFields = workBasicFields.append("pictureStory.title", "pictureStory.cover.picture").toArray();
-    private static final String[] pictureStoryFields = workBasicFields.append("pictureStory").toArray();
+    private static final Fields workBasicFields = Fields.newInstance().copyThenAppend("id", "authorId", "source", "publishedAt");
+    private static final String[] workProfileFields = workBasicFields.copyThenAppend("pictureStory.title", "pictureStory.cover.picture").toArray();
+    private static final String[] pictureStoryFields = workBasicFields.copyThenAppend("pictureStory").toArray();
 
     @Override
     public List<Work> getLatestWorks(Work.Source source, int count) {

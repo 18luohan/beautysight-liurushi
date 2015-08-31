@@ -320,6 +320,11 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
             this.fields = new ArrayList<>(capacity);
         }
 
+        private Fields(List<String> fields) {
+            Preconditions.checkArgument((fields != null), "fields is null");
+            this.fields = fields;
+        }
+
         public static Fields newInstance(Integer... fieldsCount) {
             int capacity = 10;
             if (!ObjectUtils.isEmpty(fieldsCount)) {
@@ -328,12 +333,15 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
             return new Fields(capacity);
         }
 
-        public Fields append(String... fieldNames) {
+        public Fields copyThenAppend(String... fieldNames) {
             Assert.notEmpty(fieldNames, "fieldNames must not be blank");
+
+            Fields copy = new Fields(new ArrayList<String>());
+            copy.fields.addAll(this.fields);
             for (String field : fieldNames) {
-                fields.add(field);
+                copy.fields.add(field);
             }
-            return this;
+            return copy;
         }
 
         public String[] toArray() {
