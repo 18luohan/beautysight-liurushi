@@ -108,4 +108,13 @@ public final class BlockLocator {
         return false;
     }
 
+    public static void main(String[] args) {
+        BlockLocator locator = new BlockLocator(6);
+        locator.locateOneBlockBy(new Block.Size(2, 3));
+        locator.locateOneBlockBy(new Block.Size(1, 4));
+        locator.locateOneBlockBy(new Block.Size(3, 3));
+        locator.locateOneBlockBy(new Block.Size(4, 2));
+        locator.locateOneBlockBy(new Block.Size(6, 2));
+    }
+
 }

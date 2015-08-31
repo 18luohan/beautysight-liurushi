@@ -47,8 +47,16 @@ public class Block extends ValueObject {
      * 块在布局中的大小
      */
     public static class Size extends ValueObject {
-        private Integer rowSpan;
         private Integer colSpan;
+        private Integer rowSpan;
+
+        public Size() {
+        }
+
+        public Size(Integer colSpan, Integer rowSpan) {
+            this.colSpan = colSpan;
+            this.rowSpan = rowSpan;
+        }
 
         public Integer colSpan() {
             return this.colSpan;

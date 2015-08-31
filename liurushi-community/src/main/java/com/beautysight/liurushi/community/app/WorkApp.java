@@ -26,6 +26,7 @@ import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfig;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
+import com.beautysight.liurushi.fundamental.domain.appconfig.IntegerVal;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
@@ -36,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.jvm.hotspot.jdi.IntegerValueImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,10 +143,10 @@ public class WorkApp {
         String downloadUrl = storageService.issueDownloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
 
-        Integer shotsNum = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
+        IntegerVal shotsNum = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
         BlockLocator locator = pictureStory.layout().generateBlockLocator();
         for (int i = 0; i < pictureStory.controls().size(); i++) {
-            if ((i + 1) > shotsNum) {
+            if ((i + 1) > shotsNum.val()) {
                 break;
             }
 
