@@ -27,13 +27,22 @@ public class AppConfigRepoImplTest extends SpringBasedAppTest {
     @Test
     @Prepare
     @Cleanup
-    public void withName() {
+    public void smsCredentialConfig() {
         Optional<AppConfig> appConfig = appConfigRepo.withName(
                 AppConfig.ItemName.sms_android_credential.toString());
         assertTrue(appConfig.isPresent());
         assertEquals("App config item name not equal",
                 AppConfig.ItemName.sms_android_credential,
                 Reflections.getField(appConfig.get(), "name"));
+    }
+
+    @Test
+    @Prepare
+    @Cleanup
+    public void h5SharingShotsNum() {
+        Optional<AppConfig> appConfig = appConfigRepo.withName(
+                AppConfig.ItemName.sharing_h5_shots_num.toString());
+        assertTrue(appConfig.isPresent());
     }
 
 }

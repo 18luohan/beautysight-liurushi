@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author chenlong
  * @since 1.0
  */
@@ -30,7 +29,7 @@ public class AppConfigService {
     static {
         configItemToValModelMapping.put(AppConfig.ItemName.sms_android_credential, AppCredentialInThirdParty.class);
         configItemToValModelMapping.put(AppConfig.ItemName.sms_ios_credential, AppCredentialInThirdParty.class);
-        configItemToValModelMapping.put(AppConfig.ItemName.sms_ios_credential, AppCredentialInThirdParty.class);
+        configItemToValModelMapping.put(AppConfig.ItemName.sharing_h5_shots_num, IntegerVal.class);
     }
 
     public <T> T getItemValue(AppConfig.ItemName itemName) {

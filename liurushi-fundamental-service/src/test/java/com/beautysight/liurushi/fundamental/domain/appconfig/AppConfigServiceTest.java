@@ -70,4 +70,19 @@ public class AppConfigServiceTest {
                 AppConfig.ItemName.sms_android_credential);
     }
 
+    @Test
+    public void getSharingH5ShotsNum() {
+        new Expectations() {{
+            appConfigRepo.withName(anyString);
+            AppConfig appConfig = new AppConfig();
+            Reflections.setField(appConfig, "name", AppConfig.ItemName.sharing_h5_shots_num);
+            Reflections.setField(appConfig, "value", "{ \"val\":\"8\" }");
+            result = Optional.of(appConfig);
+        }};
+
+        IntegerVal val = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
+        assertNotNull(val);
+        assertEquals(8, val.val().intValue());
+    }
+
 }

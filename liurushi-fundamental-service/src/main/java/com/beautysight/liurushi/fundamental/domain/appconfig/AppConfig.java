@@ -24,7 +24,7 @@ public class AppConfig extends AbstractEntity {
     }
 
     public enum ItemName {
-        sms_android_credential, sms_ios_credential, sharing_h5_shots_num;
+        sms_android_credential, sms_ios_credential, sharing_h5_shots_num
     }
 
 }
