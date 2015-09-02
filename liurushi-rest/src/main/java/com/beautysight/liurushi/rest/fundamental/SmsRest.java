@@ -25,13 +25,13 @@ public class SmsRest {
     private AppConfigApp appConfigApp;
 
     @RequestMapping(value = "/android_credential", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public AppCredentialInThirdParty smsAndroidCredential() {
         return appConfigApp.smsAndroidCredential();
     }
 
     @RequestMapping(value = "/ios_credential", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public AppCredentialInThirdParty smsIOSCredential() {
         return appConfigApp.smsIOSCredential();
     }

@@ -37,14 +37,14 @@ public class UserRest {
     private UserApp userApp;
 
     @RequestMapping(value = "/actions/exist", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public UserExistPresentation checkIfUserExistWith(@RequestParam String mobile) {
         PreconditionUtils.checkRequiredMobile("request param mobile", mobile);
         return userApp.checkIfUserExistWith(mobile);
     }
 
     @RequestMapping(value = "/{mobileOrUnionId}/actions/exist", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public UserExistPresentation checkIfUserExistWith(@PathVariable("mobileOrUnionId") String mobileOrUnionId,
                                                       @RequestParam(required = false) User.Origin origin) {
         PreconditionUtils.checkRequired("path variable mobileOrUnionId", mobileOrUnionId);
@@ -52,7 +52,7 @@ public class UserRest {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public SignUpOrLoginPresentation signUp(@RequestBody SignUpCommand signUpCommand) {
         logger.info("New user sign up");
         signUpCommand.validate();
@@ -60,7 +60,7 @@ public class UserRest {
     }
 
     @RequestMapping(value = "/actions/login", method = RequestMethod.PUT)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public SignUpOrLoginPresentation login(@RequestBody LoginCommand loginCommand) {
         logger.info("User login");
         loginCommand.validate();
@@ -76,7 +76,7 @@ public class UserRest {
     }
 
     @RequestMapping(value = "/{mobile}/actions/reset_pwd", method = RequestMethod.PUT)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public void resetPassword(@PathVariable("mobile") String mobile, @RequestBody ResetPasswordCommand command) {
         command.mobile = mobile;
         command.validate();
@@ -84,7 +84,7 @@ public class UserRest {
     }
 
     @RequestMapping(value = "/actions/set_grp_to_pro", method = RequestMethod.PUT)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public void setUsersGroupToProfessional(@RequestBody List<String> mobiles) {
         PreconditionUtils.checkRequired("request param mobiles", mobiles);
         userApp.setUsersGroupToProfessional(mobiles);

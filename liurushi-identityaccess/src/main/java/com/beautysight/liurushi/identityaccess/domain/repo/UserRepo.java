@@ -24,4 +24,14 @@ public interface UserRepo extends MongoRepository<User> {
 
     void setUsersGroupToProfessional(List<String> mobiles);
 
+    User getLiteUserBy(String id);
+
+    List<User> getLiteUsersWithStats(List<String> ids);
+
+    User getUser(String id);
+
+    void increaseFollowersNumBy(int increment, String followingId);
+
+    void increaseFollowingsNumBy(int increment, String followerId);
+
 }

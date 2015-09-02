@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.model.work.picstory;
 
-import com.beautysight.liurushi.community.domain.model.work.OffsetDirection;
+import com.beautysight.liurushi.common.domain.OffsetDirection;
 import com.beautysight.liurushi.community.domain.model.work.Work;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 import com.google.common.base.Optional;

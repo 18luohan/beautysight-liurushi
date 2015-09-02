@@ -16,7 +16,7 @@ public class Authors {
 
     public static Author currentAuthor() {
         UserLite currentUser = RequestContext.getUser();
-        return new Author(currentUser.id().toString(), currentUser.nickname(),
+        return new Author(currentUser.idAsStr(),
                 currentUser.group().toString());
     }
 

@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.community.domain.model.work.OffsetDirection;
+import com.beautysight.liurushi.common.domain.OffsetDirection;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStoryRepo;
 import com.beautysight.liurushi.community.domain.model.work.Work;

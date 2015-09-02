@@ -18,6 +18,7 @@ public class APIs {
     public static final String SMS_V1 = v1_0 + "/sms";
     public static final String WORKS_V1 = v1_0 + "/works";
     public static final String SHARING_V1 = v1_0 + "/sharing";
+    public static final String FOLLOW_V1 = v1_0 + "/follow";
 //    public static final String WORK_DRAFTS_V1 = v1_0 + "/work_drafts";
 
 }

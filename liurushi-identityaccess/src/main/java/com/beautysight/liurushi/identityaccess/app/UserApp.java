@@ -15,8 +15,11 @@ import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
 import com.beautysight.liurushi.identityaccess.app.command.LogoutCommand;
 import com.beautysight.liurushi.identityaccess.app.command.ResetPasswordCommand;
 import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
-import com.beautysight.liurushi.identityaccess.app.presentation.*;
+import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
+import com.beautysight.liurushi.identityaccess.app.presentation.SignUpOrLoginPresentation;
+import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
@@ -82,7 +85,7 @@ public class UserApp {
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
         AccessToken accessToken = accessTokenRepo.save(AccessToken.issueBearerTokenFor(user, device));
 
-        UserDPO userDPO = translateToDPOFrom(user);
+        UserDPO userDPO = userService.translateToUserDPO(user);
         AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(accessToken);
         cacheUserProfileForNewSession(accessToken, user.toUserLite());
         return new SignUpOrLoginPresentation(userDPO, accessTokenPresentation);
@@ -94,7 +97,7 @@ public class UserApp {
         Device device = userService.saveOrAddUserToDevice(command.device.toDevice(), user);
         AccessToken accessToken = accessTokenService.issueOrRefreshBearerTokenFor(user, device);
 
-        UserDPO userDPO = translateToDPOFrom(user);
+        UserDPO userDPO = userService.translateToUserDPO(user);
         AccessTokenPresentation accessTokenPresentation = AccessTokenPresentation.from(accessToken);
         cacheUserProfileForNewSession(accessToken, user.toUserLite());
         return new SignUpOrLoginPresentation(userDPO, accessTokenPresentation);
@@ -120,14 +123,14 @@ public class UserApp {
 
     public UserDPO getUserProfile(String userId) {
         User user = userRepo.findOne(userId);
-        return translateToDPOFrom(user);
+        return userService.translateToUserDPO(user);
     }
 
     public UserDPO editUserProfile(UserDPO userDPO) {
         User user = userRepo.findOne(userDPO.id);
         user.edit(userDPO);
         userRepo.merge(user);
-        return translateToDPOFrom(user);
+        return userService.translateToUserDPO(user);
     }
 
     public void setUsersGroupToProfessional(List<String> mobiles) {
@@ -150,9 +153,8 @@ public class UserApp {
         return DownloadUrlPresentation.from(storageService.issueDownloadUrl(headerPhoto.key()));
     }
 
-    public PersonalCenter getUserPersonalCenter(String userId) {
-        User user = userRepo.findOne(userId);
-        return PersonalCenter.from(translateToDPOFrom(user));
+    public UserDPO getUserPersonalCenter(String userId) {
+        return userService.getUserWithStats(userId);
     }
 
     public void resetPassword(ResetPasswordCommand command) {
@@ -164,24 +166,6 @@ public class UserApp {
 
         user.get().resetPassword(command.password);
         userRepo.merge(user.get());
-    }
-
-    private UserDPO translateToDPOFrom(User user) {
-        String originalAvatarUrl = null;
-        String headerPhotoUrl = null;
-        String maxAvatarUrl = null;
-
-        if (user.originalAvatar().isPresent()) {
-            originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatar().get().key());
-        }
-        if (user.headerPhoto().isPresent()) {
-            headerPhotoUrl = storageService.issueDownloadUrl(user.headerPhoto().get().key());
-        }
-        if (user.maxAvatar().isPresent()) {
-            maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().get().key());
-        }
-
-        return UserDPO.from(user, originalAvatarUrl, maxAvatarUrl, headerPhotoUrl);
     }
 
     /**

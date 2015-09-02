@@ -6,7 +6,7 @@ package com.beautysight.liurushi.identityaccess.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.identityaccess.app.presentation.UserDPO;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 
 /**
  * @author chenlong

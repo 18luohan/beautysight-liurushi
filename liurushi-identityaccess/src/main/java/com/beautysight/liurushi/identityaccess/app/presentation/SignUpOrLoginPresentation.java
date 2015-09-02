@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.identityaccess.app.presentation;
 
 import com.beautysight.liurushi.common.app.PresentationModel;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 
 /**
  * Here is Javadoc.

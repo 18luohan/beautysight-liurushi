@@ -12,23 +12,14 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-30.
+ * A restful API annotated by this annotation can also be requested by the visitors.
+ * Otherwise it can only be accessed by the members.
  *
  * @author chenlong
  * @since 1.0
  */
 @Inherited
 @Retention(RUNTIME)
-@Target({ METHOD })
+@Target({METHOD})
 public @interface VisitorApiPermission {
-
-    /**
-     * Indicates whether the restful API that the API annotated by this annotation
-     * can be requested by the visitors.
-     * @return
-     */
-    boolean value() default false;
-
 }

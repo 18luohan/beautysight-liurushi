@@ -7,7 +7,7 @@ package com.beautysight.liurushi.rest.identityaccess;
 import com.beautysight.liurushi.fundamental.app.DownloadUrlPresentation;
 import com.beautysight.liurushi.fundamental.app.FileMetadataDPO;
 import com.beautysight.liurushi.identityaccess.app.UserApp;
-import com.beautysight.liurushi.identityaccess.app.presentation.UserDPO;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -31,7 +31,7 @@ public class UserProfileRest {
     }
 
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public UserDPO getUserProfile(@PathVariable("userId") String userId) {
         return userApp.getUserProfile(userId);
     }

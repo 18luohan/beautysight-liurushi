@@ -25,14 +25,14 @@ public class StorageRest {
     private StorageApp storageApp;
 
     @RequestMapping(value = "/actions/prepare_for_upload", method = RequestMethod.POST)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public PrepareForUploadPresentation prepareForUpload(@RequestBody PrepareForUploadCommand command) {
         command.validate();
         return storageApp.prepareForUpload(command);
     }
 
     @RequestMapping(value = "/upload_token", method = RequestMethod.POST)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public UploadTokenPresentation issueUploadToken(
             @RequestBody(required = false) IssueUploadTokenCommand command) {
         if (command == null) {

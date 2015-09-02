@@ -2,7 +2,7 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.identityaccess.app.presentation;
+package com.beautysight.liurushi.identityaccess.domain.dpo;
 
 import com.beautysight.liurushi.common.app.DPO;
 import com.beautysight.liurushi.common.utils.Beans;
@@ -34,6 +34,8 @@ public class UserDPO extends DPO {
     public String maxAvatarUrl;
     public String headerPhotoUrl;
 
+    public Stats stats;
+
     public static UserDPO from(User user, String originalAvatarUrl, String maxAvatarUrl, String headerPhotoUrl) {
         UserDPO target = new UserDPO();
         Beans.copyProperties(user, target);
@@ -42,6 +44,9 @@ public class UserDPO extends DPO {
         target.originalAvatarUrl = originalAvatarUrl;
         target.maxAvatarUrl = maxAvatarUrl;
         target.headerPhotoUrl = headerPhotoUrl;
+        if (user.stats().isPresent()) {
+            target.setStats(user.stats().get());
+        }
         return target;
     }
 
@@ -65,6 +70,22 @@ public class UserDPO extends DPO {
         if (this.origin == null) {
             this.origin = User.Origin.self;
         }
+    }
+
+    private void setStats(User.Stats userStats) {
+        Stats stats = new Stats();
+        stats.followersNum = userStats.followersNum();
+        stats.followingsNum = userStats.followingsNum();
+        stats.worksNum = userStats.worksNum();
+        stats.favoritesNum = userStats.favoritesNum();
+        this.stats = stats;
+    }
+
+    public static class Stats extends DPO {
+        public Integer followersNum;
+        public Integer followingsNum;
+        public Integer worksNum;
+        public Integer favoritesNum;
     }
 
 }

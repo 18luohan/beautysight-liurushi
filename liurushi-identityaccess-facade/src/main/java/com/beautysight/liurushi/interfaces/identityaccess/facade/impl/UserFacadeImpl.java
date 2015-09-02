@@ -5,14 +5,15 @@
 package com.beautysight.liurushi.interfaces.identityaccess.facade.impl;
 
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
-import com.beautysight.liurushi.identityaccess.app.OAuthApp;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
+import com.beautysight.liurushi.identityaccess.domain.service.UserService;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.UserFacade;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chenlong
@@ -22,28 +23,36 @@ import org.springframework.stereotype.Service;
 public class UserFacadeImpl implements UserFacade {
 
     @Autowired
-    private OAuthApp oAuthApp;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private StorageService storageService;
+    private UserService userService;
 
     @Override
-    public UserDTO getUserBy(String userId) {
+    public UserDTO getLiteUserBy(String userId) {
         PreconditionUtils.checkRequired("userId", userId);
-        User user = userRepo.findOne(userId);
+        UserDPO liteUser = userService.getLiteUser(userId);
+        return translateToUserDTO(liteUser);
+    }
 
-        UserDTO result = new UserDTO();
-        result.id = user.id().toString();
-        result.nickname = user.nickname();
-        result.group = UserDTO.Group.valueOf(user.group().toString());
+    public List<UserDTO> getLiteUsersBy(List<String> userIds) {
+        PreconditionUtils.checkRequired("userIds", userIds);
+        List<UserDPO> liteUsers = userService.getLiteUsersWithStats(userIds);
+        return translateToUserDTOs(liteUsers);
+    }
 
-        if (user.hasAvatar()) {
-            result.originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatar().get().key());
-            result.maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().get().key());
+    private List<UserDTO> translateToUserDTOs(List<UserDPO> liteUsers) {
+        List<UserDTO> userDTOs = new ArrayList<>(liteUsers.size());
+        for (UserDPO user : liteUsers) {
+            userDTOs.add(translateToUserDTO(user));
         }
+        return userDTOs;
+    }
 
-        return result;
+    private UserDTO translateToUserDTO(UserDPO liteUser) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.id = liteUser.id;
+        userDTO.nickname = liteUser.nickname;
+        userDTO.group = UserDTO.Group.valueOf(liteUser.group.toString());
+        userDTO.maxAvatarUrl = liteUser.maxAvatarUrl;
+        return userDTO;
     }
 
 }

@@ -15,6 +15,6 @@ import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
  */
 public interface UserFacade {
 
-    UserDTO getUserBy(String userId);
+    UserDTO getLiteUserBy(String userId);
 
 }

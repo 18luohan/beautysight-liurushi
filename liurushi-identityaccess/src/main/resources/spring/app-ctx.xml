@@ -15,4 +15,6 @@
 
     <context:component-scan base-package="com.beautysight.liurushi.identityaccess.infrastructure"/>
 
+    <context:component-scan base-package="com.beautysight.liurushi.social"/>
+
 </beans>

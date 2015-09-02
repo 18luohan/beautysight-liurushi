@@ -6,7 +6,7 @@ package com.beautysight.liurushi.community.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.community.domain.model.work.OffsetDirection;
+import com.beautysight.liurushi.common.domain.OffsetDirection;
 
 /**
  * @author chenlong

@@ -220,6 +220,22 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return datastore.createQuery(entityClass());
     }
 
+    protected ObjectId toMongoId(String id) {
+        return new ObjectId(id);
+    }
+
+    protected List<ObjectId> toMongoIds(List<String> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+
+        List<ObjectId> mongoIds = new ArrayList<>(ids.size());
+        for (String id : ids) {
+            mongoIds.add(toMongoId(id));
+        }
+        return mongoIds;
+    }
+
     private static boolean isNullOrEmpty(Iterable<?> iterable) {
         if (iterable == null) {
             return true;
@@ -331,6 +347,14 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
                 capacity = fieldsCount[0].intValue();
             }
             return new Fields(capacity);
+        }
+
+        public Fields append(String... fieldNames) {
+            Assert.notEmpty(fieldNames, "fieldNames must not be blank");
+            for (String field : fieldNames) {
+                this.fields.add(field);
+            }
+            return this;
         }
 
         public Fields copyThenAppend(String... fieldNames) {

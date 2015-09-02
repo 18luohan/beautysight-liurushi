@@ -22,6 +22,10 @@ public class UserLite extends ValueObject {
         return this.id;
     }
 
+    public String idAsStr() {
+        return this.id.toHexString();
+    }
+
     public String nickname() {
         return this.nickname;
     }

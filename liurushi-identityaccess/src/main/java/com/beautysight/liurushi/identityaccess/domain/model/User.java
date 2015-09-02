@@ -9,11 +9,12 @@ import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.Passwords;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
-import com.beautysight.liurushi.identityaccess.app.presentation.UserDPO;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
+import org.mongodb.morphia.annotations.Transient;
 
 import java.util.Date;
 
@@ -44,6 +45,8 @@ public class User extends AbstractEntity {
     // 默认组别为业余组
     private Group group = Group.amateur;
     private Origin origin;
+
+    private Stats stats;
 
     public User() {
     }
@@ -132,6 +135,14 @@ public class User extends AbstractEntity {
         this.password = new Password(plainPwd);
     }
 
+    public void defaultStatsToZero() {
+        this.stats = new Stats();
+    }
+
+    public Optional<Stats> stats() {
+        return Optional.fromNullable(this.stats);
+    }
+
     public UserLite toUserLite() {
         UserLite userLite = new UserLite();
         Beans.copyProperties(this, userLite);
@@ -199,6 +210,33 @@ public class User extends AbstractEntity {
 
         public Integer spec() {
             return this.spec;
+        }
+
+    }
+
+    public static class Stats extends ValueObject {
+
+        private static final int DEFAULT_VAL = 0;
+
+        private Integer followersNum = DEFAULT_VAL;
+        private Integer followingsNum = DEFAULT_VAL;
+        private Integer worksNum = DEFAULT_VAL;
+        private Integer favoritesNum = DEFAULT_VAL;
+
+        public Integer followersNum() {
+            return followersNum;
+        }
+
+        public Integer followingsNum() {
+            return followingsNum;
+        }
+
+        public Integer worksNum() {
+            return worksNum;
+        }
+
+        public Integer favoritesNum() {
+            return favoritesNum;
         }
 
     }

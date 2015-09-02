@@ -23,10 +23,9 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author getAuthorBy(String authorId) {
-        UserDTO userDTO = userFacade.getUserBy(authorId);
+        UserDTO userDTO = userFacade.getLiteUserBy(authorId);
         return new Author(userDTO.id,
                 userDTO.nickname,
-                userDTO.originalAvatarUrl,
                 userDTO.maxAvatarUrl,
                 userDTO.group.toString());
     }

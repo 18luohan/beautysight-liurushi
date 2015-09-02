@@ -66,7 +66,7 @@ public class ApiPermissionInterceptor extends HandlerInterceptorAdapter {
                 return false;
             }
 
-            return annotation.value();
+            return true;
         }
 
         if (logger.isWarnEnabled()) {

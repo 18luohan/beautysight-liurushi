@@ -7,11 +7,13 @@ package com.beautysight.liurushi.identityaccess.domain.service;
 import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.utils.AsyncTasks;
+import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 import com.beautysight.liurushi.identityaccess.domain.model.Device;
 import com.beautysight.liurushi.identityaccess.domain.model.User;
 import com.beautysight.liurushi.identityaccess.domain.repo.DeviceRepo;
@@ -22,11 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-13.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -54,6 +55,7 @@ public class UserService {
         }
 
         newUser.setLastLoginToNow();
+        newUser.defaultStatsToZero();
         if (newUser.hasAvatar()) {
             setNewAvatarFor(newUser, newUser.originalAvatar().get());
         }
@@ -117,6 +119,49 @@ public class UserService {
         user.changeHeaderPhoto(theNewFile);
         userRepo.merge(user);
         return theNewFile;
+    }
+
+    public UserDPO getUserWithStats(String userId) {
+        PreconditionUtils.checkRequired("userId", userId);
+        User user = userRepo.getUser(userId);
+        return translateToUserDPO(user);
+    }
+
+    public UserDPO getLiteUser(String userId) {
+        PreconditionUtils.checkRequired("userId", userId);
+        User liteUser = userRepo.getLiteUserBy(userId);
+        return translateToUserDPO(liteUser);
+    }
+
+    public List<UserDPO> getLiteUsersWithStats(List<String> userIds) {
+        List<User> liteUsers = userRepo.getLiteUsersWithStats(userIds);
+        return translateToUserDPOs(liteUsers);
+    }
+
+    private List<UserDPO> translateToUserDPOs(List<User> users) {
+        List<UserDPO> userDPOs = new ArrayList<>(users.size());
+        for (User user : users) {
+            userDPOs.add(translateToUserDPO(user));
+        }
+        return userDPOs;
+    }
+
+    public UserDPO translateToUserDPO(User user) {
+        String originalAvatarUrl = null;
+        String headerPhotoUrl = null;
+        String maxAvatarUrl = null;
+
+        if (user.originalAvatar().isPresent()) {
+            originalAvatarUrl = storageService.issueDownloadUrl(user.originalAvatar().get().key());
+        }
+        if (user.headerPhoto().isPresent()) {
+            headerPhotoUrl = storageService.issueDownloadUrl(user.headerPhoto().get().key());
+        }
+        if (user.maxAvatar().isPresent()) {
+            maxAvatarUrl = storageService.issueDownloadUrl(user.maxAvatar().get().key());
+        }
+
+        return UserDPO.from(user, originalAvatarUrl, maxAvatarUrl, headerPhotoUrl);
     }
 
     private void setNewAvatarFor(User user, FileMetadata newOriginalAvatar) {

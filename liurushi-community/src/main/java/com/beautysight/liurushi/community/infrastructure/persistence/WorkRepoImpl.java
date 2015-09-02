@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.community.domain.model.work.OffsetDirection;
+import com.beautysight.liurushi.common.domain.OffsetDirection;
 import com.beautysight.liurushi.community.domain.model.work.Work;
 import com.beautysight.liurushi.community.domain.model.work.WorkRepo;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
@@ -25,7 +25,7 @@ import java.util.List;
 @Repository
 public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkRepo {
 
-    private static final Fields workBasicFields = Fields.newInstance().copyThenAppend("id", "authorId", "source", "publishedAt");
+    private static final Fields workBasicFields = Fields.newInstance().append("id", "authorId", "source", "publishedAt");
     private static final String[] workProfileFields = workBasicFields.copyThenAppend("pictureStory.title", "pictureStory.cover.picture").toArray();
     private static final String[] pictureStoryFields = workBasicFields.copyThenAppend("pictureStory").toArray();
 

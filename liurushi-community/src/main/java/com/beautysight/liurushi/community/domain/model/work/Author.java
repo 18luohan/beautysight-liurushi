@@ -14,20 +14,19 @@ public class Author extends ValueObject {
 
     public String id;
     public String nickname;
-    public String originalAvatarUrl;
     public String maxAvatarUrl;
     public Group group;
 
-    public Author(String id, String nickname, String groupAsStr) {
-        this(id, nickname, null, null, groupAsStr);
+    public Author(String id, String groupAsStr) {
+        this.id = id;
+        this.group = Group.valueOf(groupAsStr);
     }
 
-    public Author(String id, String nickname, String originalAvatarUrl, String maxAvatarUrl, String groupAsStr) {
+    public Author(String id, String nickname, String groupAsStr, String maxAvatarUrl) {
         this.id = id;
         this.nickname = nickname;
-        this.originalAvatarUrl = originalAvatarUrl;
-        this.maxAvatarUrl = maxAvatarUrl;
         this.group = Group.valueOf(groupAsStr);
+        this.maxAvatarUrl = maxAvatarUrl;
     }
 
     public enum Group {

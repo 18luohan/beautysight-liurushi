@@ -11,7 +11,7 @@ import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfilePresentation;
-import com.beautysight.liurushi.community.domain.model.work.OffsetDirection;
+import com.beautysight.liurushi.common.domain.OffsetDirection;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -45,21 +45,21 @@ public class WorkRest {
     }
 
     @RequestMapping(value = "/{workId}", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public WorkPresentation getWorkBy(@PathVariable("workId") String workId) {
         PreconditionUtils.checkRequired("url path variable workId", workId);
         return workApp.getWorkBy(workId);
     }
 
     @RequestMapping(value = "/pgc/latest", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public WorkProfilePresentation getPgcLatestWorkProfiles(@RequestParam("count") int count) {
         PreconditionUtils.checkGreaterThanZero("request param count", count);
         return workApp.getPgcLatestWorkProfiles(count);
     }
 
     @RequestMapping(value = "/pgc", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public WorkProfilePresentation getPgcWorkProfilesInRange(@RequestParam(required = false) String referenceWork,
                                                              @RequestParam Integer offset,
                                                              @RequestParam(required = false) OffsetDirection direction) {
@@ -68,14 +68,14 @@ public class WorkRest {
     }
 
     @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public WorkProfilePresentation getUgcLatestWorkProfiles(@RequestParam("count") int count) {
         PreconditionUtils.checkGreaterThanZero("request param count", count);
         return workApp.getUgcLatestWorkProfiles(count);
     }
 
     @RequestMapping(value = "/ugc", method = RequestMethod.GET)
-    @VisitorApiPermission(true)
+    @VisitorApiPermission
     public WorkProfilePresentation getUgcWorkProfilesInRange(@RequestParam(required = false) String referenceWork,
                                                              @RequestParam Integer offset,
                                                              @RequestParam(required = false) OffsetDirection direction) {

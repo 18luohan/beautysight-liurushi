@@ -2,7 +2,7 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.rest.community;
+package com.beautysight.liurushi.rest.social;
 
 import com.beautysight.liurushi.community.app.WorkApp;
 import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;

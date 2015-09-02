@@ -7,7 +7,7 @@ package com.beautysight.liurushi.identityaccess.app.command;
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.identityaccess.app.presentation.UserDPO;
+import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import org.apache.commons.lang3.StringUtils;
 
