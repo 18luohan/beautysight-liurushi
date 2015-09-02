@@ -5,7 +5,7 @@
 package com.beautysight.liurushi.rest.social;
 
 import com.beautysight.liurushi.common.domain.OffsetDirection;
-import com.beautysight.liurushi.common.domain.Pageable;
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -47,8 +47,8 @@ public class FollowRest {
                                                 @RequestParam(required = false) String referencePoint,
                                                 @RequestParam Integer offset,
                                                 @RequestParam(required = false) OffsetDirection direction) {
-        Pageable pageable = new Pageable(referencePoint, offset, direction);
-        return followApp.findFollowersInRange(userId, pageable);
+        Range range = new Range(referencePoint, offset, direction);
+        return followApp.findFollowersInRange(userId, range);
     }
 
     @RequestMapping(value = "/followings", method = RequestMethod.GET)
@@ -57,8 +57,8 @@ public class FollowRest {
                                                  @RequestParam(required = false) String referencePoint,
                                                  @RequestParam Integer offset,
                                                  @RequestParam(required = false) OffsetDirection direction) {
-        Pageable pageable = new Pageable(referencePoint, offset, direction);
-        return followApp.findFollowingsInRange(userId, pageable);
+        Range range = new Range(referencePoint, offset, direction);
+        return followApp.findFollowingsInRange(userId, range);
     }
 
 }

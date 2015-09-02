@@ -13,11 +13,11 @@ import java.util.List;
  * @author chenlong
  * @since 1.0
  */
-public class WorkProfilePresentation implements PresentationModel {
+public class WorkProfilesPresentation implements PresentationModel {
 
     private List<WorkProfile> workProfiles;
 
-    public WorkProfilePresentation(List<WorkProfile> workProfiles) {
+    public WorkProfilesPresentation(List<WorkProfile> workProfiles) {
         this.workProfiles = workProfiles;
     }
 

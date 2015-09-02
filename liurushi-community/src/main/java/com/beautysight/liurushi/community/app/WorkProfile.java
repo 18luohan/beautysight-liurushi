@@ -24,6 +24,10 @@ public class WorkProfile implements PresentationModel {
     private Author author;
     private Date publishedAt;
 
+    public static WorkProfile from(Work work, String coverPictureUrl) {
+        return from(work, coverPictureUrl, null);
+    }
+
     public static WorkProfile from(Work work, String coverPictureUrl, Author author) {
         WorkProfile workProfile = new WorkProfile();
         workProfile.id = work.id().toString();

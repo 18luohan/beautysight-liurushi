@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.social.domain.follow;
 
-import com.beautysight.liurushi.common.domain.Pageable;
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.identityaccess.domain.dpo.UserDPO;
 import com.beautysight.liurushi.identityaccess.domain.service.UserService;
 import com.google.common.collect.Lists;
@@ -29,7 +29,7 @@ public class FollowService {
     @Autowired
     private UserService userService;
 
-    public List<FollowDPO> findFollowInRange(FollowRepo.QueryType type, String involvedUserId, Pageable range) {
+    public List<FollowDPO> findFollowInRange(FollowRepo.QueryType type, String involvedUserId, Range range) {
         List<Follow> followList = followRepo.findFollowInRange(type, involvedUserId, range);
         List<FollowDPO> result = new ArrayList<>(followList.size());
 

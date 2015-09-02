@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.social.domain.follow;
 
-import com.beautysight.liurushi.common.domain.Pageable;
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 import com.google.common.base.Optional;
 
@@ -20,7 +20,7 @@ public interface FollowRepo extends MongoRepository<Follow> {
 
     int deleteBy(String followerId, String followingId);
 
-    List<Follow> findFollowInRange(QueryType type, String involvedUserId, Pageable range);
+    List<Follow> findFollowInRange(QueryType type, String involvedUserId, Range range);
 
     enum QueryType {
         follower, following

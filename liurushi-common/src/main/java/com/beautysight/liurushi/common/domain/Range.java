@@ -11,13 +11,13 @@ import com.google.common.base.Optional;
  * @author chenlong
  * @since 1.0
  */
-public class Pageable {
+public class Range {
 
     private Optional<String> referencePoint;
     private Integer offset;
-    private OffsetDirection direction;
+    private OffsetDirection direction = OffsetDirection.both;
 
-    public Pageable(String referencePoint, Integer offset, OffsetDirection direction) {
+    public Range(String referencePoint, Integer offset, OffsetDirection direction) {
         this.setReferencePoint(referencePoint);
         this.setOffset(offset);
         this.setDirection(direction);

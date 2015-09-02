@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.social.app;
 
-import com.beautysight.liurushi.common.domain.Pageable;
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
 import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
 import com.beautysight.liurushi.social.domain.follow.Follow;
@@ -62,13 +62,13 @@ public class FollowApp {
         userRepo.increaseFollowersNumBy(-1, command.followingId);
     }
 
-    public FollowersPresentation findFollowersInRange(String followingId, Pageable range) {
+    public FollowersPresentation findFollowersInRange(String followingId, Range range) {
         List<FollowDPO> followers = followService.findFollowInRange(
                 FollowRepo.QueryType.follower, followingId, range);
         return FollowersPresentation.from(followers);
     }
 
-    public FollowingsPresentation findFollowingsInRange(String followerId, Pageable range) {
+    public FollowingsPresentation findFollowingsInRange(String followerId, Range range) {
         List<FollowDPO> followings = followService.findFollowInRange(
                 FollowRepo.QueryType.following, followerId, range);
         return FollowingsPresentation.from(followings);

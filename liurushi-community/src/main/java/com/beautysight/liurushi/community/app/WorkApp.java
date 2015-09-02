@@ -4,14 +4,15 @@
 
 package com.beautysight.liurushi.community.app;
 
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
-import com.beautysight.liurushi.community.app.command.FindWorkProfilesInRangeCommand;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
+import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.app.dpo.ControlDPO;
 import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
-import com.beautysight.liurushi.community.app.presentation.WorkProfilePresentation;
+import com.beautysight.liurushi.community.app.presentation.WorkProfilesPresentation;
 import com.beautysight.liurushi.community.domain.model.work.*;
 import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRepo;
@@ -31,7 +32,6 @@ import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
-import com.google.common.base.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,28 +166,44 @@ public class WorkApp {
         return PictureStoryDPO.from(pictureStory, keyToDownloadUrlMapping);
     }
 
-    public WorkProfilePresentation getPgcLatestWorkProfiles(int count) {
+    public WorkProfilesPresentation getPgcLatestWorkProfiles(int count) {
         return getLatestWorkProfiles(Work.Source.pgc, count);
     }
 
-    public WorkProfilePresentation findPgcWorkProfilesInRange(FindWorkProfilesInRangeCommand command) {
-        return findWorkProfilesInRange(Work.Source.pgc, command);
+    public WorkProfilesPresentation findPgcWorkProfilesIn(Range range) {
+        return findWorkProfilesInRange(Work.Source.pgc, range);
     }
 
-    public WorkProfilePresentation getUgcLatestWorkProfiles(int count) {
+    public WorkProfilesPresentation getUgcLatestWorkProfiles(int count) {
         return getLatestWorkProfiles(Work.Source.ugc, count);
     }
 
-    public WorkProfilePresentation findUgcWorkProfilesInRange(FindWorkProfilesInRangeCommand command) {
-        return findWorkProfilesInRange(Work.Source.ugc, command);
+    public WorkProfilesPresentation findUgcWorkProfilesIn(Range range) {
+        return findWorkProfilesInRange(Work.Source.ugc, range);
     }
 
-    private WorkProfilePresentation getLatestWorkProfiles(Work.Source source, int count) {
+    public WorkProfilesPresentation findAuthorWorksIn(AuthorWorksRange range) {
+        List<WorkProfile> workProfiles = new ArrayList<>();
+        List<Work> theWorks = workRepo.findAuthorWorksIn(range);
+
+        if (CollectionUtils.isEmpty(theWorks)) {
+            return new WorkProfilesPresentation(workProfiles);
+        }
+
+        for (Work work : theWorks) {
+            String coverPictureUrl = storageService.issueDownloadUrl(work.cover().pictureKey());
+            workProfiles.add(WorkProfile.from(work, coverPictureUrl));
+        }
+
+        return new WorkProfilesPresentation(workProfiles);
+    }
+
+    private WorkProfilesPresentation getLatestWorkProfiles(Work.Source source, int count) {
         List<WorkProfile> workProfiles = new ArrayList<>();
         List<Work> theWorks = workRepo.getLatestWorks(source, count);
 
         if (CollectionUtils.isEmpty(theWorks)) {
-            return new WorkProfilePresentation(workProfiles);
+            return new WorkProfilesPresentation(workProfiles);
         }
 
         for (Work work : theWorks) {
@@ -196,17 +212,16 @@ public class WorkApp {
             workProfiles.add(WorkProfile.from(work, coverPictureUrl, author));
         }
 
-        return new WorkProfilePresentation(workProfiles);
+        return new WorkProfilesPresentation(workProfiles);
     }
 
-    private WorkProfilePresentation findWorkProfilesInRange(Work.Source source, FindWorkProfilesInRangeCommand command) {
+    private WorkProfilesPresentation findWorkProfilesInRange(Work.Source source, Range range) {
         List<WorkProfile> workProfiles = new ArrayList<>();
 
-        List<Work> theWorks = workRepo.findWorksInRange(
-                source, Optional.fromNullable(command.referenceWork), command.offset, command.direction);
+        List<Work> theWorks = workRepo.findWorksInRange(source, range);
 
         if (CollectionUtils.isEmpty(theWorks)) {
-            return new WorkProfilePresentation(workProfiles);
+            return new WorkProfilesPresentation(workProfiles);
         }
 
         for (Work work : theWorks) {
@@ -215,7 +230,7 @@ public class WorkApp {
             workProfiles.add(WorkProfile.from(work, coverPictureUrl, author));
         }
 
-        return new WorkProfilePresentation(workProfiles);
+        return new WorkProfilesPresentation(workProfiles);
     }
 
     private Map<String, ContentSection> saveContentSections(Map<String, ContentSection> newSections) {

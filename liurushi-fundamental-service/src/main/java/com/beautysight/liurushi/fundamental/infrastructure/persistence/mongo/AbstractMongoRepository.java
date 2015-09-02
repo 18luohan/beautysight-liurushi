@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo;
 
+import com.beautysight.liurushi.common.domain.OffsetDirection;
+import com.beautysight.liurushi.common.domain.Range;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.mongodb.WriteResult;
@@ -181,7 +183,51 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return orderBy.toString();
     }
 
-    protected abstract Class<T> entityClass();
+    protected List<T> find(Conditions conditions, Range range) {
+        return find(conditions, range, Optional.<FieldsFilter>absent());
+    }
+
+    protected List<T> findLatest(Conditions conditions, int count, Optional<FieldsFilter> fieldsFilter) {
+        Query<T> query = newQuery(conditions)
+                .order("-id").limit(count);
+        filterFields(query, fieldsFilter);
+        return query.asList();
+    }
+
+    protected List<T> find(Conditions conditions, Range range, Optional<FieldsFilter> fieldsFilter) {
+        Preconditions.checkArgument(range.offset() > 0, "Assert range.offset() > 0");
+
+        if (!range.referencePoint().isPresent()) {
+            return findLatest(conditions, range.offset(), fieldsFilter);
+        }
+
+        List<T> result = new ArrayList<>();
+        if (range.direction() == OffsetDirection.both || range.direction() == OffsetDirection.after) {
+            Query<T> query = newQuery(conditions)
+                    .field("id").greaterThanOrEq(new ObjectId(range.referencePoint().get()))
+                    .order("id").limit(range.offset() + 1);
+            filterFields(query, fieldsFilter);
+            List<T> ascendingList = query.asList();
+            if (org.apache.commons.collections.CollectionUtils.isNotEmpty(ascendingList)) {
+                // 倒序排列
+                Collections.reverse(ascendingList);
+                result.addAll(ascendingList);
+            }
+        }
+
+        if (range.direction() == OffsetDirection.both || range.direction() == OffsetDirection.before) {
+            Query<T> query = newQuery(conditions)
+                    .field("id").lessThan(new ObjectId(range.referencePoint().get()))
+                    .order("-id").limit(range.offset()); // 目前morphia组件还不支持$natural查询修饰符
+            filterFields(query, fieldsFilter);
+            List<T> descendingList = query.asList();
+            if (org.apache.commons.collections.CollectionUtils.isNotEmpty(descendingList)) {
+                result.addAll(descendingList);
+            }
+        }
+
+        return result;
+    }
 
     protected List<T> findBy(Conditions conditions) {
         return newQuery(conditions).asList();
@@ -204,9 +250,9 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     protected Query<T> newQuery(Conditions conditions) {
         Assert.notNull(conditions, "The given conditions must not be null");
         Query<T> query = newQuery();
-        Iterator<Conditions.Condition> it = conditions.iterator();
+        Iterator<Conditions.And> it = conditions.iterator();
         while (it.hasNext()) {
-            Conditions.Condition condition = it.next();
+            Conditions.And condition = it.next();
             query.field(condition.field).equal(condition.val);
         }
         return query;
@@ -235,6 +281,8 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         }
         return mongoIds;
     }
+
+    protected abstract Class<T> entityClass();
 
     private static boolean isNullOrEmpty(Iterable<?> iterable) {
         if (iterable == null) {
@@ -270,17 +318,23 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return iterable == null ? 0 : (iterable instanceof Collection) ? ((Collection<?>) iterable).size() : defaultSize;
     }
 
+    private void filterFields(Query<T> query, Optional<FieldsFilter> filter) {
+        if (filter.isPresent()) {
+            query.retrievedFields(filter.get().include, filter.get().fields);
+        }
+    }
+
     protected enum Op {
         DELETE, UPDATE
     }
 
     protected static class Conditions {
 
-        private final List<Condition> conditions;
+        private final List<And> conditions;
 
         private Conditions(String field, Object val) {
             conditions = new ArrayList<>(5);
-            conditions.add(new Condition(field, val));
+            conditions.add(new And(field, val));
         }
 
         public static Conditions of(String field, Object val) {
@@ -288,18 +342,18 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         }
 
         public Conditions and(String field, Object val) {
-            conditions.add(new Condition(field, val));
+            conditions.add(new And(field, val));
             return this;
         }
 
-        public Iterator<Condition> iterator() {
+        public Iterator<And> iterator() {
             return conditions.iterator();
         }
 
         @Override
         public String toString() {
             StringBuilder conditionStr = new StringBuilder("{");
-            for (Condition condition : conditions) {
+            for (And condition : conditions) {
                 conditionStr.append(condition.field)
                         .append(":")
                         .append(condition.val)
@@ -310,11 +364,11 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
                     .append("}").toString();
         }
 
-        private static class Condition {
+        private static class And {
             private String field;
             private Object val;
 
-            private Condition(String field, Object val) {
+            private And(String field, Object val) {
                 Assert.hasText(field, "The given field must not be blank");
                 if (val instanceof String) {
                     Assert.hasText((String) val, "The given val must not be blank");
@@ -374,4 +428,15 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         }
 
     }
+
+    protected static class FieldsFilter {
+        private boolean include = true;
+        private String[] fields;
+
+        public FieldsFilter(boolean include, String[] fields) {
+            this.include = include;
+            this.fields = fields;
+        }
+    }
+
 }

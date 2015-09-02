@@ -4,14 +4,15 @@
 
 package com.beautysight.liurushi.rest.community;
 
+import com.beautysight.liurushi.common.domain.OffsetDirection;
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.WorkApp;
-import com.beautysight.liurushi.community.app.command.FindWorkProfilesInRangeCommand;
+import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
-import com.beautysight.liurushi.community.app.presentation.WorkProfilePresentation;
-import com.beautysight.liurushi.common.domain.OffsetDirection;
+import com.beautysight.liurushi.community.app.presentation.WorkProfilesPresentation;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -53,46 +54,43 @@ public class WorkRest {
 
     @RequestMapping(value = "/pgc/latest", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfilePresentation getPgcLatestWorkProfiles(@RequestParam("count") int count) {
+    public WorkProfilesPresentation getPgcLatestWorkProfiles(@RequestParam("count") int count) {
         PreconditionUtils.checkGreaterThanZero("request param count", count);
         return workApp.getPgcLatestWorkProfiles(count);
     }
 
     @RequestMapping(value = "/pgc", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfilePresentation getPgcWorkProfilesInRange(@RequestParam(required = false) String referenceWork,
+    public WorkProfilesPresentation getPgcWorkProfilesInRange(@RequestParam(required = false) String referenceWork,
                                                              @RequestParam Integer offset,
                                                              @RequestParam(required = false) OffsetDirection direction) {
-        FindWorkProfilesInRangeCommand command = newQueryCommandAndValidate(referenceWork, offset, direction);
-        return workApp.findPgcWorkProfilesInRange(command);
+        return workApp.findPgcWorkProfilesIn(new Range(referenceWork, offset, direction));
     }
 
     @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfilePresentation getUgcLatestWorkProfiles(@RequestParam("count") int count) {
+    public WorkProfilesPresentation getUgcLatestWorkProfiles(@RequestParam("count") int count) {
         PreconditionUtils.checkGreaterThanZero("request param count", count);
         return workApp.getUgcLatestWorkProfiles(count);
     }
 
     @RequestMapping(value = "/ugc", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfilePresentation getUgcWorkProfilesInRange(@RequestParam(required = false) String referenceWork,
+    public WorkProfilesPresentation getUgcWorkProfilesInRange(@RequestParam(required = false) String referenceWork,
                                                              @RequestParam Integer offset,
                                                              @RequestParam(required = false) OffsetDirection direction) {
-        FindWorkProfilesInRangeCommand command = newQueryCommandAndValidate(referenceWork, offset, direction);
-        return workApp.findUgcWorkProfilesInRange(command);
+        return workApp.findUgcWorkProfilesIn(new Range(referenceWork, offset, direction));
     }
 
-    private FindWorkProfilesInRangeCommand newQueryCommandAndValidate(
-            String referenceWork, Integer offset, OffsetDirection direction) {
-        FindWorkProfilesInRangeCommand command = new FindWorkProfilesInRangeCommand();
-        command.referenceWork = referenceWork;
-        command.offset = offset;
-        if (direction != null) {
-            command.direction = direction;
-        }
-        command.validate();
-        return command;
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    @VisitorApiPermission
+    public WorkProfilesPresentation getAuthorWorks(@RequestParam String authorId,
+                                                  @RequestParam(required = false) String referencePoint,
+                                                  @RequestParam Integer offset,
+                                                  @RequestParam(required = false) OffsetDirection direction) {
+        PreconditionUtils.checkRequired("authorId", authorId);
+        AuthorWorksRange range = new AuthorWorksRange(authorId, referencePoint, offset, direction);
+        return workApp.findAuthorWorksIn(range);
     }
 
 }
