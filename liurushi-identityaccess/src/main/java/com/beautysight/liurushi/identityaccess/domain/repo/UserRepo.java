@@ -34,4 +34,8 @@ public interface UserRepo extends MongoRepository<User> {
 
     void increaseFollowingsNumBy(int increment, String followerId);
 
+    void increaseWorksNumBy(int increment, String userId);
+
+    void increaseFavoritesNumBy(int increment, String userId);
+
 }

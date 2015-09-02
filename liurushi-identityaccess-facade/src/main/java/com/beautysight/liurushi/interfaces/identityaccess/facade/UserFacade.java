@@ -17,4 +17,6 @@ public interface UserFacade {
 
     UserDTO getLiteUserBy(String userId);
 
+    void increaseWorkNumBy(int increment, String userId);
+
 }

@@ -32,6 +32,12 @@ public class UserFacadeImpl implements UserFacade {
         return translateToUserDTO(liteUser);
     }
 
+    @Override
+    public void increaseWorkNumBy(int increment, String userId) {
+        PreconditionUtils.checkRequired("userId", userId);
+        userService.increaseWorksNumBy(increment, userId);
+    }
+
     public List<UserDTO> getLiteUsersBy(List<String> userIds) {
         PreconditionUtils.checkRequired("userIds", userIds);
         List<UserDPO> liteUsers = userService.getLiteUsersWithStats(userIds);

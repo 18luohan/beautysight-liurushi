@@ -110,6 +110,8 @@ public class WorkApp {
             publishingWorkRepo.delete(publishingWork.id());
             logger.info("Transformed publishing-work to work, so delete publishing-work, publishingWorkId:{}, workId:{}",
                     publishingWorkId, theWork.idAsStr());
+            authorService.increaseWorkNumBy(1, theWork.authorId().toHexString());
+            logger.info("Increased workNum of author({}) by 1", theWork.authorId().toHexString());
         }
     }
 

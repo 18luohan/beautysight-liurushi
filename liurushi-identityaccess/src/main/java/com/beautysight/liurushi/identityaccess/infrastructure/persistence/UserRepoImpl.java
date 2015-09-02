@@ -91,6 +91,20 @@ public class UserRepoImpl extends AbstractMongoRepository<User> implements UserR
     }
 
     @Override
+    public void increaseWorksNumBy(int increment, String userId) {
+        Query<User> query = newQuery().field("id").equal(toMongoId(userId));
+        UpdateOperations<User> updateOps = newUpdateOps().inc("stats.worksNum", increment);
+        datastore.update(query, updateOps);
+    }
+
+    @Override
+    public void increaseFavoritesNumBy(int increment, String userId) {
+        Query<User> query = newQuery().field("id").equal(toMongoId(userId));
+        UpdateOperations<User> updateOps = newUpdateOps().inc("stats.favoritesNum", increment);
+        datastore.update(query, updateOps);
+    }
+
+    @Override
     protected Class<User> entityClass() {
         return User.class;
     }

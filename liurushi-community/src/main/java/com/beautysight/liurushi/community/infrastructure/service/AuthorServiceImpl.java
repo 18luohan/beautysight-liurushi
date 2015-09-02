@@ -26,8 +26,12 @@ public class AuthorServiceImpl implements AuthorService {
         UserDTO userDTO = userFacade.getLiteUserBy(authorId);
         return new Author(userDTO.id,
                 userDTO.nickname,
-                userDTO.maxAvatarUrl,
-                userDTO.group.toString());
+                userDTO.group.toString(),
+                userDTO.maxAvatarUrl);
     }
 
+    @Override
+    public void increaseWorkNumBy(int increment, String authorId) {
+        userFacade.increaseWorkNumBy(increment, authorId);
+    }
 }

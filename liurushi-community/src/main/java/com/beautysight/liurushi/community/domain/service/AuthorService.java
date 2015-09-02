@@ -14,4 +14,6 @@ public interface AuthorService {
 
     Author getAuthorBy(String authorId);
 
+    void increaseWorkNumBy(int increment, String authorId);
+
 }

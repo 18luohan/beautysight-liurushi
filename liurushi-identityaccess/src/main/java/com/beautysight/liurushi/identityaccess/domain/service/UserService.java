@@ -138,6 +138,10 @@ public class UserService {
         return translateToUserDPOs(liteUsers);
     }
 
+    public void increaseWorksNumBy(int increment, String userId) {
+        userRepo.increaseWorksNumBy(increment, userId);
+    }
+
     private List<UserDPO> translateToUserDPOs(List<User> users) {
         List<UserDPO> userDPOs = new ArrayList<>(users.size());
         for (User user : users) {
