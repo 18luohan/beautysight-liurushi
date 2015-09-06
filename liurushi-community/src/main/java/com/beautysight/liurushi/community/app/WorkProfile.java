@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.app;
 
-import com.beautysight.liurushi.common.app.PresentationModel;
+import com.beautysight.liurushi.common.app.ViewModel;
 import com.beautysight.liurushi.community.domain.model.work.Author;
 import com.beautysight.liurushi.community.domain.model.work.Work;
 
@@ -16,7 +16,7 @@ import java.util.Date;
  * @author chenlong
  * @since 1.0
  */
-public class WorkProfile implements PresentationModel {
+public class WorkProfile implements ViewModel {
 
     private String id;
     private String title;

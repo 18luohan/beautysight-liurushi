@@ -5,8 +5,8 @@
 package com.beautysight.liurushi.identityaccess.infrastructure.persistence;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
-import com.beautysight.liurushi.identityaccess.domain.model.RequestLog;
-import com.beautysight.liurushi.identityaccess.domain.repo.RequestLogRepo;
+import com.beautysight.liurushi.identityaccess.domain.requestlog.RequestLog;
+import com.beautysight.liurushi.identityaccess.domain.requestlog.RequestLogRepo;
 import org.springframework.stereotype.Repository;
 
 /**

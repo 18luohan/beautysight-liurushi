@@ -6,11 +6,11 @@ package com.beautysight.liurushi.social.app;
 
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
-import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
+import com.beautysight.liurushi.identityaccess.domain.user.UserRepo;
 import com.beautysight.liurushi.social.domain.follow.Follow;
-import com.beautysight.liurushi.social.domain.follow.FollowDPO;
 import com.beautysight.liurushi.social.domain.follow.FollowRepo;
 import com.beautysight.liurushi.social.domain.follow.FollowService;
+import com.beautysight.liurushi.social.domain.follow.UserInFollow;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,16 +62,14 @@ public class FollowApp {
         userRepo.increaseFollowersNumBy(-1, command.followingId);
     }
 
-    public FollowersPresentation findFollowersInRange(String followingId, Range range) {
-        List<FollowDPO> followers = followService.findFollowInRange(
-                FollowRepo.QueryType.follower, followingId, range);
-        return FollowersPresentation.from(followers);
+    public FollowersVM findFollowersInRange(String followingId, Range range, Optional<String> loginUserId) {
+        List<UserInFollow> followers = followService.findFollowersInRange(followingId, range, loginUserId);
+        return new FollowersVM(followers);
     }
 
-    public FollowingsPresentation findFollowingsInRange(String followerId, Range range) {
-        List<FollowDPO> followings = followService.findFollowInRange(
-                FollowRepo.QueryType.following, followerId, range);
-        return FollowingsPresentation.from(followings);
+    public FollowingsVM findFollowingsInRange(String followerId, Range range, Optional<String> loginUserId) {
+        List<UserInFollow> followings = followService.findFollowingsInRange(followerId, range, loginUserId);
+        return new FollowingsVM(followings);
     }
 
 }

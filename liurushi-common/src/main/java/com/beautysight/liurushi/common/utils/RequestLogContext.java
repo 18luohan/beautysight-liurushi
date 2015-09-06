@@ -40,8 +40,9 @@ public final class RequestLogContext {
         reqLogCtxForCurrentReq().protocolVersion = protocolVersion;
     }
 
-    public static void putUserId(String userId) {
+    public static void putUserAndDeviceId(String userId, String deviceId) {
         reqLogCtxForCurrentReq().userId = userId;
+        reqLogCtxForCurrentReq().deviceId = deviceId;
     }
 
     public static void putReqId(String reqId) {
@@ -68,6 +69,7 @@ public final class RequestLogContext {
         copy.reqTime = source.reqTime;
         copy.costOfTime = source.costOfTime;
         copy.userId = source.userId;
+        copy.deviceId = source.deviceId;
         return copy;
     }
 
@@ -86,6 +88,7 @@ public final class RequestLogContext {
     private Date reqTime;
     private Integer costOfTime;
     private String userId = "visitor";
+    private String deviceId;
 
 //    public String reqId() {
 //        return this.reqId;

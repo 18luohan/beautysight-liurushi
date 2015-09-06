@@ -4,9 +4,9 @@
 
 package com.beautysight.liurushi.rest.identityaccess;
 
-import com.beautysight.liurushi.identityaccess.app.OAuthApp;
-import com.beautysight.liurushi.identityaccess.app.command.RefreshAccessTokenCommand;
-import com.beautysight.liurushi.identityaccess.app.presentation.AccessTokenPresentation;
+import com.beautysight.liurushi.identityaccess.app.auth.OAuthApp;
+import com.beautysight.liurushi.identityaccess.app.auth.RefreshAccessTokenCommand;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessTokenVM;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author chenlong
@@ -29,11 +27,10 @@ public class OAuthRest {
     private OAuthApp oAuthApp;
 
     @RequestMapping(value = "/bearer_token", method = RequestMethod.PUT)
-    public AccessTokenPresentation refreshBearerToken(@RequestBody RefreshAccessTokenCommand command,
-                                                      HttpServletRequest request) {
-        command.bearerToken = RequestContext.getAccessToken().accessToken;
+    public AccessTokenVM refreshBearerToken(@RequestBody RefreshAccessTokenCommand command) {
+        command.accessToken = RequestContext.currentAccessToken().accessToken();
         command.validate();
-        return oAuthApp.refreshBearerToken(command);
+        return oAuthApp.refreshAccessToken(command);
     }
 
 }

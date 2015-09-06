@@ -5,9 +5,9 @@
 package com.beautysight.liurushi.identityaccess.infrastructure.persistence;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
-import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
-import com.beautysight.liurushi.identityaccess.domain.model.Device;
-import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessToken;
+import com.beautysight.liurushi.identityaccess.domain.user.Device;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessTokenRepo;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;

@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.rest.common;
 
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessTokenPayload;
 import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -58,7 +58,7 @@ public class Requests {
         }
     }
 
-    public static Optional<AccessTokenDPO> getAccessToken(HttpServletRequest request) {
+    public static Optional<AccessTokenPayload> getAccessToken(HttpServletRequest request) {
         Optional<String> authorization = Requests.getHeader(AUTHORIZATION, request);
         if (logger.isDebugEnabled()) {
             logger.debug("Got authorization header: {}", authorization.orNull());
@@ -76,10 +76,10 @@ public class Requests {
         return Optional.absent();
     }
 
-    private static AccessTokenDPO parse(String authorization) {
+    private static AccessTokenPayload parse(String authorization) {
         String[] data = authorization.split(" ");
         Preconditions.checkArgument((data.length == 2), "Authorization malformed");
-        return new AccessTokenDPO(data[0], data[1]);
+        return new AccessTokenPayload(data[0], data[1]);
     }
 
 }

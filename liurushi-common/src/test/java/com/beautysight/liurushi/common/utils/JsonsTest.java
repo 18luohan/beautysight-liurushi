@@ -3,7 +3,7 @@
  */
 package com.beautysight.liurushi.common.utils;
 
-import com.beautysight.liurushi.common.app.PresentationModel;
+import com.beautysight.liurushi.common.app.ViewModel;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public class JsonsTest {
                 millisOfSecond).toDate();
     }
 
-    private static class Post implements PresentationModel {
+    private static class Post implements ViewModel {
         private int threadId;
         private String author;
         //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -15,6 +15,7 @@ import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfilesPresentation;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.rest.common.APIs;
+import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class WorkRest {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public PublishWorkPresentation publishWork(@RequestBody PublishWorkCommand command) {
-        command.setAuthor(Authors.currentAuthor());
+        command.setAuthorId(RequestContext.currentUserId());
         command.validate();
         return workApp.publishWork(command);
     }

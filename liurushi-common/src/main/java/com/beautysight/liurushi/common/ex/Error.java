@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.common.ex;
 
-import com.beautysight.liurushi.common.app.PresentationModel;
+import com.beautysight.liurushi.common.app.ViewModel;
 
 /**
  * Here is Javadoc.
@@ -14,7 +14,7 @@ import com.beautysight.liurushi.common.app.PresentationModel;
  * @author chenlong
  * @since 1.0
  */
-public class Error implements PresentationModel {
+public class Error implements ViewModel {
 
     private Id id;
     private String message;

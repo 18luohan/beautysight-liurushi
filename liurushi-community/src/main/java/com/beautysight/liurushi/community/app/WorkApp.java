@@ -8,8 +8,8 @@ import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
-import com.beautysight.liurushi.community.app.dpo.ControlDPO;
-import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
+import com.beautysight.liurushi.community.app.dpo.ControlPayload;
+import com.beautysight.liurushi.community.app.dpo.PictureStoryPayload;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfilesPresentation;
@@ -135,7 +135,7 @@ public class WorkApp {
         return WorkPresentation.from(pictureStory, presentation, keyToDownloadUrlMapping);
     }
 
-    public PictureStoryDPO h5SharingOf(String workId) {
+    public PictureStoryPayload h5SharingOf(String workId) {
         Work workOnlyWithPictureStory = workRepo.getPictureStoryOf(workId);
         PictureStory pictureStory = workOnlyWithPictureStory.pictureStory();
 
@@ -163,7 +163,7 @@ public class WorkApp {
         }
         pictureStory.sliceShots(0, endIndex);
 
-        return PictureStoryDPO.from(pictureStory, keyToDownloadUrlMapping);
+        return PictureStoryPayload.from(pictureStory, keyToDownloadUrlMapping);
     }
 
     public WorkProfilesPresentation getPgcLatestWorkProfiles(int count) {
@@ -261,7 +261,8 @@ public class WorkApp {
             }
         }
 
-        return new PublishingWork(pictureStory, presentation, command.author, files);
+        Author author = authorService.getAuthorBy(command.authorId);
+        return new PublishingWork(pictureStory, presentation, author, files);
     }
 
     private void setCover(PictureStory pictureStory, Map<String, ContentSection> contentSections, PublishWorkCommand command) {
@@ -270,7 +271,7 @@ public class WorkApp {
     }
 
     private void setContentSections(WorkPart<? extends Control> workPart, Map<String, ContentSection> contentSections,
-                                    List<? extends ControlDPO> controlDTOs) {
+                                    List<? extends ControlPayload> controlDTOs) {
         for (int i = 0; i < controlDTOs.size(); i++) {
             String key = controlDTOs.get(i).sectionId;
             workPart.controls().get(i).setContentSection(contentSections.get(key));

@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.app.presentation;
 
-import com.beautysight.liurushi.common.app.PresentationModel;
+import com.beautysight.liurushi.common.app.ViewModel;
 import com.beautysight.liurushi.community.app.WorkProfile;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * @author chenlong
  * @since 1.0
  */
-public class WorkProfilesPresentation implements PresentationModel {
+public class WorkProfilesPresentation implements ViewModel {
 
     private List<WorkProfile> workProfiles;
 

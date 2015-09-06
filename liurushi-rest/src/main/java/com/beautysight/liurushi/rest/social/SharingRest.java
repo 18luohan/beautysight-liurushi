@@ -5,7 +5,7 @@
 package com.beautysight.liurushi.rest.social;
 
 import com.beautysight.liurushi.community.app.WorkApp;
-import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
+import com.beautysight.liurushi.community.app.dpo.PictureStoryPayload;
 import com.beautysight.liurushi.rest.common.APIs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +25,7 @@ public class SharingRest {
     private WorkApp workApp;
 
     @RequestMapping(value = "/h5/{workId}", method = RequestMethod.GET)
-    public PictureStoryDPO h5SharingOf(@PathVariable("workId") String workId) {
+    public PictureStoryPayload h5SharingOf(@PathVariable("workId") String workId) {
         return workApp.h5SharingOf(workId);
     }
 

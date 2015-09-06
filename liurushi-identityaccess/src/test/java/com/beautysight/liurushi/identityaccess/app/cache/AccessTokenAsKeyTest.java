@@ -4,8 +4,9 @@
 
 package com.beautysight.liurushi.identityaccess.app.cache;
 
-import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
-import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
+import com.beautysight.liurushi.identityaccess.app.auth.AccessTokenAsCacheKey;
+import com.beautysight.liurushi.identityaccess.app.auth.AuthCommand;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessToken;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

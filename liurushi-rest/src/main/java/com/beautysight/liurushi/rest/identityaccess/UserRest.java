@@ -5,14 +5,8 @@
 package com.beautysight.liurushi.rest.identityaccess;
 
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.identityaccess.app.UserApp;
-import com.beautysight.liurushi.identityaccess.app.command.LoginCommand;
-import com.beautysight.liurushi.identityaccess.app.command.LogoutCommand;
-import com.beautysight.liurushi.identityaccess.app.command.ResetPasswordCommand;
-import com.beautysight.liurushi.identityaccess.app.command.SignUpCommand;
-import com.beautysight.liurushi.identityaccess.app.presentation.SignUpOrLoginPresentation;
-import com.beautysight.liurushi.identityaccess.app.presentation.UserExistPresentation;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
+import com.beautysight.liurushi.identityaccess.app.user.*;
+import com.beautysight.liurushi.identityaccess.domain.user.User;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -38,22 +32,22 @@ public class UserRest {
 
     @RequestMapping(value = "/actions/exist", method = RequestMethod.GET)
     @VisitorApiPermission
-    public UserExistPresentation checkIfUserExistWith(@RequestParam String mobile) {
+    public ExistenceOfUserVM checkIfUserExistWith(@RequestParam String mobile) {
         PreconditionUtils.checkRequiredMobile("request param mobile", mobile);
         return userApp.checkIfUserExistWith(mobile);
     }
 
     @RequestMapping(value = "/{mobileOrUnionId}/actions/exist", method = RequestMethod.GET)
     @VisitorApiPermission
-    public UserExistPresentation checkIfUserExistWith(@PathVariable("mobileOrUnionId") String mobileOrUnionId,
-                                                      @RequestParam(required = false) User.Origin origin) {
+    public ExistenceOfUserVM checkIfUserExistWith(@PathVariable("mobileOrUnionId") String mobileOrUnionId,
+                                                @RequestParam(required = false) User.Origin origin) {
         PreconditionUtils.checkRequired("path variable mobileOrUnionId", mobileOrUnionId);
         return userApp.checkIfUserExistWith(mobileOrUnionId, origin);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @VisitorApiPermission
-    public SignUpOrLoginPresentation signUp(@RequestBody SignUpCommand signUpCommand) {
+    public UserAndAccessTokenVM signUp(@RequestBody SignUpCommand signUpCommand) {
         logger.info("New user sign up");
         signUpCommand.validate();
         return userApp.signUp(signUpCommand);
@@ -61,7 +55,7 @@ public class UserRest {
 
     @RequestMapping(value = "/actions/login", method = RequestMethod.PUT)
     @VisitorApiPermission
-    public SignUpOrLoginPresentation login(@RequestBody LoginCommand loginCommand) {
+    public UserAndAccessTokenVM login(@RequestBody LoginCommand loginCommand) {
         logger.info("User login");
         loginCommand.validate();
         return userApp.login(loginCommand);
@@ -70,9 +64,8 @@ public class UserRest {
     @RequestMapping(value = "/actions/logout", method = RequestMethod.PUT)
     public void logout() {
         logger.info("User logout");
-        userApp.logout(new LogoutCommand(
-                RequestContext.getAccessToken().type.toString(),
-                RequestContext.getAccessToken().accessToken));
+        userApp.logout(RequestContext.currentAccessToken().accessToken(),
+                RequestContext.currentAccessToken().type());
     }
 
     @RequestMapping(value = "/{mobile}/actions/reset_pwd", method = RequestMethod.PUT)

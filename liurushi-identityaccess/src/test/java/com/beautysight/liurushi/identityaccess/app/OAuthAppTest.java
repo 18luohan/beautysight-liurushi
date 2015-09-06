@@ -4,14 +4,15 @@
 
 package com.beautysight.liurushi.identityaccess.app;
 
+import com.beautysight.liurushi.identityaccess.app.auth.OAuthApp;
 import com.beautysight.liurushi.identityaccess.ex.AuthException;
 import com.beautysight.liurushi.common.utils.Jsons;
-import com.beautysight.liurushi.identityaccess.app.cache.AccessTokenCache;
-import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
-import com.beautysight.liurushi.identityaccess.domain.model.AccessToken;
-import com.beautysight.liurushi.identityaccess.domain.repo.AccessTokenRepo;
-import com.beautysight.liurushi.identityaccess.domain.repo.DeviceRepo;
-import com.beautysight.liurushi.identityaccess.domain.service.AccessTokenService;
+import com.beautysight.liurushi.identityaccess.app.auth.AccessTokenCache;
+import com.beautysight.liurushi.identityaccess.app.auth.AuthCommand;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessToken;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessTokenRepo;
+import com.beautysight.liurushi.identityaccess.domain.user.DeviceRepo;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessTokenService;
 import com.beautysight.liurushi.test.utils.Files;
 import mockit.Expectations;
 import mockit.Injectable;

@@ -5,8 +5,8 @@
 package com.beautysight.liurushi.identityaccess.infrastructure.persistence;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
+import com.beautysight.liurushi.identityaccess.domain.user.User;
+import com.beautysight.liurushi.identityaccess.domain.user.UserRepo;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
@@ -29,7 +29,7 @@ public class UserRepoImpl extends AbstractMongoRepository<User> implements UserR
     private static final String[] commonExcludedFields = Fields.newInstance().append("password", "lastLogin", "originalAvatar").toArray();
 
     @Override
-    public User getUser(String id) {
+    public User getUserWithoutPwd(String id) {
         Query<User> query = newQuery().retrievedFields(false, commonExcludedFields)
                 .field("id").equal(new ObjectId(id));
         return query.get();

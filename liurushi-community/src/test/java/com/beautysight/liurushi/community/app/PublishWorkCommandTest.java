@@ -5,7 +5,7 @@
 package com.beautysight.liurushi.community.app;
 
 import com.beautysight.liurushi.common.utils.Jsons;
-import com.beautysight.liurushi.community.app.dpo.ContentSectionDPO;
+import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
 import com.beautysight.liurushi.test.utils.Files;
 import com.fasterxml.jackson.core.type.TypeReference;
 import static org.junit.Assert.*;
@@ -21,12 +21,12 @@ public class PublishWorkCommandTest {
 
     @Test
     public void readContentSectionsJsonWithGenericType() {
-        List<ContentSectionDPO> sections = Jsons.toObject(
+        List<ContentSectionPayload> sections = Jsons.toObject(
                 Files.fileInSameDirWith(PublishWorkCommandTest.class, "ContentSections.json"),
-                new TypeReference<List<ContentSectionDPO>>() {}
+                new TypeReference<List<ContentSectionPayload>>() {}
         );
         assertEquals(6, sections.size());
-        for (ContentSectionDPO sectionDTO : sections) {
+        for (ContentSectionPayload sectionDTO : sections) {
             assertNotNull(sectionDTO.type);
         }
     }

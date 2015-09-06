@@ -4,13 +4,13 @@
 
 package com.beautysight.liurushi.fundamental.app;
 
-import com.beautysight.liurushi.common.app.PresentationModel;
+import com.beautysight.liurushi.common.app.ViewModel;
 
 /**
  * @author chenlong
  * @since 1.0
  */
-public class UploadTokenPresentation implements PresentationModel {
+public class UploadTokenPresentation implements ViewModel {
 
     private String uploadToken;
 

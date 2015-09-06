@@ -7,11 +7,12 @@ package com.beautysight.liurushi.rest.common;
 import com.beautysight.liurushi.common.ex.ApplicationException;
 import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.common.utils.Logs;
-import com.beautysight.liurushi.identityaccess.app.OAuthApp;
-import com.beautysight.liurushi.identityaccess.app.UserApp;
-import com.beautysight.liurushi.identityaccess.app.command.AccessTokenDPO;
-import com.beautysight.liurushi.identityaccess.app.command.AuthCommand;
-import com.beautysight.liurushi.identityaccess.domain.model.UserLite;
+import com.beautysight.liurushi.common.utils.RequestLogContext;
+import com.beautysight.liurushi.identityaccess.app.auth.AuthCommand;
+import com.beautysight.liurushi.identityaccess.app.auth.OAuthApp;
+import com.beautysight.liurushi.identityaccess.app.user.UserApp;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessToken;
+import com.beautysight.liurushi.identityaccess.domain.auth.AccessTokenPayload;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,24 +43,25 @@ public class AccessTokenAuthenticator extends HandlerInterceptorAdapter {
         }
 
         try {
-            Optional<AccessTokenDPO> accessToken = Requests.getAccessToken(request);
+            Optional<AccessTokenPayload> clientProvidedToken = Requests.getAccessToken(request);
             if (logger.isDebugEnabled()) {
-                logger.debug("Authenticating access token: {}", accessToken.orNull());
+                logger.debug("Authenticating access token: {}", clientProvidedToken.orNull());
             }
 
-            if (accessToken.isPresent()) {
-                accessToken.get().validate();
+            if (clientProvidedToken.isPresent()) {
+                clientProvidedToken.get().validate();
 
-                // 如果是refresh bearer token api，就跳过对请求的认证
-                if (!isRefreshBearerTokenAPI(request)) {
-                    authApp.authenticate(new AuthCommand(accessToken.get().type, accessToken.get().accessToken));
+                // 如果是refresh bearer token api，就跳过对请求的认证；否则校验access token。
+                AccessToken theToken;
+                if (isRefreshBearerTokenAPI(request)) {
+                    theToken = authApp.getLastTokenOrCurrentToken(clientProvidedToken.get().accessToken, clientProvidedToken.get().type);
+                } else {
+                    theToken = authApp.authenticate(new AuthCommand(clientProvidedToken.get().type, clientProvidedToken.get().accessToken));
                 }
 
-                RequestContext.putAccessToken(accessToken.get());
-                UserLite userLite = userApp.getCurrentUserProfile(accessToken.get().type, accessToken.get().accessToken);
-                RequestContext.putUserProfile(userLite);
-                // 将当前会话所属用户的id放入请求日志上下文中
-                Logs.putUserId(userLite.id().toString());
+                RequestContext.putAccessToken(theToken);
+                Logs.putUserAndDeviceId(theToken.userId(), theToken.deviceId());
+                RequestLogContext.putUserAndDeviceId(theToken.userId(), theToken.deviceId());
             }
         } catch (ApplicationException ex) {
             logger.error("Error while authenticate", ex);

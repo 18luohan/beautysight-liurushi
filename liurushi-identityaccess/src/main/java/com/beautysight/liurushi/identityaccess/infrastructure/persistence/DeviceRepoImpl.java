@@ -5,9 +5,9 @@
 package com.beautysight.liurushi.identityaccess.infrastructure.persistence;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
-import com.beautysight.liurushi.identityaccess.domain.model.Device;
-import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.repo.DeviceRepo;
+import com.beautysight.liurushi.identityaccess.domain.user.Device;
+import com.beautysight.liurushi.identityaccess.domain.user.User;
+import com.beautysight.liurushi.identityaccess.domain.user.DeviceRepo;
 import com.google.common.base.Optional;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;

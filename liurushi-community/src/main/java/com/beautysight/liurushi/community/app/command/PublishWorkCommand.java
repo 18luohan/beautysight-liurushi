@@ -6,10 +6,9 @@ package com.beautysight.liurushi.community.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.community.app.dpo.ContentSectionDPO;
-import com.beautysight.liurushi.community.app.dpo.PictureStoryDPO;
-import com.beautysight.liurushi.community.app.dpo.PresentationDPO;
-import com.beautysight.liurushi.community.domain.model.work.Author;
+import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
+import com.beautysight.liurushi.community.app.dpo.PictureStoryPayload;
+import com.beautysight.liurushi.community.app.dpo.PresentationPayload;
 import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
 
 import java.util.HashMap;
@@ -23,13 +22,13 @@ import java.util.Map;
  */
 public class PublishWorkCommand implements Command {
 
-    public PictureStoryDPO pictureStory;
-    public PresentationDPO presentation;
-    public List<ContentSectionDPO> contentSections;
-    public Author author;
+    public PictureStoryPayload pictureStory;
+    public PresentationPayload presentation;
+    public List<ContentSectionPayload> contentSections;
+    public String authorId;
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
     public void validate() {
@@ -40,19 +39,19 @@ public class PublishWorkCommand implements Command {
 
         PreconditionUtils.checkRequired("contentSections", contentSections);
         HashSet<String> sectionIds = new HashSet<>();
-        for (ContentSectionDPO section : contentSections) {
+        for (ContentSectionPayload section : contentSections) {
             section.validate();
             if (sectionIds.contains(section.id)) {
                 throw new IllegalArgumentException("Duplicate id in contentSections: " + section.id);
             }
         }
 
-        PreconditionUtils.checkRequired("author", author);
+        PreconditionUtils.checkRequired("authorId", authorId);
     }
 
     public Map<String, ContentSection> contentSectionsMap() {
         Map<String, ContentSection> contentSectionsMap = new HashMap<>();
-        for (ContentSectionDPO sectionDTO : contentSections) {
+        for (ContentSectionPayload sectionDTO : contentSections) {
             contentSectionsMap.put(sectionDTO.id, sectionDTO.toDomainModel());
         }
         return contentSectionsMap;

@@ -247,6 +247,10 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return Optional.fromNullable(query.get());
     }
 
+    protected Query<T> newQuery() {
+        return datastore.createQuery(entityClass());
+    }
+
     protected Query<T> newQuery(Conditions conditions) {
         Assert.notNull(conditions, "The given conditions must not be null");
         Query<T> query = newQuery();
@@ -260,10 +264,6 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     protected UpdateOperations<T> newUpdateOps() {
         return datastore.createUpdateOperations(entityClass());
-    }
-
-    protected Query<T> newQuery() {
-        return datastore.createQuery(entityClass());
     }
 
     protected ObjectId toMongoId(String id) {

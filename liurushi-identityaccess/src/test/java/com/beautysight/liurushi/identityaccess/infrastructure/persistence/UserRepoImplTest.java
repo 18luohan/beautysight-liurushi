@@ -4,13 +4,12 @@
 
 package com.beautysight.liurushi.identityaccess.infrastructure.persistence;
 
-import com.beautysight.liurushi.identityaccess.domain.model.User;
-import com.beautysight.liurushi.identityaccess.domain.repo.UserRepo;
+import com.beautysight.liurushi.identityaccess.domain.user.User;
+import com.beautysight.liurushi.identityaccess.domain.user.UserRepo;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import com.beautysight.liurushi.test.mongo.Cleanup;
 import com.beautysight.liurushi.test.mongo.Prepare;
 import com.beautysight.liurushi.test.utils.Reflections;
-import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;

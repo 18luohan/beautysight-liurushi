@@ -20,7 +20,9 @@ public interface FollowRepo extends MongoRepository<Follow> {
 
     int deleteBy(String followerId, String followingId);
 
-    List<Follow> findFollowInRange(QueryType type, String involvedUserId, Range range);
+    List<UserInFollow> findUsersInFollowInRange(QueryType type, String involvedUserId, Range range);
+
+    List<Follow> findFollowsBy(String followerId, List<String> followingIds);
 
     enum QueryType {
         follower, following

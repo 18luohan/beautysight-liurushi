@@ -34,11 +34,11 @@ public class StorageApp {
         return UploadTokenPresentation.from(storageService.issueUploadToken(command.toUploadOptions()));
     }
 
-    public DownloadUrlPresentation issueDownloadUrl(IssueDownloadUrlCommand command) {
+    public DownloadUrl issueDownloadUrl(IssueDownloadUrlCommand command) {
         command.validate();
         String url = storageService.issueDownloadUrlWithFileOps(
                 command.key, command.expiry, command.instructions, command.savedAsKey);
-        return DownloadUrlPresentation.from(url);
+        return DownloadUrl.from(url);
     }
 
 }

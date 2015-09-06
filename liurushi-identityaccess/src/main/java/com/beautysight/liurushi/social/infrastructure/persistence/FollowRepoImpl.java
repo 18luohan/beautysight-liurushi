@@ -8,11 +8,15 @@ import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.beautysight.liurushi.social.domain.follow.Follow;
 import com.beautysight.liurushi.social.domain.follow.FollowRepo;
+import com.beautysight.liurushi.social.domain.follow.UserInFollow;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,18 +42,45 @@ public class FollowRepoImpl extends AbstractMongoRepository<Follow> implements F
     }
 
     @Override
-    public List<Follow> findFollowInRange(QueryType type, String involvedUserId, Range range) {
-        Conditions conditions = Conditions.of(determineField(type), toMongoId(involvedUserId));
-        return find(conditions, range);
+    public List<UserInFollow> findUsersInFollowInRange(QueryType type, String involvedUserId, Range range) {
+        Conditions conditions = Conditions.of(determineConditionField(type), toMongoId(involvedUserId));
+        List<Follow> follows = find(conditions, range);
+        if (CollectionUtils.isEmpty(follows)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<UserInFollow> result = new ArrayList<>(follows.size());
+        for (Follow follow : follows) {
+            String userId = determineFollowerOrFollowingId(type, follow);
+            result.add(new UserInFollow(follow.idAsStr(), userId));
+        }
+
+        return result;
     }
 
-    private String determineField(QueryType type) {
+    @Override
+    public List<Follow> findFollowsBy(String followerId, List<String> followingIds) {
+        return newQuery().field("followerId").equal(toMongoId(followerId))
+                .field("followingId").in(toMongoIds(followingIds)).asList();
+    }
+
+    private String determineConditionField(QueryType type) {
         if (type == QueryType.follower) {
             return "followingId";
         } else if (type == QueryType.following) {
             return "followerId";
         } else {
-            throw new RuntimeException("Unexpected FollowType: " + type);
+            throw new RuntimeException("Unexpected QueryType: " + type);
+        }
+    }
+
+    private String determineFollowerOrFollowingId(QueryType type, Follow follow) {
+        if (type == QueryType.follower) {
+            return follow.followerId();
+        } else if (type == QueryType.following) {
+            return follow.followingId();
+        } else {
+            throw new RuntimeException("Unexpected QueryType: " + type);
         }
     }
 

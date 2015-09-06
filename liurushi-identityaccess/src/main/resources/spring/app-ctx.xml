@@ -5,16 +5,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- <import resource="classpath*:spring/persistence-mongo.xml"/> -->
-
-    <!-- Application Service Layer -->
-    <context:component-scan base-package="com.beautysight.liurushi.identityaccess.app"/>
-    <!-- Domain Service Layer -->
-    <context:component-scan base-package="com.beautysight.liurushi.identityaccess.domain.service"/>
-    <!-- Repository Layer -->
-    <context:component-scan base-package="com.beautysight.liurushi.identityaccess.infrastructure.persistence"/>
-
-    <context:component-scan base-package="com.beautysight.liurushi.identityaccess.infrastructure"/>
-
+    <context:component-scan base-package="com.beautysight.liurushi.identityaccess"/>
     <context:component-scan base-package="com.beautysight.liurushi.social"/>
 
 </beans>
