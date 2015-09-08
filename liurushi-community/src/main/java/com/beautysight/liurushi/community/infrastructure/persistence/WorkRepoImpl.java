@@ -12,6 +12,7 @@ import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.Abs
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,8 +24,8 @@ import java.util.List;
 @Repository
 public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkRepo {
 
-    private static final Fields workBasicFields = Fields.newInstance().append("id", "authorId", "source", "publishedAt");
-    private static final String[] workProfileFields = workBasicFields.copyThenAppend("pictureStory.title", "pictureStory.cover.picture").toArray();
+    private static final Fields workBasicFields = Fields.newInstance().append("id", "title", "subtitle", "authorId", "source", "publishedAt");
+    private static final String[] workProfileFields = workBasicFields.copyThenAppend("stats", "pictureStory.cover.picture").toArray();
     private static final String[] pictureStoryFields = workBasicFields.copyThenAppend("pictureStory").toArray();
 
     @Override
@@ -43,7 +44,7 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     @Override
-    public Work getPictureStoryOf(String workId) {
+    public Work getWorkOnlyWithPictureStory(String workId) {
         Query<Work> query = newQuery();
         query.retrievedFields(true, pictureStoryFields)
                 .field("id").equal(new ObjectId(workId));
@@ -55,6 +56,13 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
         Conditions conditions = Conditions.of("authorId", toMongoId(range.authorId()));
         FieldsFilter filter = new FieldsFilter(true, workProfileFields);
         return find(conditions, range, Optional.of(filter));
+    }
+
+    @Override
+    public void increaseLikeTimesBy(int increment, String workId) {
+        Query<Work> query = newQuery().field("id").equal(toMongoId(workId));
+        UpdateOperations<Work> updateOps = newUpdateOps().inc("stats.likeTimes", increment);
+        datastore.update(query, updateOps);
     }
 
     @Override

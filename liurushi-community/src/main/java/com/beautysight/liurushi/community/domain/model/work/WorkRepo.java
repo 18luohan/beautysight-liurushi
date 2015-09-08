@@ -20,8 +20,10 @@ public interface WorkRepo extends MongoRepository<Work> {
 
     List<Work> findWorksInRange(Work.Source source, Range range);
 
-    Work getPictureStoryOf(String workId);
+    Work getWorkOnlyWithPictureStory(String workId);
 
     List<Work> findAuthorWorksIn(AuthorWorksRange range);
+
+    void increaseLikeTimesBy(int increment, String workId);
 
 }

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -128,13 +129,15 @@ public class UserService {
         return buildViewOf(theLiteUser).lite();
     }
 
+    public List<UserView.Lite> getLiteUsers(Collection<String> userIds) {
+        PreconditionUtils.checkRequired("userIds", userIds);
+        List<User> liteUsers = userRepo.getLiteUsersBy(userIds);
+        return buildViewsOf(liteUsers, UserView.Lite.class);
+    }
+
     public List<UserView.LiteAndStats> getLiteUsersWithStats(List<String> userIds) {
-        List<User> theLiteUsers = userRepo.getLiteUsersWithStats(userIds);
-        List<UserView.LiteAndStats> views = new ArrayList<>(theLiteUsers.size());
-        for (User liteUser : theLiteUsers) {
-            views.add(buildViewOf(liteUser).liteAndStats());
-        }
-        return views;
+        List<User> liteUsers = userRepo.getLiteUsersWithStats(userIds);
+        return buildViewsOf(liteUsers, UserView.LiteAndStats.class);
     }
 
     public void increaseWorksNumBy(int increment, String userId) {
@@ -152,6 +155,23 @@ public class UserService {
             builder.setMaxAvatarUrl(storageService.issueDownloadUrl(user.maxAvatar().get().key()));
         }
         return builder.build();
+    }
+
+    private <T> List<T> buildViewsOf(List<User> users, Class<T> expectedViewClass) {
+        List<T> views = new ArrayList<>(users.size());
+        for (User user : users) {
+            UserView view = buildViewOf(user);
+            if (expectedViewClass == UserView.Lite.class) {
+                views.add((T) view.lite());
+            } else if (expectedViewClass == UserView.LiteAndStats.class) {
+                views.add((T) view.liteAndStats());
+            } else if (expectedViewClass == UserView.Whole.class) {
+                views.add((T) view.whole());
+            } else {
+                throw new IllegalArgumentException("Invalid view class: " + expectedViewClass);
+            }
+        }
+        return views;
     }
 
     private void setNewAvatarFor(User user, FileMetadata newOriginalAvatar) {

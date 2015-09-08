@@ -17,6 +17,10 @@ public class Range {
     private Integer offset;
     private OffsetDirection direction = OffsetDirection.both;
 
+    public Range(Integer offset, OffsetDirection direction) {
+        this(null, offset, direction);
+    }
+
     public Range(String referencePoint, Integer offset, OffsetDirection direction) {
         this.setReferencePoint(referencePoint);
         this.setOffset(offset);
@@ -49,6 +53,14 @@ public class Range {
 
     public OffsetDirection direction() {
         return this.direction;
+    }
+
+    /**
+     * @author chenlong
+     * @since 1.0
+     */
+    public enum OffsetDirection {
+        before, after, both
     }
 
 }

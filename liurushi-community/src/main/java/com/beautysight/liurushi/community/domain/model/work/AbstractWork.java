@@ -20,6 +20,8 @@ import org.bson.types.ObjectId;
  */
 public abstract class AbstractWork extends AbstractEntity {
 
+    protected String title;
+    protected String subtitle;
     protected PictureStory pictureStory;
     protected Presentation presentation;
     protected ObjectId authorId;
@@ -28,7 +30,9 @@ public abstract class AbstractWork extends AbstractEntity {
     public AbstractWork() {
     }
 
-    public AbstractWork(PictureStory pictureStory, Presentation presentation, Author author) {
+    public AbstractWork(String title, String subtitle, PictureStory pictureStory, Presentation presentation, Author author) {
+        this.title = title;
+        this.subtitle = subtitle;
         this.pictureStory = pictureStory;
         this.presentation = presentation;
         if (author != null) {
@@ -38,10 +42,11 @@ public abstract class AbstractWork extends AbstractEntity {
     }
 
     public String title() {
-        if (pictureStory == null) {
-            return null;
-        }
-        return pictureStory.title();
+        return this.title;
+    }
+
+    public String subtitle() {
+        return this.subtitle;
     }
 
     public Cover cover() {
@@ -59,8 +64,8 @@ public abstract class AbstractWork extends AbstractEntity {
         return this.presentation;
     }
 
-    public ObjectId authorId() {
-        return this.authorId;
+    public String authorId() {
+        return this.authorId.toHexString();
     }
 
     private void determineSourceBy(Author author) {

@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,9 +24,9 @@ public class PreconditionUtils {
         }
     }
 
-    public static void checkRequired(String field, List<?> val) {
+    public static void checkRequired(String field, Collection<?> val) {
         if (CollectionUtils.isEmpty(val)) {
-            throw new IllegalParamException("%s must not be null or empty", field);
+            throw new IllegalParamException("collection %s must not be null or empty", field);
         }
     }
 

@@ -28,14 +28,11 @@ import java.util.Map;
  */
 public class PictureStoryPayload extends Payload {
 
-    public String title;
-    public String subtitle;
     public Layout layout;
     public CoverDPO cover;
     public List<ShotPayload> shots;
 
     public void validate() {
-        PreconditionUtils.checkRequired("pictureStory.title", title);
         PreconditionUtils.checkRequired("pictureStory.layout", layout);
         PreconditionUtils.checkRequired("pictureStory.cover", cover);
         PreconditionUtils.checkRequired("pictureStory.shots", shots);
@@ -49,7 +46,7 @@ public class PictureStoryPayload extends Payload {
         for (ShotPayload dto : shots) {
             shotList.add(dto.toShot());
         }
-        return new PictureStory(title, subtitle, layout, cover.toCover(), shotList);
+        return new PictureStory(layout, cover.toCover(), shotList);
     }
 
     public static PictureStoryPayload from(PictureStory source, Map<String, String> keyToDownloadUrlMapping) {

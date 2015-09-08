@@ -4,7 +4,6 @@
 
 package com.beautysight.liurushi.rest.social;
 
-import com.beautysight.liurushi.common.domain.OffsetDirection;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.FOLLOW_V1)
+@RequestMapping(APIs.FOLLOWS_V1)
 public class FollowRest {
 
     @Autowired
@@ -46,7 +45,7 @@ public class FollowRest {
     public FollowersVM getFollowersOf(@RequestParam String userId,
                                                 @RequestParam(required = false) String referencePoint,
                                                 @RequestParam Integer offset,
-                                                @RequestParam(required = false) OffsetDirection direction) {
+                                                @RequestParam(required = false) Range.OffsetDirection direction) {
         Range range = new Range(referencePoint, offset, direction);
         return followApp.findFollowersInRange(userId, range, RequestContext.optionalCurrentUserId());
     }
@@ -56,7 +55,7 @@ public class FollowRest {
     public FollowingsVM getFollowingsOf(@RequestParam String userId,
                                                  @RequestParam(required = false) String referencePoint,
                                                  @RequestParam Integer offset,
-                                                 @RequestParam(required = false) OffsetDirection direction) {
+                                                 @RequestParam(required = false) Range.OffsetDirection direction) {
         Range range = new Range(referencePoint, offset, direction);
         return followApp.findFollowingsInRange(userId, range, RequestContext.optionalCurrentUserId());
     }

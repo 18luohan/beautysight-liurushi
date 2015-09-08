@@ -13,11 +13,11 @@ import java.util.List;
  * @author chenlong
  * @since 1.0
  */
-public class WorkProfilesPresentation implements ViewModel {
+public class WorkProfilesVM implements ViewModel {
 
     private List<WorkProfile> workProfiles;
 
-    public WorkProfilesPresentation(List<WorkProfile> workProfiles) {
+    public WorkProfilesVM(List<WorkProfile> workProfiles) {
         this.workProfiles = workProfiles;
     }
 

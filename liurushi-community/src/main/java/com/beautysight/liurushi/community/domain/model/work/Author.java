@@ -17,11 +17,6 @@ public class Author extends ValueObject {
     public String maxAvatarUrl;
     public Group group;
 
-    public Author(String id, String groupAsStr) {
-        this.id = id;
-        this.group = Group.valueOf(groupAsStr);
-    }
-
     public Author(String id, String nickname, String groupAsStr, String maxAvatarUrl) {
         this.id = id;
         this.nickname = nickname;

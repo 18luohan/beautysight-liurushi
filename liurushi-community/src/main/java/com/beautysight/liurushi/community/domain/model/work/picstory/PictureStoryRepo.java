@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.model.work.picstory;
 
-import com.beautysight.liurushi.common.domain.OffsetDirection;
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.domain.model.work.Work;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 import com.google.common.base.Optional;
@@ -20,6 +20,6 @@ public interface PictureStoryRepo extends MongoRepository<PictureStory> {
     List<PictureStory> getLatestPictureStories(Work.Source source, int count);
 
     List<PictureStory> findPictureStoriesInRange(
-            Work.Source source, Optional<String> referenceWorkId, int offset, OffsetDirection direction);
+            Work.Source source, Optional<String> referenceWorkId, int offset, Range.OffsetDirection direction);
 
 }

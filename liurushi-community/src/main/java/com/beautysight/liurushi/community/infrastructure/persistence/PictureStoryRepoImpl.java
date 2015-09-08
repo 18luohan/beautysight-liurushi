@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.common.domain.OffsetDirection;
+import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStoryRepo;
 import com.beautysight.liurushi.community.domain.model.work.Work;
@@ -36,7 +36,7 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
     }
 
     public List<PictureStory> findPictureStoriesInRange(
-            Work.Source source, Optional<String> referenceWorkId, int offset, OffsetDirection direction) {
+            Work.Source source, Optional<String> referenceWorkId, int offset, Range.OffsetDirection direction) {
         List<PictureStory> result = new ArrayList<>();
 
         if (!referenceWorkId.isPresent()) {
@@ -45,7 +45,7 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
 
         Query<PictureStory> query;
         boolean isReferenceWorkAdded = false;
-        if (offset > 0 && (direction == OffsetDirection.both || direction == OffsetDirection.after)) {
+        if (offset > 0 && (direction == Range.OffsetDirection.both || direction == Range.OffsetDirection.after)) {
             query = newQuery();
             query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
                     .field("source").equal(source)
@@ -61,7 +61,7 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
             }
         }
 
-        if (offset > 0 && (direction == OffsetDirection.both || direction == OffsetDirection.before)) {
+        if (offset > 0 && (direction == Range.OffsetDirection.both || direction == Range.OffsetDirection.before)) {
             query = newQuery();
             query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
                     .field("source").equal(source)

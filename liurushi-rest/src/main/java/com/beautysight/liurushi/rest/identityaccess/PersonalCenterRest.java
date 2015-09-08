@@ -58,16 +58,4 @@ public class PersonalCenterRest {
         return userApp.editUserProfile(userDPO);
     }
 
-//    @RequestMapping(value = "/{userId}/works", method = RequestMethod.GET)
-//    @VisitorApiPermission
-//    public List<Map<String, Object>> myWorks(@PathVariable("userId") String userId) {
-//        return new ArrayList<>();
-//    }
-//
-//    @RequestMapping(value = "/{userId}/favorites", method = RequestMethod.GET)
-//    @VisitorApiPermission
-//    public List<Map<String, Object>> myFavorites(@PathVariable("userId") String userId) {
-//        return new ArrayList<>();
-//    }
-
 }

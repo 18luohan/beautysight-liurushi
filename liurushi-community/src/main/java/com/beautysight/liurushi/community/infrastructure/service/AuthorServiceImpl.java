@@ -11,6 +11,10 @@ import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * @author chenlong
  * @since 1.0
@@ -24,14 +28,31 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author getAuthorBy(String authorId) {
         UserDTO userDTO = userFacade.getLiteUserBy(authorId);
-        return new Author(userDTO.id,
-                userDTO.nickname,
-                userDTO.group.toString(),
-                userDTO.maxAvatarUrl);
+        return translateToAuthor(userDTO);
+    }
+
+    @Override
+    public List<Author> getAuthorsBy(Collection<String> authorIds) {
+        return translateToAuthors(userFacade.getLiteUsersBy(authorIds));
     }
 
     @Override
     public void increaseWorkNumBy(int increment, String authorId) {
         userFacade.increaseWorkNumBy(increment, authorId);
+    }
+
+    private List<Author> translateToAuthors(List<UserDTO> userDTOs) {
+        List<Author> authors = new ArrayList<>(userDTOs.size());
+        for (UserDTO userDTO : userDTOs) {
+            authors.add(translateToAuthor(userDTO));
+        }
+        return authors;
+    }
+
+    private Author translateToAuthor(UserDTO userDTO) {
+        return new Author(userDTO.id,
+                userDTO.nickname,
+                userDTO.group.toString(),
+                userDTO.maxAvatarUrl);
     }
 }

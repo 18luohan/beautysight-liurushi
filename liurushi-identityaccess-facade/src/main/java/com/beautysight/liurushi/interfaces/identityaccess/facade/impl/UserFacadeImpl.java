@@ -5,12 +5,16 @@
 package com.beautysight.liurushi.interfaces.identityaccess.facade.impl;
 
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.identityaccess.domain.user.UserView;
 import com.beautysight.liurushi.identityaccess.domain.user.UserService;
+import com.beautysight.liurushi.identityaccess.domain.user.UserView;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.UserFacade;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author chenlong
@@ -30,6 +34,13 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
+    public List<UserDTO> getLiteUsersBy(Collection<String> userIds) {
+        PreconditionUtils.checkRequired("userIds", userIds);
+        List<UserView.Lite> liteUsers = userService.getLiteUsers(userIds);
+        return translateToUserDTOs(liteUsers);
+    }
+
+    @Override
     public void increaseWorkNumBy(int increment, String userId) {
         PreconditionUtils.checkRequired("userId", userId);
         userService.increaseWorksNumBy(increment, userId);
@@ -42,6 +53,14 @@ public class UserFacadeImpl implements UserFacade {
         userDTO.group = UserDTO.Group.valueOf(liteUser.getGroup().val());
         userDTO.maxAvatarUrl = liteUser.getMaxAvatarUrl();
         return userDTO;
+    }
+
+    private List<UserDTO> translateToUserDTOs(List<UserView.Lite> liteUsers) {
+        List<UserDTO> userDTOs = new ArrayList<>(liteUsers.size());
+        for (UserView.Lite liteUser : liteUsers) {
+            userDTOs.add(translateToUserDTO(liteUser));
+        }
+        return userDTOs;
     }
 
 }

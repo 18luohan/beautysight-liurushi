@@ -30,8 +30,8 @@ public class PublishingWork extends AbstractWork {
         this.initialize();
     }
 
-    public PublishingWork(PictureStory pictureStory, Presentation presentation, Author author, List<FileMetadata> files) {
-        super(pictureStory, presentation, author);
+    public PublishingWork(String title, String subtitle, PictureStory pictureStory, Presentation presentation, Author author, List<FileMetadata> files) {
+        super(title, subtitle, pictureStory, presentation, author);
         this.initialize();
         this.files = files;
     }
@@ -41,7 +41,8 @@ public class PublishingWork extends AbstractWork {
     }
 
     public Work transformToWork() {
-        Work theWork = new Work(this.id, this.pictureStory, this.presentation, this.authorId, this.source);
+        Work theWork = new Work(this.id, this.title, this.subtitle,
+                this.pictureStory, this.presentation, this.authorId, this.source);
         theWork.setPublishedAt(this.createdAt);
         return theWork;
     }

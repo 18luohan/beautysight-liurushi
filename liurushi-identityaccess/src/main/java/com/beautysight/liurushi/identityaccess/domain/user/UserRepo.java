@@ -5,9 +5,9 @@
 package com.beautysight.liurushi.identityaccess.domain.user;
 
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
-import com.beautysight.liurushi.identityaccess.domain.user.User;
 import com.google.common.base.Optional;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,6 +25,8 @@ public interface UserRepo extends MongoRepository<User> {
     void setUsersGroupToProfessional(List<String> mobiles);
 
     User getLiteUserBy(String id);
+
+    List<User> getLiteUsersBy(Collection<String> ids);
 
     List<User> getLiteUsersWithStats(List<String> ids);
 

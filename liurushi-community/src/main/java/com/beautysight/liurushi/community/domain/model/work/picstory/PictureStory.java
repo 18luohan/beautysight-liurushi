@@ -17,8 +17,6 @@ import java.util.List;
  */
 public class PictureStory extends WorkPart<Shot> {
 
-    private String title;
-    private String subtitle;
     private Layout layout;
     private Cover cover;
     private List<Shot> shots;
@@ -26,9 +24,7 @@ public class PictureStory extends WorkPart<Shot> {
     public PictureStory() {
     }
 
-    public PictureStory(String title, String subtitle, Layout layout, Cover cover, List<Shot> shots) {
-        this.title = title;
-        this.subtitle = subtitle;
+    public PictureStory(Layout layout, Cover cover, List<Shot> shots) {
         this.layout = layout;
         this.cover = cover;
         this.shots = shots;
@@ -45,10 +41,6 @@ public class PictureStory extends WorkPart<Shot> {
 
     public Cover cover() {
         return cover;
-    }
-
-    public String title() {
-        return this.title;
     }
 
     public Layout layout() {

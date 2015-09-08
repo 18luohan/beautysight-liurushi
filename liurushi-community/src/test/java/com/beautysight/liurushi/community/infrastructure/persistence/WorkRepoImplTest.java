@@ -22,7 +22,7 @@ public class WorkRepoImplTest extends SpringBasedAppTest {
 
     @Test
     public void getPictureStoryOf() {
-        Work work = workRepo.getPictureStoryOf("55e431175e76a9cdbb532ed1");
+        Work work = workRepo.getWorkOnlyWithPictureStory("55e431175e76a9cdbb532ed1");
         Assert.assertNotNull(work.pictureStory().layout());
         Assert.assertNotNull(work.pictureStory().layout().generateBlockLocator());
     }

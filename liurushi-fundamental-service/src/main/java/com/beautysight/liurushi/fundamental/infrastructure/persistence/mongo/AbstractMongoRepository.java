@@ -4,7 +4,6 @@
 
 package com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo;
 
-import com.beautysight.liurushi.common.domain.OffsetDirection;
 import com.beautysight.liurushi.common.domain.Range;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -202,27 +201,34 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         }
 
         List<T> result = new ArrayList<>();
-        if (range.direction() == OffsetDirection.both || range.direction() == OffsetDirection.after) {
+        boolean isReferencePointAdded = false;
+        if (range.direction() == Range.OffsetDirection.both || range.direction() == Range.OffsetDirection.after) {
             Query<T> query = newQuery(conditions)
-                    .field("id").greaterThanOrEq(new ObjectId(range.referencePoint().get()))
+                    .field("id").greaterThanOrEq(toMongoId(range.referencePoint().get()))
                     .order("id").limit(range.offset() + 1);
             filterFields(query, fieldsFilter);
             List<T> ascendingList = query.asList();
-            if (org.apache.commons.collections.CollectionUtils.isNotEmpty(ascendingList)) {
+            if (!CollectionUtils.isEmpty(ascendingList)) {
                 // 倒序排列
                 Collections.reverse(ascendingList);
                 result.addAll(ascendingList);
+                isReferencePointAdded = true;
             }
         }
 
-        if (range.direction() == OffsetDirection.both || range.direction() == OffsetDirection.before) {
+        if (range.direction() == Range.OffsetDirection.both || range.direction() == Range.OffsetDirection.before) {
             Query<T> query = newQuery(conditions)
-                    .field("id").lessThan(new ObjectId(range.referencePoint().get()))
-                    .order("-id").limit(range.offset()); // 目前morphia组件还不支持$natural查询修饰符
+                    .field("id").lessThanOrEq(toMongoId(range.referencePoint().get()))
+                    .order("-id").limit(range.offset()+1); // 目前morphia组件还不支持$natural查询修饰符
             filterFields(query, fieldsFilter);
             List<T> descendingList = query.asList();
-            if (org.apache.commons.collections.CollectionUtils.isNotEmpty(descendingList)) {
-                result.addAll(descendingList);
+            if (!CollectionUtils.isEmpty(descendingList)) {
+                // 如果作为参考点的对象已添加，则无需重复添加
+                if (isReferencePointAdded) {
+                    result.addAll(descendingList.subList(1, descendingList.size()));
+                } else {
+                    result.addAll(descendingList);
+                }
             }
         }
 
@@ -234,7 +240,10 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     }
 
     protected Optional<T> findOneBy(Conditions conditions) {
-        Query<T> query = newQuery(conditions);
+        return findOneBy(newQuery(conditions));
+    }
+
+    protected Optional<T> findOneBy(Query<T> query) {
 //        long count = query.countAll();
 //        if (count > 1) {
 //            throw new DuplicateEntityException(String.format(
@@ -270,7 +279,7 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return new ObjectId(id);
     }
 
-    protected List<ObjectId> toMongoIds(List<String> ids) {
+    protected List<ObjectId> toMongoIds(Collection<String> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
         }

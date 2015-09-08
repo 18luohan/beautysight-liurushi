@@ -14,6 +14,7 @@ import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class UserRepoImpl extends AbstractMongoRepository<User> implements UserR
         Query<User> query = newQuery().retrievedFields(true, liteFields)
                 .field("id").equal(new ObjectId(id));
         return query.get();
+    }
+
+    @Override
+    public List<User> getLiteUsersBy(Collection<String> ids) {
+        return newQuery().retrievedFields(true, liteFields)
+                .field("id").in(toMongoIds(ids)).asList();
     }
 
     @Override

@@ -22,6 +22,8 @@ import java.util.Map;
  */
 public class PublishWorkCommand implements Command {
 
+    public String title;
+    public String subtitle;
     public PictureStoryPayload pictureStory;
     public PresentationPayload presentation;
     public List<ContentSectionPayload> contentSections;
@@ -32,6 +34,7 @@ public class PublishWorkCommand implements Command {
     }
 
     public void validate() {
+        PreconditionUtils.checkRequired("title", title);
         PreconditionUtils.checkRequired("presentation", presentation);
         PreconditionUtils.checkRequired("pictureStory", pictureStory);
         presentation.validate();

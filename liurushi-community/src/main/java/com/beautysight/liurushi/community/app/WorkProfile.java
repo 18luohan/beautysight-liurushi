@@ -20,22 +20,41 @@ public class WorkProfile implements ViewModel {
 
     private String id;
     private String title;
+    private String subtitle;
+    public Work.Stats stats;
+
     private String coverPictureUrl;
     private Author author;
     private Date publishedAt;
 
-    public static WorkProfile from(Work work, String coverPictureUrl) {
-        return from(work, coverPictureUrl, null);
+    private Boolean isLiked = Boolean.FALSE;
+    private Boolean isFavored = Boolean.FALSE;
+
+    public WorkProfile(Work work, String coverPictureUrl) {
+        this(work, coverPictureUrl, null);
     }
 
-    public static WorkProfile from(Work work, String coverPictureUrl, Author author) {
-        WorkProfile workProfile = new WorkProfile();
-        workProfile.id = work.id().toString();
-        workProfile.title = work.title();
-        workProfile.coverPictureUrl = coverPictureUrl;
-        workProfile.author = author;
-        workProfile.publishedAt = work.publishedAt();
-        return workProfile;
+    public WorkProfile(Work work, String coverPictureUrl, Author author) {
+        this.id = work.idAsStr();
+        this.title = work.title();
+        this.subtitle = work.subtitle();
+        this.stats = work.stats();
+        this.publishedAt = work.publishedAt();
+
+        this.coverPictureUrl = coverPictureUrl;
+        this.author = author;
+    }
+
+    public void setIsLiked(Boolean isLiked) {
+        if (isLiked != null) {
+            this.isLiked = isLiked;
+        }
+    }
+
+    public void setIsFavored(Boolean isFavored) {
+        if (isFavored != null) {
+            this.isFavored = isFavored;
+        }
     }
 
 }

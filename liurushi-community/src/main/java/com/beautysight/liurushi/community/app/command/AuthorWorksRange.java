@@ -4,7 +4,6 @@
 
 package com.beautysight.liurushi.community.app.command;
 
-import com.beautysight.liurushi.common.domain.OffsetDirection;
 import com.beautysight.liurushi.common.domain.Range;
 
 /**
