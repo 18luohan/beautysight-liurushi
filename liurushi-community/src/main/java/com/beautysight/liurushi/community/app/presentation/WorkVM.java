@@ -35,13 +35,16 @@ public class WorkVM implements ViewModel {
         workVM.id = work.idAsStr();
         workVM.title = work.title();
         workVM.subtitle = work.subtitle();
-        workVM.pictureStory = PictureStoryPayload.from(work.pictureStory(), keyToDownloadUrlMapping);
 
         if (work.stats() != null) {
             workVM.stats = work.stats();
         }
 
-        if (workVM.presentation != null) {
+        if (work.pictureStory() != null) {
+            workVM.pictureStory = PictureStoryPayload.from(work.pictureStory(), keyToDownloadUrlMapping);
+        }
+
+        if (work.presentation() != null) {
             workVM.presentation = PresentationPayload.from(work.presentation(), keyToDownloadUrlMapping);
         }
 
