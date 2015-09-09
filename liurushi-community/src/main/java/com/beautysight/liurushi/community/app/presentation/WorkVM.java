@@ -22,7 +22,7 @@ public class WorkVM implements ViewModel {
     public String subtitle;
     public Boolean isLiked = Boolean.FALSE;
     public Boolean isFavored = Boolean.FALSE;
-    public Work.Stats stats;
+    public Work.Stats stats = new Work.Stats();
     private PictureStoryPayload pictureStory;
     private PresentationPayload presentation;
 
@@ -35,8 +35,11 @@ public class WorkVM implements ViewModel {
         workVM.id = work.idAsStr();
         workVM.title = work.title();
         workVM.subtitle = work.subtitle();
-        workVM.stats = work.stats();
         workVM.pictureStory = PictureStoryPayload.from(work.pictureStory(), keyToDownloadUrlMapping);
+
+        if (work.stats() != null) {
+            workVM.stats = work.stats();
+        }
 
         if (workVM.presentation != null) {
             workVM.presentation = PresentationPayload.from(work.presentation(), keyToDownloadUrlMapping);

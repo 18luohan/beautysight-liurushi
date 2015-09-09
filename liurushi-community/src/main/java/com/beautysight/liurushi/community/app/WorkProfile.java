@@ -21,7 +21,7 @@ public class WorkProfile implements ViewModel {
     private String id;
     private String title;
     private String subtitle;
-    public Work.Stats stats;
+    public Work.Stats stats = new Work.Stats();
 
     private String coverPictureUrl;
     private Author author;
@@ -38,8 +38,11 @@ public class WorkProfile implements ViewModel {
         this.id = work.idAsStr();
         this.title = work.title();
         this.subtitle = work.subtitle();
-        this.stats = work.stats();
         this.publishedAt = work.publishedAt();
+
+        if (work.stats() != null) {
+            this.stats = work.stats();
+        }
 
         this.coverPictureUrl = coverPictureUrl;
         this.author = author;

@@ -35,14 +35,14 @@
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/"/>
             <mvc:exclude-mapping path="/*/oauth/basic_token"/>
-            <mvc:exclude-mapping path="/*/sharing/h5/*"/>
+            <mvc:exclude-mapping path="/*/shares/**"/>
             <bean class="com.beautysight.liurushi.rest.common.AccessTokenAuthenticator"/>
         </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/"/>
             <mvc:exclude-mapping path="/*/oauth/basic_token"/>
-            <mvc:exclude-mapping path="/*/sharing/h5/*"/>
+            <mvc:exclude-mapping path="/*/shares/**"/>
             <bean class="com.beautysight.liurushi.rest.permission.ApiPermissionInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
