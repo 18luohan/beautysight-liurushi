@@ -214,7 +214,6 @@ public class WorkApp {
         List<WorkProfile> workProfiles = new ArrayList<>();
 
         List<Work> works = workRepo.findWorksInRange(source, range);
-
         if (CollectionUtils.isEmpty(works)) {
             return new WorkProfilesVM(workProfiles);
         }
@@ -245,7 +244,6 @@ public class WorkApp {
                 String coverPictureUrl = storageService.issueDownloadUrl(work.cover().pictureKey());
                 WorkProfile workProfile = new WorkProfile(work, coverPictureUrl, author);
                 workIdToWorkProfileMap.put(work.idAsStr(), workProfile);
-                workProfiles.add(workProfile);
             }
         }
 
@@ -254,6 +252,11 @@ public class WorkApp {
             for (Like like : likes) {
                 workIdToWorkProfileMap.get(like.workId()).setIsLiked(Boolean.TRUE);
             }
+        }
+
+        // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
+        for (Work work : works) {
+            workProfiles.add(workIdToWorkProfileMap.get(work.idAsStr()));
         }
 
         return new WorkProfilesVM(workProfiles);

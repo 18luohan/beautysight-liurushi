@@ -37,7 +37,6 @@ public class FollowService {
 
     private List<UserInFollow> findUsersInFollowInRange(FollowRepo.QueryType queryType, String followerOrFollowingId, Range range, Optional<String> loginUserId) {
         List<UserInFollow> usersInFollow = followRepo.findUsersInFollowInRange(queryType, followerOrFollowingId, range);
-
         if (CollectionUtils.isEmpty(usersInFollow)) {
             return Collections.EMPTY_LIST;
         }
@@ -71,7 +70,7 @@ public class FollowService {
             }
         }
 
-        return new ArrayList<>(userIdToUserInFollowMapping.values());
+        return usersInFollow;
     }
 
 }
