@@ -156,13 +156,9 @@ public class WorkApp {
 
         IntegerVal shotsNum = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
         BlockLocator locator = pictureStory.layout().generateBlockLocator();
-        int count = 0;
-        for (int i = 0; i < pictureStory.controls().size(); i++) {
-            count = i + 1;
-            if (count > shotsNum.val()) {
-                break;
-            }
 
+        int count = 0;
+        for (int i = 0; i < pictureStory.controls().size() && count < shotsNum.val(); i++, count++) {
             Shot shot = pictureStory.controls().get(i);
             shot.calculatePosition(locator);
             if (shot.content() instanceof Picture) {
