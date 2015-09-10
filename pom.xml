@@ -235,6 +235,26 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!-- CORS Filter -->
+            <!--
+            <dependency>
+                <groupId>com.thetransactioncompany</groupId>
+                <artifactId>cors-filter</artifactId>
+                <version>2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thetransactioncompany</groupId>
+                <artifactId>java-property-utils</artifactId>
+                <version>1.9.1</version>
+            </dependency>
+            -->
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-catalina</artifactId>
+                <version>8.0.26</version>
+                <scope>provided</scope>
+            </dependency>
+
             <!-- Spring Core Container -->
             <dependency>
                 <groupId>org.springframework</groupId>

@@ -21,6 +21,9 @@ db.app_config.createIndex( { name: 0 }, { unique: true } );
 // request log
 db.createCollection("request_logs");
 
+db.createCollection("follow");
+db.follow.createIndex( { followerId: 0, followingId: 0 }, { unique: true } );
+
 db.createCollection("likes");
-db.likes.createIndex( { userId: 0, workId: 0 }, { unique: true } );
+db.likes.createIndex( { workId: 0, userId: 0 }, { unique: true } );
 
