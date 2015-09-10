@@ -17,6 +17,8 @@ import java.util.List;
 @Repository
 public interface LikeRepo extends MongoRepository<Like> {
 
+    boolean findAndCreateIfNotExist(Like newLike);
+
     int deleteLikeBy(String workId, String userId);
 
     Optional<Like> getLikeBy(String workId, String userId);

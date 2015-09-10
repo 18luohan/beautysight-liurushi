@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface FollowRepo extends MongoRepository<Follow> {
 
+    boolean findAndCreateIfNotExist(Follow newFollow);
+
     Optional<Follow> getBy(String followerId, String followingId);
 
     int deleteBy(String followerId, String followingId);

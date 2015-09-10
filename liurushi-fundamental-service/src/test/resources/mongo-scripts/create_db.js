@@ -20,3 +20,7 @@ db.app_config.createIndex( { name: 0 }, { unique: true } );
 
 // request log
 db.createCollection("request_logs");
+
+db.createCollection("likes");
+db.likes.createIndex( { userId: 0, workId: 0 }, { unique: true } );
+

@@ -37,7 +37,7 @@ public class FollowRest {
     public void unfollow(@RequestBody FollowOrNotCommand command) {
         command.followerId = RequestContext.currentUserId();
         command.validate();
-        followApp.unfollow(command);
+        followApp.cancelFollow(command);
     }
 
     @RequestMapping(value = "/followers", method = RequestMethod.GET)

@@ -36,4 +36,8 @@ public abstract class AbstractEntity extends DomainModel implements JsonAnyField
         return id.toHexString();
     }
 
+    public Date createdAt() {
+        return this.createdAt;
+    }
+
 }

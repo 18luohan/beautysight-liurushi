@@ -26,8 +26,20 @@ public class Like extends AbstractEntity {
         this.userId = new ObjectId(userId);
     }
 
+    public ObjectId workMongoId() {
+        return this.workId;
+    }
+
     public String workId() {
         return this.workId.toHexString();
+    }
+
+    public ObjectId userMongoId() {
+        return this.userId;
+    }
+
+    public String userId() {
+        return this.userId.toHexString();
     }
 
 }

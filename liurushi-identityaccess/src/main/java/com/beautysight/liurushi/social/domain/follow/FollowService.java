@@ -9,11 +9,16 @@ import com.beautysight.liurushi.identityaccess.domain.user.UserService;
 import com.beautysight.liurushi.identityaccess.domain.user.UserView;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenlong
@@ -22,10 +27,19 @@ import java.util.*;
 @Service
 public class FollowService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FollowService.class);
+
     @Autowired
     private FollowRepo followRepo;
     @Autowired
     private UserService userService;
+
+    /**
+     * 关注
+     */
+    public boolean follow(String followerId, String followingId) {
+        return followRepo.findAndCreateIfNotExist(new Follow(followerId, followingId));
+    }
 
     public List<UserInFollow> findFollowersInRange(String followingId, Range range, Optional<String> loginUserId) {
         return findUsersInFollowInRange(FollowRepo.QueryType.follower, followingId, range, loginUserId);

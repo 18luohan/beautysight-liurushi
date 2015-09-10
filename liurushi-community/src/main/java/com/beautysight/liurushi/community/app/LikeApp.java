@@ -23,13 +23,17 @@ public class LikeApp {
     private WorkRepo workRepo;
 
     public void likeWork(LikeOrCancelCommand command) {
-        likeService.likeWork(command.workId, command.userId);
-        workRepo.increaseLikeTimesBy(1, command.workId);
+        boolean successful = likeService.likeWork(command.workId, command.userId);
+        if (successful) {
+            workRepo.increaseLikeTimesBy(1, command.workId);
+        }
     }
 
     public void cancelLikeOfWork(LikeOrCancelCommand command) {
         int affected = likeService.cancelLikeOfWork(command.workId, command.userId);
-        workRepo.increaseLikeTimesBy(affected * (-1), command.workId);
+        if (affected > 0) {
+            workRepo.increaseLikeTimesBy(affected * (-1), command.workId);
+        }
     }
 
 }

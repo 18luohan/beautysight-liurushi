@@ -7,7 +7,6 @@ package com.beautysight.liurushi.social.app;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
 import com.beautysight.liurushi.identityaccess.domain.user.UserRepo;
-import com.beautysight.liurushi.social.domain.follow.Follow;
 import com.beautysight.liurushi.social.domain.follow.FollowRepo;
 import com.beautysight.liurushi.social.domain.follow.FollowService;
 import com.beautysight.liurushi.social.domain.follow.UserInFollow;
@@ -36,30 +35,26 @@ public class FollowApp {
     private FollowService followService;
 
     public void follow(FollowOrNotCommand command) {
-        Optional<Follow> theFollow = followRepo.getBy(command.followerId, command.followingId);
-        if (theFollow.isPresent()) {
-            logger.info("Follow exists: {} -> {}", command.followerId, command.followingId);
-            return;
+        boolean successful = followService.follow(command.followerId, command.followingId);
+        if (successful) {
+            userRepo.increaseFollowingsNumBy(1, command.followerId);
+            userRepo.increaseFollowersNumBy(1, command.followingId);
         }
-        followRepo.save(new Follow(command.followerId, command.followingId));
-        logger.info("Added follow: {} -> {}", command.followerId, command.followingId);
-
-        userRepo.increaseFollowingsNumBy(1, command.followerId);
-        userRepo.increaseFollowersNumBy(1, command.followingId);
     }
 
-    public void unfollow(FollowOrNotCommand command) {
+    public void cancelFollow(FollowOrNotCommand command) {
         int affected = followRepo.deleteBy(command.followerId, command.followingId);
         logger.info("Deleted follow: {} -> {}, affected: {}",
                 command.followerId, command.followingId, affected);
 
-        if (affected != 1) {
-            throw new IllegalDomainStateException(
-                    "Affected on unfollow: expected %s, actual %s", 1, affected);
+        if (affected > 1) {
+            throw new IllegalDomainStateException("Affected on cancel follow: expected %s, actual %s", 1, affected);
         }
 
-        userRepo.increaseFollowingsNumBy(-1, command.followerId);
-        userRepo.increaseFollowersNumBy(-1, command.followingId);
+        if (affected > 0) {
+            userRepo.increaseFollowingsNumBy(affected * (-1), command.followerId);
+            userRepo.increaseFollowersNumBy(affected * (-1), command.followingId);
+        }
     }
 
     public FollowersVM findFollowersInRange(String followingId, Range range, Optional<String> loginUserId) {

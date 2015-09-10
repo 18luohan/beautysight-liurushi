@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.service;
 
+import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
 import com.beautysight.liurushi.community.domain.model.like.Like;
 import com.beautysight.liurushi.community.domain.model.like.LikeRepo;
 import com.google.common.base.Optional;
@@ -29,15 +30,8 @@ public class LikeService {
     /**
      * 赞一个作品
      */
-    public void likeWork(String workId, String userId) {
-        Optional<Like> theLike = likeRepo.getLikeBy(workId, userId);
-        if (theLike.isPresent()) {
-            logger.info("Like of work already exists, workId: {}, userId: {}", workId, userId);
-            return;
-        }
-
-        Like like = new Like(workId, userId);
-        likeRepo.save(like);
+    public boolean likeWork(String workId, String userId) {
+        return likeRepo.findAndCreateIfNotExist(new Like(workId, userId));
     }
 
     /**
@@ -51,8 +45,8 @@ public class LikeService {
         int affected = likeRepo.deleteLikeBy(workId, userId);
         logger.info("Deleted like of work, workId: {}, userId: {}", workId, userId);
 
-        if (affected != 1) {
-            logger.error("Affected on cancel like of work: expected %s, actual %s", 1, affected);
+        if (affected > 1) {
+            throw new IllegalDomainStateException("Affected on cancel like of work: expected %s, actual %s", 1, affected);
         }
 
         return affected;

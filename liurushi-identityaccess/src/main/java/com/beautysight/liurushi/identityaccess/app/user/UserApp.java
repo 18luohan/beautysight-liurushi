@@ -52,8 +52,6 @@ public class UserApp {
     @Autowired
     private FollowRepo followRepo;
 
-//    private UserProfileCache userProfileCache = new UserProfileCache();
-
     public ExistenceOfUserVM checkIfUserExistWith(String mobile) {
         return new ExistenceOfUserVM(userRepo.withMobile(mobile).isPresent());
     }

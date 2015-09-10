@@ -10,8 +10,12 @@ import com.beautysight.liurushi.social.domain.follow.Follow;
 import com.beautysight.liurushi.social.domain.follow.FollowRepo;
 import com.beautysight.liurushi.social.domain.follow.UserInFollow;
 import com.google.common.base.Optional;
+import com.mongodb.DuplicateKeyException;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
@@ -26,6 +30,28 @@ import java.util.List;
 @Repository
 public class FollowRepoImpl extends AbstractMongoRepository<Follow> implements FollowRepo {
 
+    private static final Logger logger = LoggerFactory.getLogger(FollowRepoImpl.class);
+
+    @Override
+    public boolean findAndCreateIfNotExist(Follow newFollow) {
+        try {
+            Query<Follow> query = newQuery()
+                    .field("followerId").equal(newFollow.followerMongoId())
+                    .field("followingId").equal(newFollow.followingMongoId());
+            UpdateOperations<Follow> updateOps = newUpdateOps()
+                    .setOnInsert("followerId", newFollow.followerMongoId())
+                    .setOnInsert("followingId", newFollow.followingMongoId())
+                    .setOnInsert("createdAt", newFollow.createdAt());
+            boolean oldVersion = true, createIfMissing = true;
+            Follow oldLike = datastore.findAndModify(query, updateOps, oldVersion, createIfMissing);
+            return (oldLike == null);
+        } catch (DuplicateKeyException ex) {
+            logger.error(String.format("Error on create new follow, followerId: %s, followingId: %s",
+                    newFollow.followerId(), newFollow.followingId()), ex);
+            return false;
+        }
+    }
+
     @Override
     public Optional<Follow> getBy(String followerId, String followingId) {
         Conditions conditions = Conditions.of("followerId", new ObjectId(followerId))
@@ -36,8 +62,8 @@ public class FollowRepoImpl extends AbstractMongoRepository<Follow> implements F
     @Override
     public int deleteBy(String followerId, String followingId) {
         Query<Follow> query = newQuery(
-                Conditions.of("followerId", new ObjectId(followerId))
-                        .and("followingId", new ObjectId(followingId)));
+                Conditions.of("followerId", toMongoId(followerId))
+                        .and("followingId", toMongoId(followingId)));
         return datastore.delete(query).getN();
     }
 

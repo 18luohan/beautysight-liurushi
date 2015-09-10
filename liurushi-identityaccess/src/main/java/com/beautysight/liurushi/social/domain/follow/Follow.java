@@ -33,8 +33,16 @@ public class Follow extends AbstractEntity {
         this.followingId = new ObjectId(followingId);
     }
 
+    public ObjectId followerMongoId() {
+        return this.followerId;
+    }
+
     public String followerId() {
         return this.followerId.toHexString();
+    }
+
+    public ObjectId followingMongoId() {
+        return this.followingId;
     }
 
     public String followingId() {
