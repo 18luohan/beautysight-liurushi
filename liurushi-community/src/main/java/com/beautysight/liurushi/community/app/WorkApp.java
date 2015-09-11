@@ -10,7 +10,7 @@ import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.dpo.ControlPayload;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
-import com.beautysight.liurushi.community.app.presentation.WorkProfilesVM;
+import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
 import com.beautysight.liurushi.community.app.presentation.WorkVM;
 import com.beautysight.liurushi.community.domain.model.like.Like;
 import com.beautysight.liurushi.community.domain.model.work.*;
@@ -145,6 +145,19 @@ public class WorkApp {
         return WorkVM.from(work, keyToDownloadUrlMapping, isLikedByLoginUser, isFavoredByLoginUser);
     }
 
+    public WorkProfileVM getWorkProfileBy(String workId, Optional<String> loginUserId) {
+        Work workProfile = workRepo.getWorkProfile(workId);
+        String coverPictureKey = workProfile.pictureStory().cover().pictureKey();
+        String coverPictureUrl = storageService.issueDownloadUrl(coverPictureKey);
+        Author author = authorService.getAuthorBy(workProfile.authorId());
+        WorkProfileVM result = new WorkProfileVM(workProfile, coverPictureUrl, author);
+
+        if (loginUserId.isPresent()) {
+            result.setIsLiked(likeService.isWorkLikedByUser(workId, loginUserId.get()));
+        }
+        return result;
+    }
+
     public WorkVM shareWork(String workId) {
         Work workOnlyWithPictureStory = workRepo.getWorkOnlyWithPictureStory(workId);
         PictureStory pictureStory = workOnlyWithPictureStory.pictureStory();
@@ -172,46 +185,46 @@ public class WorkApp {
         return WorkVM.from(workOnlyWithPictureStory, keyToDownloadUrlMapping);
     }
 
-    public WorkProfilesVM getPgcLatestWorkProfiles(int count, Optional<String> loginUserId) {
+    public WorkProfileList getPgcLatestWorkProfiles(int count, Optional<String> loginUserId) {
         Range range = new Range(count, Range.OffsetDirection.before);
         return findWorkProfilesInRange(Work.Source.pgc, range, loginUserId);
     }
 
-    public WorkProfilesVM findPgcWorkProfilesIn(Range range, Optional<String> loginUserId) {
+    public WorkProfileList findPgcWorkProfilesIn(Range range, Optional<String> loginUserId) {
         return findWorkProfilesInRange(Work.Source.pgc, range, loginUserId);
     }
 
-    public WorkProfilesVM getUgcLatestWorkProfiles(int count, Optional<String> loginUserId) {
+    public WorkProfileList getUgcLatestWorkProfiles(int count, Optional<String> loginUserId) {
         Range range = new Range(count, Range.OffsetDirection.before);
         return findWorkProfilesInRange(Work.Source.ugc, range, loginUserId);
     }
 
-    public WorkProfilesVM findUgcWorkProfilesIn(Range range, Optional<String> loginUserId) {
+    public WorkProfileList findUgcWorkProfilesIn(Range range, Optional<String> loginUserId) {
         return findWorkProfilesInRange(Work.Source.ugc, range, loginUserId);
     }
 
-    public WorkProfilesVM findAuthorWorksIn(AuthorWorksRange range) {
-        List<WorkProfile> workProfiles = new ArrayList<>();
+    public WorkProfileList findAuthorWorksIn(AuthorWorksRange range) {
+        List<WorkProfileVM> workProfiles = new ArrayList<>();
         List<Work> theWorks = workRepo.findAuthorWorksIn(range);
 
         if (CollectionUtils.isEmpty(theWorks)) {
-            return new WorkProfilesVM(workProfiles);
+            return new WorkProfileList(workProfiles);
         }
 
         for (Work work : theWorks) {
             String coverPictureUrl = storageService.issueDownloadUrl(work.cover().pictureKey());
-            workProfiles.add(new WorkProfile(work, coverPictureUrl));
+            workProfiles.add(new WorkProfileVM(work, coverPictureUrl));
         }
 
-        return new WorkProfilesVM(workProfiles);
+        return new WorkProfileList(workProfiles);
     }
 
-    private WorkProfilesVM findWorkProfilesInRange(Work.Source source, Range range, Optional<String> loginUserId) {
-        List<WorkProfile> workProfiles = new ArrayList<>();
+    private WorkProfileList findWorkProfilesInRange(Work.Source source, Range range, Optional<String> loginUserId) {
+        List<WorkProfileVM> workProfiles = new ArrayList<>();
 
-        List<Work> works = workRepo.findWorksInRange(source, range);
+        List<Work> works = workRepo.findWorkProfilesInRange(source, range);
         if (CollectionUtils.isEmpty(works)) {
-            return new WorkProfilesVM(workProfiles);
+            return new WorkProfileList(workProfiles);
         }
 
         Set<String> authorIds = new HashSet<>(works.size());
@@ -233,12 +246,12 @@ public class WorkApp {
         }
 
         List<Author> authors = authorService.getAuthorsBy(authorIds);
-        Map<String, WorkProfile> workIdToWorkProfileMap = new HashMap<>(works.size());
+        Map<String, WorkProfileVM> workIdToWorkProfileMap = new HashMap<>(works.size());
         for (Author author : authors) {
             List<Work> authorWorks = authorToWorksMap.get(author.id);
             for (Work work : authorWorks) {
                 String coverPictureUrl = storageService.issueDownloadUrl(work.cover().pictureKey());
-                WorkProfile workProfile = new WorkProfile(work, coverPictureUrl, author);
+                WorkProfileVM workProfile = new WorkProfileVM(work, coverPictureUrl, author);
                 workIdToWorkProfileMap.put(work.idAsStr(), workProfile);
             }
         }
@@ -255,7 +268,7 @@ public class WorkApp {
             workProfiles.add(workIdToWorkProfileMap.get(work.idAsStr()));
         }
 
-        return new WorkProfilesVM(workProfiles);
+        return new WorkProfileList(workProfiles);
     }
 
     private Map<String, ContentSection> saveContentSections(Map<String, ContentSection> newSections) {

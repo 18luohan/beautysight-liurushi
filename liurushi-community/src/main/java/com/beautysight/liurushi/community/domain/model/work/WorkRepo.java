@@ -16,9 +16,11 @@ import java.util.List;
  */
 public interface WorkRepo extends MongoRepository<Work> {
 
+    Work getWorkProfile(String workId);
+
     List<Work> getLatestWorks(Work.Source source, int count);
 
-    List<Work> findWorksInRange(Work.Source source, Range range);
+    List<Work> findWorkProfilesInRange(Work.Source source, Range range);
 
     Work getWorkOnlyWithPictureStory(String workId);
 

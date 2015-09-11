@@ -16,7 +16,7 @@ import java.util.Date;
  * @author chenlong
  * @since 1.0
  */
-public class WorkProfile implements ViewModel {
+public class WorkProfileVM implements ViewModel {
 
     private String id;
     private String title;
@@ -30,11 +30,11 @@ public class WorkProfile implements ViewModel {
     private Boolean isLiked = Boolean.FALSE;
     private Boolean isFavored = Boolean.FALSE;
 
-    public WorkProfile(Work work, String coverPictureUrl) {
+    public WorkProfileVM(Work work, String coverPictureUrl) {
         this(work, coverPictureUrl, null);
     }
 
-    public WorkProfile(Work work, String coverPictureUrl, Author author) {
+    public WorkProfileVM(Work work, String coverPictureUrl, Author author) {
         this.id = work.idAsStr();
         this.title = work.title();
         this.subtitle = work.subtitle();

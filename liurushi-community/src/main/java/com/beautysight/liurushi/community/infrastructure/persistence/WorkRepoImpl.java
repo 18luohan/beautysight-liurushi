@@ -29,6 +29,13 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     private static final String[] pictureStoryFields = workBasicFields.copyThenAppend("pictureStory").toArray();
 
     @Override
+    public Work getWorkProfile(String workId) {
+        return newQuery()
+                .retrievedFields(true, workProfileFields)
+                .field("id").equal(toMongoId(workId)).get();
+    }
+
+    @Override
     public List<Work> getLatestWorks(Work.Source source, int count) {
         Conditions conditions = Conditions.of("source", source);
         FieldsFilter filter = new FieldsFilter(true, workProfileFields);
@@ -36,8 +43,8 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     @Override
-    public List<Work> findWorksInRange(Work.Source source,
-                                       Range range) {
+    public List<Work> findWorkProfilesInRange(Work.Source source,
+                                              Range range) {
         Conditions conditions = Conditions.of("source", source);
         FieldsFilter filter = new FieldsFilter(true, workProfileFields);
         return find(conditions, range, Optional.of(filter));
