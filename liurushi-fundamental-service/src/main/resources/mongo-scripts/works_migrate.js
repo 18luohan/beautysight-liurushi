@@ -32,3 +32,7 @@ while ( picStoryCursor.hasNext() ) {
     db.works.insert(work);
 }
 print("Migrate picture_stories and presentations into works: OK!");
+
+db.works.find().forEach(function(workDoc) {
+    db.works.update({ _id: workDoc._id }, {$set: {"title": workDoc.pictureStory.title, "subtitle": workDoc.pictureStory.subtitle}, $unset: {"pictureStory.title": "", "pictureStory.subtitle": "" }}, {multi:true});
+});
