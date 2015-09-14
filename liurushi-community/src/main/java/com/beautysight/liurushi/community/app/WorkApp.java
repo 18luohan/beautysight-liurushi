@@ -142,7 +142,8 @@ public class WorkApp {
             isLikedByLoginUser = likeService.isWorkLikedByUser(workId, loginUserId.get());
         }
 
-        return WorkVM.from(work, keyToDownloadUrlMapping, isLikedByLoginUser, isFavoredByLoginUser);
+        Author author = authorService.getAuthorBy(work.authorId());
+        return WorkVM.from(work, keyToDownloadUrlMapping, isLikedByLoginUser, isFavoredByLoginUser, author);
     }
 
     public WorkProfileVM getWorkProfileBy(String workId, Optional<String> loginUserId) {
