@@ -5,6 +5,7 @@
 package com.beautysight.liurushi.community.domain.model.work;
 
 import com.beautysight.liurushi.common.domain.ValueObject;
+import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
 import org.bson.types.ObjectId;
@@ -21,8 +22,9 @@ import java.util.Date;
 @Entity(value = "works", noClassnameStored = true)
 public class Work extends AbstractWork {
 
-    private Date publishedAt;
-    private Stats stats;
+    protected Date publishedAt;
+    protected Stats stats;
+    protected Integer presentPriority = PresentPriority.ordinary.val();
 
     public Work() {
     }
@@ -77,6 +79,28 @@ public class Work extends AbstractWork {
             return commentTimes;
         }
 
+    }
+
+    public enum PresentPriority {
+        selected(10), ordinary(1);
+
+        private int val;
+
+        PresentPriority(int val) {
+            this.val = val;
+        }
+
+        public int val() {
+            return this.val;
+        }
+
+        public static PresentPriority of(String priority) {
+            try {
+                return PresentPriority.valueOf(priority);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalParamException(e.getMessage());
+            }
+        }
     }
 
 }

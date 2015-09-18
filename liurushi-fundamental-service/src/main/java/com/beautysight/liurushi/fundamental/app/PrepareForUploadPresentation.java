@@ -28,7 +28,7 @@ public class PrepareForUploadPresentation implements ViewModel {
 
         List<FileMetadataPayload> files = new ArrayList<>();
         for (FileMetadata metadata : filesMetadata) {
-            files.add(new FileMetadataPayload(metadata.idAsStr(), metadata.key()));
+            files.add(new FileMetadataPayload(metadata.idStr(), metadata.key()));
         }
 
         instance.files = files;

@@ -136,7 +136,7 @@ public class UserView extends ValueObject {
             Assert.notNull(user);
             checkState();
             Beans.copyProperties(user, userView);
-            userView.id = user.idAsStr();
+            userView.id = user.idStr();
             return this;
         }
 

@@ -28,16 +28,32 @@ public abstract class AbstractEntity extends DomainModel implements JsonAnyField
         this.id = new ObjectId(idString);
     }
 
+    public void setMongoId(ObjectId id) {
+        this.id = id;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
     public ObjectId id() {
         return id;
     }
 
-    public String idAsStr() {
+    public String idStr() {
         return id.toHexString();
     }
 
     public Date createdAt() {
         return this.createdAt;
+    }
+
+    public Date modifiedAt() {
+        return this.modifiedAt;
     }
 
 }

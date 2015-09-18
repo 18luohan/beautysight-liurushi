@@ -6,7 +6,9 @@ package com.beautysight.liurushi.community.domain.model.work;
 
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -16,16 +18,27 @@ import java.util.List;
  */
 public interface WorkRepo extends MongoRepository<Work> {
 
-    Work getWorkProfile(String workId);
+    Optional<Work> get(String workId);
 
-    List<Work> getLatestWorks(Work.Source source, int count);
+    Work getFullWork(String workId);
+
+    Work getWorkProfile(String workId);
 
     List<Work> findWorkProfilesInRange(Work.Source source, Range range);
 
+    List<Work> findAuthorWorkProfilesIn(AuthorWorksRange range);
+
     Work getWorkOnlyWithPictureStory(String workId);
 
-    List<Work> findAuthorWorksIn(AuthorWorksRange range);
-
     void increaseLikeTimesBy(int increment, String workId);
+
+    List<Work> findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority);
+
+    void selectOrCancel(String workId, Work.PresentPriority presentPriority);
+
+    AbstractMongoRepository.Fields workBasicFields = AbstractMongoRepository.Fields.newInstance().append("id", "title", "subtitle", "authorId", "source", "publishedAt");
+    String[] workProfileFields = workBasicFields.copyThenAppend("stats", "pictureStory.cover.sectionId").toArray();
+    String[] pictureStoryFields = workBasicFields.copyThenAppend("pictureStory").toArray();
+    Optional<AbstractMongoRepository.FieldsFilter> workBasicFieldsFilter = Optional.of(new AbstractMongoRepository.FieldsFilter(true, workProfileFields));
 
 }

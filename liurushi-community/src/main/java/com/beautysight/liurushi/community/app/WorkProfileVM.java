@@ -35,7 +35,7 @@ public class WorkProfileVM implements ViewModel {
     }
 
     public WorkProfileVM(Work work, String coverPictureUrl, Author author) {
-        this.id = work.idAsStr();
+        this.id = work.idStr();
         this.title = work.title();
         this.subtitle = work.subtitle();
         this.publishedAt = work.publishedAt();

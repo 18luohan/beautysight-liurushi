@@ -21,7 +21,7 @@ public class FollowPayload extends Payload {
     public static FollowPayload newFollowerWith(UserView.LiteAndStats userView, Follow follow) {
         Preconditions.checkState(follow.followerId().equals(userView.getId()), "following not match");
         FollowPayload instance = new FollowPayload();
-        instance.id = follow.idAsStr();
+        instance.id = follow.idStr();
         instance.follower = userView;
         return instance;
     }
@@ -29,7 +29,7 @@ public class FollowPayload extends Payload {
     public static FollowPayload newFolowingWith(UserView.LiteAndStats userView, Follow follow) {
         Preconditions.checkState(follow.followingId().equals(userView.getId()), "follower not match");
         FollowPayload instance = new FollowPayload();
-        instance.id = follow.idAsStr();
+        instance.id = follow.idStr();
         instance.following = userView;
         return instance;
     }

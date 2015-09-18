@@ -65,6 +65,9 @@ public class WorkApp {
     @Autowired
     private ContentSectionRepo contentSectionRepo;
     @Autowired
+    private DiscardedWorkRepo discardedWorkRepo;
+
+    @Autowired
     private StorageService storageService;
     @Autowired
     private AuthorService authorService;
@@ -82,7 +85,7 @@ public class WorkApp {
         PublishingWork publishingWork = translateToPublishingWork(command, savedContentSections);
         publishingWorkRepo.save(publishingWork);
         String uploadToken = storageService.issueUploadToken();
-        return new PublishWorkPresentation(publishingWork.idAsStr(), uploadToken, savedContentSections);
+        return new PublishWorkPresentation(publishingWork.idStr(), uploadToken, savedContentSections);
     }
 
     public void onPicSectionUploaded(String publishingWorkId, String fileId, NotifyPicUploadedCommand command) {
@@ -112,17 +115,17 @@ public class WorkApp {
             PublishingWork publishingWork = publishingWorkRepo.findOne(publishingWorkId);
             Work theWork = workRepo.save(publishingWork.transformToWork());
             logger.info("All pictures uploaded, so transform publishing-work to work, publishingWorkId:{}, workId:{}",
-                    publishingWorkId, theWork.idAsStr());
+                    publishingWorkId, theWork.idStr());
             publishingWorkRepo.delete(publishingWork.id());
             logger.info("Transformed publishing-work to work, so delete publishing-work, publishingWorkId:{}, workId:{}",
-                    publishingWorkId, theWork.idAsStr());
+                    publishingWorkId, theWork.idStr());
             authorService.increaseWorkNumBy(1, theWork.authorId());
             logger.info("Increased workNum of author({}) by 1", theWork.authorId());
         }
     }
 
     public WorkVM getFullWorkBy(String workId, Optional<String> loginUserId) {
-        Work work = workRepo.findOne(workId);
+        Work work = workRepo.getFullWork(workId);
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
         String coverPictureKey = work.pictureStory().cover().pictureKey();
@@ -206,7 +209,7 @@ public class WorkApp {
 
     public WorkProfileList findAuthorWorksIn(AuthorWorksRange range) {
         List<WorkProfileVM> workProfiles = new ArrayList<>();
-        List<Work> theWorks = workRepo.findAuthorWorksIn(range);
+        List<Work> theWorks = workRepo.findAuthorWorkProfilesIn(range);
 
         if (CollectionUtils.isEmpty(theWorks)) {
             return new WorkProfileList(workProfiles);
@@ -220,6 +223,87 @@ public class WorkApp {
         return new WorkProfileList(workProfiles);
     }
 
+    public WorkProfileList findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority) {
+        List<WorkProfileVM> workProfiles = new ArrayList<>();
+
+        List<Work> works = workRepo.findUgcWorkProfilesInRange(range, presentPriority);
+        if (CollectionUtils.isEmpty(works)) {
+            return new WorkProfileList(workProfiles);
+        }
+
+        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = joinWorksWithAuthor(works);
+        // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
+        for (Work work : works) {
+            workProfiles.add(workIdToWorkProfileVMMap.get(work.idStr()));
+        }
+
+        return new WorkProfileList(workProfiles);
+    }
+
+    public WorkProfileList findDiscardedUgcWorkProfilesInRange(Range range) {
+        List<WorkProfileVM> workProfiles = new ArrayList<>();
+        List<DiscardedWork> works = discardedWorkRepo.findInRange(range);
+        if (CollectionUtils.isEmpty(works)) {
+            return new WorkProfileList(workProfiles);
+        }
+
+        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = joinWorksWithAuthor(works);
+        // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
+        for (Work work : works) {
+            workProfiles.add(workIdToWorkProfileVMMap.get(work.idStr()));
+        }
+
+        return new WorkProfileList(workProfiles);
+    }
+
+    public void selectWork(String workId) {
+        workRepo.selectOrCancel(workId, Work.PresentPriority.selected);
+    }
+
+    public void cancelSelectWork(String workId) {
+        workRepo.selectOrCancel(workId, Work.PresentPriority.ordinary);
+    }
+
+    public void discardWork(String workId) {
+        Optional<Work> work = workRepo.get(workId);
+        if (work.isPresent()) {
+            discardedWorkRepo.save(new DiscardedWork(work.get()));
+            workRepo.delete(work.get().id());
+        }
+    }
+
+    public void cancelDiscardWork(String workId) {
+        Optional<DiscardedWork> discardedWork = discardedWorkRepo.get(workId);
+        if (discardedWork.isPresent()) {
+            workRepo.save(discardedWork.get().transformToWork());
+            discardedWorkRepo.delete(discardedWork.get().id());
+        }
+    }
+
+    public WorkVM getFullWorkForExamine(String workId) {
+        Work work;
+        if (discardedWorkRepo.get(workId).isPresent()) {
+            work = discardedWorkRepo.getFullWork(workId);
+        } else {
+            work = workRepo.getFullWork(workId);
+        }
+
+        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
+        String coverPictureKey = work.pictureStory().cover().pictureKey();
+        String downloadUrl = storageService.issueDownloadUrl(coverPictureKey);
+        keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
+        for (Shot shot : work.pictureStory().controls()) {
+            if (shot.content() instanceof Picture) {
+                Picture picture = (Picture) shot.content();
+                downloadUrl = storageService.issueDownloadUrl(picture.key());
+                keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
+            }
+        }
+
+        Author author = authorService.getAuthorBy(work.authorId());
+        return WorkVM.from(work, keyToDownloadUrlMapping, author);
+    }
+
     private WorkProfileList findWorkProfilesInRange(Work.Source source, Range range, Optional<String> loginUserId) {
         List<WorkProfileVM> workProfiles = new ArrayList<>();
 
@@ -228,11 +312,30 @@ public class WorkApp {
             return new WorkProfileList(workProfiles);
         }
 
+        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = joinWorksWithAuthor(works);
+
+        List<String> workIds = new ArrayList<>(workIdToWorkProfileVMMap.keySet());
+        if (loginUserId.isPresent()) {
+            List<Like> likes = likeService.findUserLikesOfWorks(loginUserId.get(), workIds);
+            for (Like like : likes) {
+                workIdToWorkProfileVMMap.get(like.workId()).setIsLiked(Boolean.TRUE);
+            }
+        }
+
+        // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
+        for (Work work : works) {
+            workProfiles.add(workIdToWorkProfileVMMap.get(work.idStr()));
+        }
+
+        return new WorkProfileList(workProfiles);
+    }
+
+    private Map<String, WorkProfileVM> joinWorksWithAuthor(List<? extends Work> works) {
         Set<String> authorIds = new HashSet<>(works.size());
         List<String> workIds = new ArrayList<>(works.size());
         for (Work work : works) {
             authorIds.add(work.authorId());
-            workIds.add(work.idAsStr());
+            workIds.add(work.idStr());
         }
 
         ListMultimap<String, Work> authorToWorksMap = Multimaps.newListMultimap(
@@ -247,29 +350,17 @@ public class WorkApp {
         }
 
         List<Author> authors = authorService.getAuthorsBy(authorIds);
-        Map<String, WorkProfileVM> workIdToWorkProfileMap = new HashMap<>(works.size());
+        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = new HashMap<>(works.size());
         for (Author author : authors) {
             List<Work> authorWorks = authorToWorksMap.get(author.id);
             for (Work work : authorWorks) {
                 String coverPictureUrl = storageService.issueDownloadUrl(work.cover().pictureKey());
                 WorkProfileVM workProfile = new WorkProfileVM(work, coverPictureUrl, author);
-                workIdToWorkProfileMap.put(work.idAsStr(), workProfile);
+                workIdToWorkProfileVMMap.put(work.idStr(), workProfile);
             }
         }
 
-        if (loginUserId.isPresent()) {
-            List<Like> likes = likeService.findUserLikesOfWorks(loginUserId.get(), workIds);
-            for (Like like : likes) {
-                workIdToWorkProfileMap.get(like.workId()).setIsLiked(Boolean.TRUE);
-            }
-        }
-
-        // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
-        for (Work work : works) {
-            workProfiles.add(workIdToWorkProfileMap.get(work.idAsStr()));
-        }
-
-        return new WorkProfileList(workProfiles);
+        return workIdToWorkProfileVMMap;
     }
 
     private Map<String, ContentSection> saveContentSections(Map<String, ContentSection> newSections) {

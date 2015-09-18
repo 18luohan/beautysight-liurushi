@@ -37,7 +37,7 @@ public class PublishWorkPresentation implements ViewModel {
             }
 
             FileMetadata file = ((Picture) entry.getValue()).file();
-            FileMetadataPayload fileDPO = new FileMetadataPayload(file.idAsStr(), file.key());
+            FileMetadataPayload fileDPO = new FileMetadataPayload(file.idStr(), file.key());
             filesMap.put(entry.getKey(), fileDPO);
         }
         return filesMap;

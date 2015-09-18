@@ -70,7 +70,7 @@ public class FollowRepoImpl extends AbstractMongoRepository<Follow> implements F
     @Override
     public List<UserInFollow> findUsersInFollowInRange(QueryType type, String involvedUserId, Range range) {
         Conditions conditions = Conditions.of(determineConditionField(type), toMongoId(involvedUserId));
-        List<Follow> follows = find(conditions, range);
+        List<Follow> follows = find(Optional.of(conditions), range);
         if (CollectionUtils.isEmpty(follows)) {
             return Collections.EMPTY_LIST;
         }
@@ -78,7 +78,7 @@ public class FollowRepoImpl extends AbstractMongoRepository<Follow> implements F
         List<UserInFollow> result = new ArrayList<>(follows.size());
         for (Follow follow : follows) {
             String userId = determineFollowerOrFollowingId(type, follow);
-            result.add(new UserInFollow(follow.idAsStr(), userId));
+            result.add(new UserInFollow(follow.idStr(), userId));
         }
 
         return result;

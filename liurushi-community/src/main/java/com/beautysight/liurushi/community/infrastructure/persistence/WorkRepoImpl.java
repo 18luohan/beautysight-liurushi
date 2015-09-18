@@ -8,14 +8,22 @@ import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.domain.model.work.Work;
 import com.beautysight.liurushi.community.domain.model.work.WorkRepo;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.model.work.picstory.Shot;
+import com.beautysight.liurushi.community.domain.model.work.present.Slide;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenlong
@@ -24,9 +32,40 @@ import java.util.List;
 @Repository
 public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkRepo {
 
-    private static final Fields workBasicFields = Fields.newInstance().append("id", "title", "subtitle", "authorId", "source", "publishedAt");
-    private static final String[] workProfileFields = workBasicFields.copyThenAppend("stats", "pictureStory.cover.picture").toArray();
-    private static final String[] pictureStoryFields = workBasicFields.copyThenAppend("pictureStory").toArray();
+    @Autowired
+    private ContentSectionRepo contentSectionRepo;
+
+    @Override
+    public Optional<Work> get(String workId) {
+        return findOneBy(newQuery().field("id").equal(toMongoId(workId)));
+    }
+
+    @Override
+    public Work getFullWork(String workId) {
+        Work work = findOne(workId);
+
+        List<Slide> slides = work.presentation().controls();
+        List<ObjectId> sectionIds = new ArrayList<>(slides.size());
+        for (Slide slide : slides) {
+            sectionIds.add(slide.sectionId());
+        }
+
+        Iterable<ContentSection> sections = contentSectionRepo.findAll(sectionIds);
+        Map<ObjectId, ContentSection> sectionsMap = new HashMap<>(sectionIds.size());
+        for (ContentSection section : sections) {
+            sectionsMap.put(section.id(), section);
+        }
+
+        for (Slide slide : slides) {
+            slide.setContentSection(sectionsMap.get(slide.sectionId()));
+        }
+
+        for (Shot shot : work.pictureStory().controls()) {
+            shot.setContentSection(sectionsMap.get(shot.sectionId()));
+        }
+
+        return work;
+    }
 
     @Override
     public Work getWorkProfile(String workId) {
@@ -36,18 +75,20 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     @Override
-    public List<Work> getLatestWorks(Work.Source source, int count) {
-        Conditions conditions = Conditions.of("source", source);
-        FieldsFilter filter = new FieldsFilter(true, workProfileFields);
-        return findLatest(conditions, count, Optional.of(filter));
+    public List<Work> findWorkProfilesInRange(Work.Source source,
+                                              Range range) {
+        if (source == Work.Source.pgc) {
+            return findPgcWorkProfilesInRange(range);
+        } else if (source == Work.Source.ugc) {
+            return findUgcWorkProfilesInRange(range);
+        }
+        throw new IllegalArgumentException("Illegal work.source: " + source);
     }
 
     @Override
-    public List<Work> findWorkProfilesInRange(Work.Source source,
-                                              Range range) {
-        Conditions conditions = Conditions.of("source", source);
-        FieldsFilter filter = new FieldsFilter(true, workProfileFields);
-        return find(conditions, range, Optional.of(filter));
+    public List<Work> findAuthorWorkProfilesIn(AuthorWorksRange range) {
+        Conditions conditions = Conditions.of("authorId", toMongoId(range.authorId()));
+        return find(Optional.of(conditions), range, workBasicFieldsFilter);
     }
 
     @Override
@@ -59,13 +100,6 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     @Override
-    public List<Work> findAuthorWorksIn(AuthorWorksRange range) {
-        Conditions conditions = Conditions.of("authorId", toMongoId(range.authorId()));
-        FieldsFilter filter = new FieldsFilter(true, workProfileFields);
-        return find(conditions, range, Optional.of(filter));
-    }
-
-    @Override
     public void increaseLikeTimesBy(int increment, String workId) {
         Query<Work> query = newQuery().field("id").equal(toMongoId(workId));
         UpdateOperations<Work> updateOps = newUpdateOps().inc("stats.likeTimes", increment);
@@ -73,8 +107,34 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     @Override
+    public List<Work> findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority) {
+        Conditions conditions = Conditions.of("source", Work.Source.ugc)
+                .and("presentPriority", presentPriority.val());
+        OrderByFields orderByFields = OrderByFields.descBy("presentPriority").addDescField("id");
+        return find(Optional.of(conditions), range, orderByFields, workBasicFieldsFilter);
+    }
+
+    @Override
+    public void selectOrCancel(String workId, Work.PresentPriority presentPriority) {
+        UpdateOperations<Work> updateOps = newUpdateOps().set("presentPriority", presentPriority.val());
+        Query<Work> query = newQuery().field("id").equal(toMongoId(workId));
+        datastore.update(query, updateOps);
+    }
+
+    @Override
     protected Class<Work> entityClass() {
         return Work.class;
+    }
+
+    private List<Work> findUgcWorkProfilesInRange(Range range) {
+        Conditions conditions = Conditions.of("source", Work.Source.ugc);
+        OrderByFields descByFields = OrderByFields.descBy("presentPriority").addDescField("id");
+        return find(Optional.of(conditions), range, descByFields, workBasicFieldsFilter);
+    }
+
+    private List<Work> findPgcWorkProfilesInRange(Range range) {
+        Conditions conditions = Conditions.of("source", Work.Source.pgc);
+        return find(Optional.of(conditions), range, workBasicFieldsFilter);
     }
 
 }

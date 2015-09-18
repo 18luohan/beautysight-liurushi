@@ -8,7 +8,8 @@ import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
-import org.mongodb.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Transient;
 
 /**
  * A key abstraction that is a control of a {@link PictureStory} or {@link Presentation}
@@ -18,7 +19,9 @@ import org.mongodb.morphia.annotations.Reference;
  */
 public abstract class Control extends ValueObject {
 
-    @Reference(value = "sectionId", idOnly = true)
+    private ObjectId sectionId;
+
+    @Transient
     private ContentSection content;
 
     /**
@@ -27,11 +30,16 @@ public abstract class Control extends ValueObject {
     private Integer order;
 
     public void setContentSection(ContentSection content) {
+        this.sectionId = content.id();
         this.content = content;
     }
 
     public ContentSection content() {
-        return content;
+        return this.content;
+    }
+
+    public ObjectId sectionId() {
+        return this.sectionId;
     }
 
     public Integer order() {

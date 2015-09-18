@@ -48,7 +48,7 @@ public class WorkRest {
 
     @RequestMapping(value = "/{workId}", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkVM getWorkBy(@PathVariable("workId") String workId) {
+    public WorkVM getFullWorkBy(@PathVariable("workId") String workId) {
         PreconditionUtils.checkRequired("url path variable workId", workId);
         return workApp.getFullWorkBy(workId, RequestContext.optionalCurrentUserId());
     }

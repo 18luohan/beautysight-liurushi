@@ -32,9 +32,13 @@ public class WorkVM implements ViewModel {
         return from(work, keyToDownloadUrlMapping, null, null, null);
     }
 
+    public static WorkVM from(Work work, Map<String, String> keyToDownloadUrlMapping, Author author) {
+        return from(work, keyToDownloadUrlMapping, null, null, author);
+    }
+
     public static WorkVM from(Work work, Map<String, String> keyToDownloadUrlMapping, Boolean isLiked, Boolean isFavored, Author author) {
         WorkVM workVM = new WorkVM();
-        workVM.id = work.idAsStr();
+        workVM.id = work.idStr();
         workVM.title = work.title();
         workVM.subtitle = work.subtitle();
         workVM.author = author;
