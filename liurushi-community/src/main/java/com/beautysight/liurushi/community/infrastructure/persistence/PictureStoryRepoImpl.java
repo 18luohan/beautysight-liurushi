@@ -5,9 +5,9 @@
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
 import com.beautysight.liurushi.common.domain.Range;
-import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
-import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStoryRepo;
-import com.beautysight.liurushi.community.domain.model.work.Work;
+import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.work.picstory.PictureStoryRepo;
+import com.beautysight.liurushi.community.domain.work.Work;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.google.common.base.Optional;
 import org.apache.commons.collections.CollectionUtils;

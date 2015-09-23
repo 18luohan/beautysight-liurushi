@@ -9,8 +9,9 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.WorkApp;
 import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
 import com.beautysight.liurushi.community.app.presentation.WorkVM;
-import com.beautysight.liurushi.community.domain.model.work.Work;
+import com.beautysight.liurushi.community.domain.work.Work;
 import com.beautysight.liurushi.rest.common.APIs;
+import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,15 +30,22 @@ public class WorkExamineRest {
     public WorkProfileList getUgcWorkProfilesInRange(@RequestParam(required = false) String referencePoint,
                                                      @RequestParam Integer offset,
                                                      @RequestParam(required = false) Range.OffsetDirection direction,
-                                                     @PathVariable("presentPriority") String presentPriority) {
-        return workApp.findUgcWorkProfilesInRange(new Range(referencePoint, offset, direction), Work.PresentPriority.of(presentPriority));
+                                                     @PathVariable("presentPriority") String presentPriority,
+                                                     @RequestParam(required = false) Integer thumbnailSpec) {
+        return workApp.findUgcWorkProfilesInRange(
+                new Range(referencePoint, offset, direction),
+                Work.PresentPriority.of(presentPriority),
+                Optional.fromNullable(thumbnailSpec));
     }
 
     @RequestMapping(value = "/ugc/discarded", method = RequestMethod.GET)
     public WorkProfileList getDiscardedUgcWorkProfilesInRange(@RequestParam(required = false) String referencePoint,
                                                               @RequestParam Integer offset,
-                                                              @RequestParam(required = false) Range.OffsetDirection direction) {
-        return workApp.findDiscardedUgcWorkProfilesInRange(new Range(referencePoint, offset, direction));
+                                                              @RequestParam(required = false) Range.OffsetDirection direction,
+                                                              @RequestParam(required = false) Integer thumbnailSpec) {
+        return workApp.findDiscardedUgcWorkProfilesInRange(
+                new Range(referencePoint, offset, direction),
+                Optional.fromNullable(thumbnailSpec));
     }
 
     @RequestMapping(value = "/{workId}/actions/select", method = RequestMethod.PUT)

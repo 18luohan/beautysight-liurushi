@@ -7,12 +7,12 @@ package com.beautysight.liurushi.community.app.dpo;
 import com.beautysight.liurushi.common.app.Payload;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
-import com.beautysight.liurushi.community.domain.model.work.cs.TextBlock;
-import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
-import com.beautysight.liurushi.community.domain.model.work.present.Slide;
-import com.beautysight.liurushi.community.domain.model.work.present.Widget;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.work.cs.TextBlock;
+import com.beautysight.liurushi.community.domain.work.present.Presentation;
+import com.beautysight.liurushi.community.domain.work.present.Slide;
+import com.beautysight.liurushi.community.domain.work.present.Widget;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;

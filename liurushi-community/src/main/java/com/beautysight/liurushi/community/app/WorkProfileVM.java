@@ -5,8 +5,8 @@
 package com.beautysight.liurushi.community.app;
 
 import com.beautysight.liurushi.common.app.ViewModel;
-import com.beautysight.liurushi.community.domain.model.work.Author;
-import com.beautysight.liurushi.community.domain.model.work.Work;
+import com.beautysight.liurushi.community.domain.work.Author;
+import com.beautysight.liurushi.community.domain.work.Work;
 
 import java.util.Date;
 

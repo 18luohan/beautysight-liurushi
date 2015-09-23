@@ -5,7 +5,7 @@
 package com.beautysight.liurushi.community.app;
 
 import com.beautysight.liurushi.community.app.command.LikeOrCancelCommand;
-import com.beautysight.liurushi.community.domain.model.work.WorkRepo;
+import com.beautysight.liurushi.community.domain.work.WorkRepo;
 import com.beautysight.liurushi.community.domain.service.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

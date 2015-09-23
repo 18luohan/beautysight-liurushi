@@ -57,36 +57,27 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 
     @Test
     public void issueDownloadUrl() {
-        String result = storageService.issueDownloadUrl(UUID.randomUUID().toString());
+        String result = storageService.issuePrivateDownloadUrl(UUID.randomUUID().toString());
         assertTrue(StringUtils.isNotBlank(result));
         System.out.println(result);
     }
 
     @Test
     public void uploadAvatar() throws IOException {
-        String key = UUID.randomUUID().toString().replaceAll("-", "");
+        String key = FileMetadata.generateKey(FileMetadata.BizCategory.avatar);
+        key = "av_7a5d70a297c04078bfa970117489d976";
         UploadOptions uploadPolicy = uploadPolicyForTest();
         uploadPolicy.key(key);
+        uploadPolicy.insertOnly(UploadOptions.Switch.disabled);
         String uploadToken = storageService.issueUploadToken(uploadPolicy);
 
         System.out.println(uploadToken);
 
-        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/fecility.png"), uploadToken);
-        // images/avatar2.jpg:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV, hash:Fp6lZBb1zZtTbG5Vhez9WnmGQBPV
-        System.out.println("images/avatar2.jpg:" + result.key() + ", hash:" + result.hash());
-
-//        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/heben.png"), key, uploadToken);
-//        //images/avatar2.jpg:Fru9ofxwZe3XgCma6CB3rLccDK_P, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P
-//        System.out.println("images/avatar2.jpg:" + result.key() + ", hash:" + result.hash());
-
-//        result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"), uploadToken);
-//        System.out.println("images/jessy.jpg:" + result.key() + ", hash:" + result.hash());
-//
-//        result = storageService.upload(Files.readFileInClassPathAsBytes("images/avatar1-blur.png"), uploadToken);
-//        System.out.println("images/avatar1-blur.png:" + result.key() + ", hash:" + result.hash());
-
-//        images/avatar2.jpg:c97898f360fd418c8d5c6c1874e0de63, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P
-//        images/avatar2.jpg:dc7a166f03ef4433803fb0b792fbde46, hash:Fru9ofxwZe3XgCma6CB3rLccDK_P heben
+        String image = "heben.png"; // fecility heben
+        FileMetadata result = storageService.upload(
+                Files.readFileInClassPathAsBytes("images/" + image),
+                key, uploadToken);
+        System.out.println("images/fecility.png:" + result.key() + ", hash:" + result.hash());
     }
 
     @Test
@@ -120,13 +111,11 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 
     @Test
     public void downloadToken() throws Exception {
-        String key = "FgwkvStH0913xPKZiRgJxvG_9SXM";
-//        key = "d45ba164-a6ce-43e0-9ed2-659c003ce162";
+        String key = "av_fd1687ecdc3b4f78b226182cfffc275f";
         int expiry = 0;
         String instructions = "imageView2/1/w/400/h/400/q/40";
-//        instructions = null;
-        String savedAsKey = UUID.randomUUID().toString();
-//        savedAsKey = null;
+        instructions = "imageMogr2/thumbnail/300x300";
+        String savedAsKey = key + "x300";
         String downloadUrl = storageService.issueDownloadUrlWithFileOps(key, expiry, instructions, savedAsKey);
         System.out.println("savedAsKey:" + savedAsKey + ", url:" + downloadUrl);
         assertNotNull(downloadUrl);
@@ -137,20 +126,24 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
         UploadOptions uploadPolicy = uploadPolicyForTest()
                 .checksum("pseudo-checksum-abcdefg-1000");
         String uploadToken = storageService.issueUploadToken(uploadPolicy);
-        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/felicity.jpg"), uploadToken);
+        FileMetadata result = storageService.upload(
+                Files.readFileInClassPathAsBytes("images/felicity.jpg"),
+                FileMetadata.generateKey(FileMetadata.BizCategory.avatar), uploadToken);
     }
 
     @Test
     public void uploadWithDefaultPolicy() throws IOException {
         String uploadToken = storageService.issueUploadToken(uploadPolicyForTest());
-        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"), uploadToken);
+        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"),
+                FileMetadata.generateKey(FileMetadata.BizCategory.avatar), uploadToken);
     }
 
     @Test
     public void uploadWithCustomReturnBody() throws IOException {
         String returnBody = "{\"key\": $(key), \"hash\": $(etag), \"imageWidth\": $(imageInfo.width), \"imageHeight\": $(imageInfo.height)}";
         UploadOptions policy = uploadPolicyForTest().returnBody(returnBody);
-        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"), storageService.issueUploadToken(policy));
+        FileMetadata result = storageService.upload(Files.readFileInClassPathAsBytes("images/jessy.jpg"),
+                FileMetadata.generateKey(FileMetadata.BizCategory.avatar), storageService.issueUploadToken(policy));
 
 //        BufferedImage origin = Files.from("images/jessy.jpg");
 //        assertEquals("image width not equal", origin.getWidth(), result.imageWidth);

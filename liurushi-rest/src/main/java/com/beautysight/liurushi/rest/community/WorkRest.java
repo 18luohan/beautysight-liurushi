@@ -17,6 +17,7 @@ import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
+import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,17 +78,23 @@ public class WorkRest {
 
     @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfileList getUgcLatestWorkProfiles(@RequestParam("count") int count) {
+    public WorkProfileList getUgcLatestWorkProfiles(@RequestParam("count") int count,
+                                                    @RequestParam(required = false) Integer thumbnailSpec) {
         PreconditionUtils.checkGreaterThanZero("request param count", count);
-        return workApp.getUgcLatestWorkProfiles(count, RequestContext.optionalCurrentUserId());
+        return workApp.getUgcLatestWorkProfiles(count,
+                RequestContext.optionalCurrentUserId(),
+                Optional.fromNullable(thumbnailSpec));
     }
 
     @RequestMapping(value = "/ugc", method = RequestMethod.GET)
     @VisitorApiPermission
     public WorkProfileList getUgcWorkProfilesInRange(@RequestParam(required = false) String referencePoint,
                                                      @RequestParam Integer offset,
-                                                     @RequestParam(required = false) Range.OffsetDirection direction) {
-        return workApp.findUgcWorkProfilesIn(new Range(referencePoint, offset, direction), RequestContext.optionalCurrentUserId());
+                                                     @RequestParam(required = false) Range.OffsetDirection direction,
+                                                     @RequestParam(required = false) Integer thumbnailSpec) {
+        return workApp.findUgcWorkProfilesIn(new Range(referencePoint, offset, direction),
+                RequestContext.optionalCurrentUserId(),
+                Optional.fromNullable(thumbnailSpec));
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)

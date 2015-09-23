@@ -55,6 +55,18 @@ public class Range {
         return this.direction;
     }
 
+    public boolean both() {
+        return (this.direction == OffsetDirection.both);
+    }
+
+    public boolean after() {
+        return (this.direction == OffsetDirection.after);
+    }
+
+    public boolean before() {
+        return (this.direction == OffsetDirection.before);
+    }
+
     /**
      * @author chenlong
      * @since 1.0

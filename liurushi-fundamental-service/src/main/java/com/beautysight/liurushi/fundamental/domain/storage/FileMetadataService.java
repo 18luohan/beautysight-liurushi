@@ -20,16 +20,16 @@ public class FileMetadataService {
     @Autowired
     private FileMetadataRepo fileMetadataRepo;
 
-    public FileMetadata createOneLogicFile(FileMetadata.Type type) {
-        FileMetadata aNewFile = FileMetadata.newFile(type);
+    public FileMetadata createOneLogicFile(FileMetadata.Type type, FileMetadata.BizCategory bizCategory) {
+        FileMetadata aNewFile = FileMetadata.newFile(type, bizCategory);
         fileMetadataRepo.save(aNewFile);
         return aNewFile;
     }
 
-    public List<FileMetadata> createLogicFiles(int filesCount, FileMetadata.Type type) {
+    public List<FileMetadata> createLogicFiles(int filesCount, FileMetadata.Type type, FileMetadata.BizCategory bizCategory) {
         List<FileMetadata> files = new ArrayList<>();
         for (int i = 0; i < filesCount; i++) {
-            files.add(FileMetadata.newFile(type));
+            files.add(FileMetadata.newFile(type, bizCategory));
         }
         fileMetadataRepo.save(files);
         return files;

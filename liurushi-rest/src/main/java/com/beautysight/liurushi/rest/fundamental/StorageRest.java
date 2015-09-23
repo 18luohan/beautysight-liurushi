@@ -43,7 +43,7 @@ public class StorageRest {
 
     @RequestMapping(value = "/download_url", method = RequestMethod.POST)
     public DownloadUrl issueDownloadUrl(@RequestBody IssueDownloadUrlCommand command) {
-        return storageApp.issueDownloadUrl(command);
+        return storageApp.downloadUrl(command);
     }
 
 }

@@ -8,10 +8,7 @@ import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.utils.AsyncTasks;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
-import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
+import com.beautysight.liurushi.fundamental.domain.storage.*;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
@@ -149,10 +146,10 @@ public class UserService {
         builder.copyFrom(user);
 
         if (user.headerPhoto().isPresent()) {
-            builder.setHeaderPhotoUrl(storageService.issueDownloadUrl(user.headerPhoto().get().key()));
+            builder.setHeaderPhotoUrl(storageService.downloadUrl(user.headerPhoto().get().key()));
         }
         if (user.maxAvatar().isPresent()) {
-            builder.setMaxAvatarUrl(storageService.issueDownloadUrl(user.maxAvatar().get().key()));
+            builder.setMaxAvatarUrl(storageService.downloadUrl(user.maxAvatar().get().key()));
         }
         return builder.build();
     }
@@ -181,7 +178,7 @@ public class UserService {
     }
 
     private void createMaxAvatarFor(final User user) {
-        final FileMetadata theLogicFile = fileMetadataService.createOneLogicFile(FileMetadata.Type.image);
+        final FileMetadata theLogicFile = fileMetadataService.createOneLogicFile(FileMetadata.Type.image, FileMetadata.BizCategory.avatar);
         final User.Avatar maxAvatar = new User.Avatar(theLogicFile, 300);
         user.setMaxAvatar(maxAvatar);
         AsyncTasks.submit(new Runnable() {

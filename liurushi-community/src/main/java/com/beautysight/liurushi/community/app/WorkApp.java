@@ -12,19 +12,18 @@ import com.beautysight.liurushi.community.app.dpo.ControlPayload;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
 import com.beautysight.liurushi.community.app.presentation.WorkVM;
-import com.beautysight.liurushi.community.domain.model.like.Like;
-import com.beautysight.liurushi.community.domain.model.work.*;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRepo;
-import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
-import com.beautysight.liurushi.community.domain.model.work.draft.PublishingWork;
-import com.beautysight.liurushi.community.domain.model.work.draft.PublishingWorkRepo;
-import com.beautysight.liurushi.community.domain.model.work.layout.BlockLocator;
-import com.beautysight.liurushi.community.domain.model.work.picstory.PictureStory;
-import com.beautysight.liurushi.community.domain.model.work.picstory.Shot;
-import com.beautysight.liurushi.community.domain.model.work.present.Presentation;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.community.domain.service.LikeService;
+import com.beautysight.liurushi.community.domain.work.*;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.work.draft.PublishingWork;
+import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
+import com.beautysight.liurushi.community.domain.work.layout.BlockLocator;
+import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.work.picstory.Shot;
+import com.beautysight.liurushi.community.domain.work.present.Presentation;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfig;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
@@ -34,18 +33,16 @@ import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
 import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.google.common.base.Optional;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 与内容相关的应用逻辑
@@ -79,6 +76,8 @@ public class WorkApp {
     private AppConfigService appConfigService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private WorkService workService;
 
     public PublishWorkPresentation publishWork(PublishWorkCommand command) {
         Map<String, ContentSection> savedContentSections = saveContentSections(command.contentSectionsMap());
@@ -129,12 +128,12 @@ public class WorkApp {
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
         String coverPictureKey = work.pictureStory().cover().pictureKey();
-        String downloadUrl = storageService.issueDownloadUrl(coverPictureKey);
+        String downloadUrl = storageService.downloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
         for (Shot shot : work.pictureStory().controls()) {
             if (shot.content() instanceof Picture) {
                 Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.issueDownloadUrl(picture.key());
+                downloadUrl = storageService.downloadUrl(picture.key());
                 keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
             }
         }
@@ -152,7 +151,7 @@ public class WorkApp {
     public WorkProfileVM getWorkProfileBy(String workId, Optional<String> loginUserId) {
         Work workProfile = workRepo.getWorkProfile(workId);
         String coverPictureKey = workProfile.pictureStory().cover().pictureKey();
-        String coverPictureUrl = storageService.issueDownloadUrl(coverPictureKey);
+        String coverPictureUrl = storageService.downloadUrl(coverPictureKey);
         Author author = authorService.getAuthorBy(workProfile.authorId());
         WorkProfileVM result = new WorkProfileVM(workProfile, coverPictureUrl, author);
 
@@ -168,7 +167,7 @@ public class WorkApp {
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
         String coverPictureKey = pictureStory.cover().pictureKey();
-        String downloadUrl = storageService.issueDownloadUrl(coverPictureKey);
+        String downloadUrl = storageService.downloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
 
         IntegerVal shotsNum = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
@@ -180,7 +179,7 @@ public class WorkApp {
             shot.calculatePosition(locator);
             if (shot.content() instanceof Picture) {
                 Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.issueDownloadUrl(picture.key());
+                downloadUrl = storageService.downloadUrl(picture.key());
                 keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
             }
         }
@@ -191,20 +190,20 @@ public class WorkApp {
 
     public WorkProfileList getPgcLatestWorkProfiles(int count, Optional<String> loginUserId) {
         Range range = new Range(count, Range.OffsetDirection.before);
-        return findWorkProfilesInRange(Work.Source.pgc, range, loginUserId);
+        return workService.findWorkProfilesInRange(Work.Source.pgc, range, loginUserId, Optional.<Integer>absent());
     }
 
     public WorkProfileList findPgcWorkProfilesIn(Range range, Optional<String> loginUserId) {
-        return findWorkProfilesInRange(Work.Source.pgc, range, loginUserId);
+        return workService.findWorkProfilesInRange(Work.Source.pgc, range, loginUserId, Optional.<Integer>absent());
     }
 
-    public WorkProfileList getUgcLatestWorkProfiles(int count, Optional<String> loginUserId) {
+    public WorkProfileList getUgcLatestWorkProfiles(int count, Optional<String> loginUserId, Optional<Integer> intThumbnailSpec) {
         Range range = new Range(count, Range.OffsetDirection.before);
-        return findWorkProfilesInRange(Work.Source.ugc, range, loginUserId);
+        return workService.findWorkProfilesInRange(Work.Source.ugc, range, loginUserId, intThumbnailSpec);
     }
 
-    public WorkProfileList findUgcWorkProfilesIn(Range range, Optional<String> loginUserId) {
-        return findWorkProfilesInRange(Work.Source.ugc, range, loginUserId);
+    public WorkProfileList findUgcWorkProfilesIn(Range range, Optional<String> loginUserId, Optional<Integer> intThumbnailSpec) {
+        return workService.findWorkProfilesInRange(Work.Source.ugc, range, loginUserId, intThumbnailSpec);
     }
 
     public WorkProfileList findAuthorWorksIn(AuthorWorksRange range) {
@@ -216,14 +215,16 @@ public class WorkApp {
         }
 
         for (Work work : theWorks) {
-            String coverPictureUrl = storageService.issueDownloadUrl(work.cover().pictureKey());
+            String coverPictureUrl = workService.pictureUrl(
+                    work.cover().pictureKey(),
+                    Optional.of(Integer.valueOf(300)));
             workProfiles.add(new WorkProfileVM(work, coverPictureUrl));
         }
 
         return new WorkProfileList(workProfiles);
     }
 
-    public WorkProfileList findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority) {
+    public WorkProfileList findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority, Optional<Integer> intThumbnailSpec) {
         List<WorkProfileVM> workProfiles = new ArrayList<>();
 
         List<Work> works = workRepo.findUgcWorkProfilesInRange(range, presentPriority);
@@ -231,7 +232,7 @@ public class WorkApp {
             return new WorkProfileList(workProfiles);
         }
 
-        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = joinWorksWithAuthor(works);
+        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = workService.joinWorksWithAuthor(works, intThumbnailSpec);
         // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
         for (Work work : works) {
             workProfiles.add(workIdToWorkProfileVMMap.get(work.idStr()));
@@ -240,14 +241,14 @@ public class WorkApp {
         return new WorkProfileList(workProfiles);
     }
 
-    public WorkProfileList findDiscardedUgcWorkProfilesInRange(Range range) {
+    public WorkProfileList findDiscardedUgcWorkProfilesInRange(Range range, Optional<Integer> intThumbnailSpec) {
         List<WorkProfileVM> workProfiles = new ArrayList<>();
         List<DiscardedWork> works = discardedWorkRepo.findInRange(range);
         if (CollectionUtils.isEmpty(works)) {
             return new WorkProfileList(workProfiles);
         }
 
-        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = joinWorksWithAuthor(works);
+        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = workService.joinWorksWithAuthor(works, intThumbnailSpec);
         // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
         for (Work work : works) {
             workProfiles.add(workIdToWorkProfileVMMap.get(work.idStr()));
@@ -290,12 +291,12 @@ public class WorkApp {
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
         String coverPictureKey = work.pictureStory().cover().pictureKey();
-        String downloadUrl = storageService.issueDownloadUrl(coverPictureKey);
+        String downloadUrl = storageService.downloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
         for (Shot shot : work.pictureStory().controls()) {
             if (shot.content() instanceof Picture) {
                 Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.issueDownloadUrl(picture.key());
+                downloadUrl = storageService.downloadUrl(picture.key());
                 keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
             }
         }
@@ -304,70 +305,11 @@ public class WorkApp {
         return WorkVM.from(work, keyToDownloadUrlMapping, author);
     }
 
-    private WorkProfileList findWorkProfilesInRange(Work.Source source, Range range, Optional<String> loginUserId) {
-        List<WorkProfileVM> workProfiles = new ArrayList<>();
-
-        List<Work> works = workRepo.findWorkProfilesInRange(source, range);
-        if (CollectionUtils.isEmpty(works)) {
-            return new WorkProfileList(workProfiles);
-        }
-
-        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = joinWorksWithAuthor(works);
-
-        List<String> workIds = new ArrayList<>(workIdToWorkProfileVMMap.keySet());
-        if (loginUserId.isPresent()) {
-            List<Like> likes = likeService.findUserLikesOfWorks(loginUserId.get(), workIds);
-            for (Like like : likes) {
-                workIdToWorkProfileVMMap.get(like.workId()).setIsLiked(Boolean.TRUE);
-            }
-        }
-
-        // 确保与其他对象集合进行连接后列表顺序仍与数据库返回的顺序一样
-        for (Work work : works) {
-            workProfiles.add(workIdToWorkProfileVMMap.get(work.idStr()));
-        }
-
-        return new WorkProfileList(workProfiles);
-    }
-
-    private Map<String, WorkProfileVM> joinWorksWithAuthor(List<? extends Work> works) {
-        Set<String> authorIds = new HashSet<>(works.size());
-        List<String> workIds = new ArrayList<>(works.size());
-        for (Work work : works) {
-            authorIds.add(work.authorId());
-            workIds.add(work.idStr());
-        }
-
-        ListMultimap<String, Work> authorToWorksMap = Multimaps.newListMultimap(
-                Maps.<String, Collection<Work>>newHashMap(),
-                new Supplier<List<Work>>() {
-                    public List<Work> get() {
-                        return Lists.newArrayList();
-                    }
-                });
-        for (Work work : works) {
-            authorToWorksMap.put(work.authorId(), work);
-        }
-
-        List<Author> authors = authorService.getAuthorsBy(authorIds);
-        Map<String, WorkProfileVM> workIdToWorkProfileVMMap = new HashMap<>(works.size());
-        for (Author author : authors) {
-            List<Work> authorWorks = authorToWorksMap.get(author.id);
-            for (Work work : authorWorks) {
-                String coverPictureUrl = storageService.issueDownloadUrl(work.cover().pictureKey());
-                WorkProfileVM workProfile = new WorkProfileVM(work, coverPictureUrl, author);
-                workIdToWorkProfileVMMap.put(work.idStr(), workProfile);
-            }
-        }
-
-        return workIdToWorkProfileVMMap;
-    }
-
     private Map<String, ContentSection> saveContentSections(Map<String, ContentSection> newSections) {
         for (Map.Entry<String, ContentSection> entry : newSections.entrySet()) {
             if (entry.getValue() instanceof Picture) {
                 Picture pic = (Picture) entry.getValue();
-                pic.setFile(fileMetadataService.createOneLogicFile(FileMetadata.Type.image));
+                pic.setFile(fileMetadataService.createOneLogicFile(FileMetadata.Type.image, FileMetadata.BizCategory.work));
             }
             ContentSection section = contentSectionRepo.save(entry.getValue());
             entry.setValue(section);

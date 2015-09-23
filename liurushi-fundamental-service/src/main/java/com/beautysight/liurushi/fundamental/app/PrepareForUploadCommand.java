@@ -19,6 +19,7 @@ public class PrepareForUploadCommand implements Command {
      */
     public Integer filesCount;
     public FileMetadata.Type type = FileMetadata.Type.image;
+    public FileMetadata.BizCategory bizCategory = FileMetadata.BizCategory.unknown;
 
     public void validate() {
         PreconditionUtils.checkGreaterThanZero("filesCount", filesCount);

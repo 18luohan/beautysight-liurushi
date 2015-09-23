@@ -9,7 +9,7 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
 import com.beautysight.liurushi.community.app.dpo.PictureStoryPayload;
 import com.beautysight.liurushi.community.app.dpo.PresentationPayload;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -26,7 +26,7 @@ public class StorageApp {
 
     public PrepareForUploadPresentation prepareForUpload(PrepareForUploadCommand command) {
         String uploadToken = storageService.issueUploadToken();
-        List<FileMetadata> files = fileMetadataService.createLogicFiles(command.filesCount, command.type);
+        List<FileMetadata> files = fileMetadataService.createLogicFiles(command.filesCount, command.type, command.bizCategory);
         return PrepareForUploadPresentation.from(uploadToken, files);
     }
 
@@ -34,10 +34,9 @@ public class StorageApp {
         return UploadTokenPresentation.from(storageService.issueUploadToken(command.toUploadOptions()));
     }
 
-    public DownloadUrl issueDownloadUrl(IssueDownloadUrlCommand command) {
+    public DownloadUrl downloadUrl(IssueDownloadUrlCommand command) {
         command.validate();
-        String url = storageService.issueDownloadUrlWithFileOps(
-                command.key, command.expiry, command.instructions, command.savedAsKey);
+        String url = storageService.downloadUrl(command.key);
         return DownloadUrl.from(url);
     }
 

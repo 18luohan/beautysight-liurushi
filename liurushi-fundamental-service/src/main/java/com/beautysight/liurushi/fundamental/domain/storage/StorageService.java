@@ -14,9 +14,7 @@ public interface StorageService {
 
     String issueUploadToken(UploadOptions options);
 
-    String issueDownloadUrl(String key);
-
-    String issueDownloadUrlWithFileOps(final String key, final int expiry, final String instructions, final String savedAsKey);
+    String downloadUrl(String key);
 
     FileMetadata zoomImageTo(int expectedWidth, String originImageKey, String zoomedImageKey);
 

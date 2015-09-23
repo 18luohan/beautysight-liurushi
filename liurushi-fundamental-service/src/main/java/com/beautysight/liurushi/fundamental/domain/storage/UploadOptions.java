@@ -27,7 +27,15 @@ public class UploadOptions {
 
     private Scope scope = new Scope();
     private long timeOfValidity = 3600;
-    private Switch insertOnly = Switch.disabled;
+
+    /**
+     * 表明上传操作只允许新增，还是也允许更新。该参数只影响当前上传操作，并不会影响scope.key的后续使用。
+     * 也就是说，假如当前上传操作只允许新增，且实际上传成功。然后我们依然可以继续使用其key，
+     * 且允许更新，将该key对应的文件替换为另一个文件。<br/>
+     * 如果 key 和 uploadToken 都泄露了，那云存储就有可能被其他恶意的人用作图床！
+     */
+    private Switch insertOnly = Switch.enabled;
+
     private String endUser;
 
     /*
@@ -320,7 +328,7 @@ public class UploadOptions {
         }
     }
 
-    private enum Switch {
+    public enum Switch {
         disabled(0), enabled(1);
 
         private int val;

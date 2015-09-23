@@ -31,24 +31,25 @@ public class FileMetadata extends AbstractEntity {
     public FileMetadata() {
     }
 
-    private FileMetadata(Type type) {
-        this.key = this.generateKey();
+    private FileMetadata(Type type, BizCategory bizCategory) {
+        this.key = generateKey(bizCategory);
         this.type = type;
     }
 
-    public static FileMetadata newFile(Type type) {
+    public static FileMetadata newFile(Type type, BizCategory bizCategory) {
         if (type == Type.image) {
-            return new FileMetadata(Type.image);
+            return new FileMetadata(Type.image, bizCategory);
         }
         if (type == Type.video) {
-            return new FileMetadata(Type.video);
+            return new FileMetadata(Type.video, bizCategory);
         }
         throw new IllegalParamException("Expected type: %s, but actual %s",
                 Arrays.toString(Type.values()), type);
     }
 
-    public static FileMetadata newImageFile() {
-        return newFile(Type.image);
+    // TODO can remove
+    public static FileMetadata newImageFile(BizCategory bizCategory) {
+        return newFile(Type.image, bizCategory);
     }
 
     public boolean isImage() {
@@ -91,8 +92,19 @@ public class FileMetadata extends AbstractEntity {
         PreconditionUtils.checkRequired("file.hash", hash);
     }
 
-    private String generateKey() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
+    public static String generateKey(BizCategory bizCategory) {
+        return new StringBuilder(bizCategory.val).append("_")
+                .append(UUID.randomUUID().toString().replaceAll("-", "")).toString();
+    }
+
+    public enum BizCategory {
+        avatar("av"), work("wk"), unknown("unk");
+
+        private final String val;
+
+        BizCategory(String val) {
+            this.val = val;
+        }
     }
 
     public enum Type {

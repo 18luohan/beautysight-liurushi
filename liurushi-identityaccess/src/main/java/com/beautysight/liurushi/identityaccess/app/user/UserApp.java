@@ -111,12 +111,12 @@ public class UserApp {
 
     public DownloadUrl changeUserOriginalAvatar(String userId, FileMetadataPayload newAvatar) {
         User user = userService.changeUserOriginalAvatar(userId, newAvatar.toDomainModel());
-        return DownloadUrl.from(storageService.issueDownloadUrl(user.maxAvatar().get().key()));
+        return DownloadUrl.from(storageService.downloadUrl(user.maxAvatar().get().key()));
     }
 
     public DownloadUrl changeUserHeaderPhoto(String userId, FileMetadataPayload newHeaderPhoto) {
         FileMetadata headerPhoto = userService.changeUserHeaderPhoto(userId, newHeaderPhoto.toDomainModel());
-        return DownloadUrl.from(storageService.issueDownloadUrl(headerPhoto.key()));
+        return DownloadUrl.from(storageService.downloadUrl(headerPhoto.key()));
     }
 
     public PersonalCenterVM getUserPersonalCenter(String aUserId, Optional<String> loginUserId) {

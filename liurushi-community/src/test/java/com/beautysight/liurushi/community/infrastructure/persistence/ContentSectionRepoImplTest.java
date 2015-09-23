@@ -4,8 +4,8 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import org.bson.types.ObjectId;
 import org.junit.Test;

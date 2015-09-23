@@ -5,8 +5,8 @@
 package com.beautysight.liurushi.community.app.presentation;
 
 import com.beautysight.liurushi.common.app.ViewModel;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.model.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.cs.Picture;
 import com.beautysight.liurushi.fundamental.app.FileMetadataPayload;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 

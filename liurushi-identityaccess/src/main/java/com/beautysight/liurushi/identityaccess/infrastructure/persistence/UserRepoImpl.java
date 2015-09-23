@@ -62,12 +62,12 @@ public class UserRepoImpl extends AbstractMongoRepository<User> implements UserR
 
     @Override
     public Optional<User> withMobile(String mobile) {
-        return findOneBy(Conditions.of("mobile", mobile));
+        return findOneBy(Conditions.newWithEqual("mobile", mobile));
     }
 
     @Override
     public Optional<User> withGlobalId(String globalId) {
-        return findOneBy(Conditions.of("globalId", globalId));
+        return findOneBy(Conditions.newWithEqual("globalId", globalId));
     }
 
     @Override

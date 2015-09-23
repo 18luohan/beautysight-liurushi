@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.service;
 
-import com.beautysight.liurushi.community.domain.model.work.Author;
+import com.beautysight.liurushi.community.domain.work.Author;
 
 import java.util.Collection;
 import java.util.List;

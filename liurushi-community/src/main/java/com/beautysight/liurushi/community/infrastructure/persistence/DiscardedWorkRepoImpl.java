@@ -5,13 +5,13 @@
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
 import com.beautysight.liurushi.common.domain.Range;
-import com.beautysight.liurushi.community.domain.model.work.DiscardedWork;
-import com.beautysight.liurushi.community.domain.model.work.DiscardedWorkRepo;
-import com.beautysight.liurushi.community.domain.model.work.WorkRepo;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.model.work.cs.ContentSectionRepo;
-import com.beautysight.liurushi.community.domain.model.work.picstory.Shot;
-import com.beautysight.liurushi.community.domain.model.work.present.Slide;
+import com.beautysight.liurushi.community.domain.work.DiscardedWork;
+import com.beautysight.liurushi.community.domain.work.DiscardedWorkRepo;
+import com.beautysight.liurushi.community.domain.work.WorkRepo;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.work.picstory.Shot;
+import com.beautysight.liurushi.community.domain.work.present.Slide;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;

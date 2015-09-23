@@ -83,7 +83,7 @@ public class QiniuStorageService implements StorageService {
                         return client.get(zoomingImageUrl);
                     }
                 });
-        resource.setUrl(this.issueDownloadUrl(resource.key()));
+        resource.setUrl(this.issuePrivateDownloadUrl(resource.key()));
         return resource;
     }
 
@@ -101,12 +101,41 @@ public class QiniuStorageService implements StorageService {
                         return client.get(gettingThumbnailInfoUrl);
                     }
                 });
-        resource.setUrl(this.issueDownloadUrl(resource.key()));
+        resource.setUrl(this.issuePrivateDownloadUrl(resource.key()));
         return resource;
     }
 
     @Override
-    public String issueDownloadUrl(final String key) {
+    public String downloadUrl(String key) {
+        return qiniuConfig.bucketUrl + "/" + key;
+    }
+
+    public FileMetadata upload(final byte[] fileBytes, final String key, final String uploadToken) {
+        return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
+            @Override
+            public Response execute() throws QiniuException {
+                return uploadManager.put(fileBytes, key, uploadToken);
+            }
+        });
+    }
+
+    public FileMetadata upload(final byte[] fileBytes, final String uploadToken, final StringMap params) {
+        return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
+            @Override
+            public Response execute() throws QiniuException {
+                String key = null;
+                String mime = null;
+                boolean checkCrc = false;
+                return uploadManager.put(fileBytes, key, uploadToken, params, mime, checkCrc);
+            }
+        });
+    }
+
+    /*
+     * 访问私有bucket
+     */
+
+    public String issuePrivateDownloadUrl(final String key) {
         return QiniuServiceTemplate.executeAuthService("issue download url", new AuthServiceExecutor<String>() {
             @Override
             String execute() {
@@ -115,7 +144,6 @@ public class QiniuStorageService implements StorageService {
         });
     }
 
-    @Override
     public String issueDownloadUrlWithFileOps(final String key, final int expiry, final String fileOps, final String savedAsKey) {
         return QiniuServiceTemplate.executeAuthService(
                 String.format("issue download url with %s", fileOps),
@@ -148,31 +176,6 @@ public class QiniuStorageService implements StorageService {
                         return auth.privateDownloadUrl(url);
                     }
                 });
-    }
-
-    public FileMetadata upload(final byte[] fileBytes, final String uploadToken) {
-        return upload(fileBytes, null, uploadToken);
-    }
-
-    public FileMetadata upload(final byte[] fileBytes, final String key, final String uploadToken) {
-        return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
-            @Override
-            public Response execute() throws QiniuException {
-                return uploadManager.put(fileBytes, key, uploadToken);
-            }
-        });
-    }
-
-    public FileMetadata upload(final byte[] fileBytes, final String uploadToken, final StringMap params) {
-        return QiniuServiceTemplate.request("single direct upload", new RequestExecutor() {
-            @Override
-            public Response execute() throws QiniuException {
-                String key = null;
-                String mime = null;
-                boolean checkCrc = false;
-                return uploadManager.put(fileBytes, key, uploadToken, params, mime, checkCrc);
-            }
-        });
     }
 
     private static class QiniuServiceTemplate {

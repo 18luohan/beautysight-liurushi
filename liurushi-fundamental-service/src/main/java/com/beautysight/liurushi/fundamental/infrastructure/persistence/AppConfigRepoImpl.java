@@ -20,7 +20,7 @@ public class AppConfigRepoImpl extends AbstractMongoRepository<AppConfig> implem
 
     @Override
     public Optional<AppConfig> withName(String configItemName) {
-        return findOneBy(Conditions.of("name", configItemName));
+        return findOneBy(Conditions.newWithEqual("name", configItemName));
     }
 
     @Override

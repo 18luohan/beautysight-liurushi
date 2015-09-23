@@ -189,41 +189,41 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     }
 
     protected List<T> find(Optional<Conditions> conditions, Range range, Optional<FieldsFilter> fieldsFilter) {
-        return this.find(conditions, range, descById, fieldsFilter);
+        return this.find(conditions, conditions, range, descById, fieldsFilter);
     }
 
-    protected List<T> find(Optional<Conditions> conditions, Range range, OrderByFields descByFields, Optional<FieldsFilter> fieldsFilter) {
+    protected List<T> find(Optional<Conditions> afterConditions, Optional<Conditions> beforeConditions, Range range, OrderByFields descByFields, Optional<FieldsFilter> fieldsFilter) {
         Preconditions.checkArgument(range.offset() > 0, "Assert range.offset() > 0");
 
         if (!range.referencePoint().isPresent()) {
-            return findLatest(conditions, range.offset(), descByFields, fieldsFilter);
+            return findLatest(beforeConditions, range.offset(), descByFields, fieldsFilter);
         }
 
         List<T> result = new ArrayList<>();
-        boolean isReferencePointAdded = false;
-        if (range.direction() == Range.OffsetDirection.both || range.direction() == Range.OffsetDirection.after) {
-            Query<T> query = newQuery(conditions)
-                    .field("id").greaterThanOrEq(toMongoId(range.referencePoint().get()))
-                    .order(descByFields.orderClause())
-                    .limit(range.offset() + 1);
+        if (range.both() || range.after()) {
+            Query<T> query = newQuery(afterConditions)
+                    .field("id").greaterThan(toMongoId(range.referencePoint().get()))
+                    .order(descByFields.copyThenReverse().orderClause())
+                    .limit(range.offset());
             filterFields(query, fieldsFilter);
-            List<T> descendingList = query.asList();
-            if (!CollectionUtils.isEmpty(descendingList)) {
-                result.addAll(descendingList);
-                isReferencePointAdded = true;
+            List<T> ascendingList = query.asList();
+            if (!CollectionUtils.isEmpty(ascendingList)) {
+                // 降序排列
+                Collections.reverse(ascendingList);
+                result.addAll(ascendingList);
             }
         }
 
-        if (range.direction() == Range.OffsetDirection.both || range.direction() == Range.OffsetDirection.before) {
-            Query<T> query = newQuery(conditions)
+        if (range.both() || range.before()) {
+            Query<T> query = newQuery(beforeConditions)
                     .field("id").lessThanOrEq(toMongoId(range.referencePoint().get()))
                     .order(descByFields.orderClause())
                     .limit(range.offset() + 1); // 目前morphia组件还不支持$natural查询修饰符
             filterFields(query, fieldsFilter);
             List<T> descendingList = query.asList();
             if (!CollectionUtils.isEmpty(descendingList)) {
-                // 如果作为参考点的对象已添加，则无需重复添加
-                if (isReferencePointAdded) {
+                // 只有both需要将参考点数据作为结果的一部分返回
+                if (range.before()) {
                     result.addAll(descendingList.subList(1, descendingList.size()));
                 } else {
                     result.addAll(descendingList);
@@ -273,12 +273,24 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     }
 
     protected Query<T> newQuery(Conditions conditions) {
-        Assert.notNull(conditions, "The given conditions must not be null");
+        Assert.notNull(conditions, "conditions must not be null");
         Query<T> query = newQuery();
-        Iterator<Conditions.And> it = conditions.iterator();
+        Iterator<Conditions.Condition> it = conditions.iterator();
         while (it.hasNext()) {
-            Conditions.And condition = it.next();
-            query.field(condition.field).equal(condition.val);
+            Conditions.Condition condition = it.next();
+            if (condition.op == Conditions.Operator.eq) {
+                query.field(condition.field).equal(condition.val);
+            } else if (condition.op == Conditions.Operator.gte) {
+                query.field(condition.field).greaterThanOrEq(condition.val);
+            } else if (condition.op == Conditions.Operator.lt) {
+                query.field(condition.field).lessThan(condition.val);
+            } else if (condition.op == Conditions.Operator.lte) {
+                query.field(condition.field).lessThanOrEq(condition.val);
+            } else if (condition.op == Conditions.Operator.gt) {
+                query.field(condition.field).greaterThan(condition.val);
+            } else {
+                throw new IllegalStateException("Illegal query operator:" + condition.op);
+            }
         }
         return query;
     }
@@ -351,33 +363,44 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     protected static class Conditions {
 
-        private final List<And> conditions;
+        private final List<Condition> conditions;
 
-        private Conditions(String field, Object val) {
+        private Conditions() {
             conditions = new ArrayList<>(5);
-            conditions.add(new And(field, val));
         }
 
-        public static Conditions of(String field, Object val) {
-            return new Conditions(field, val);
+        public static Conditions newWithEqual(String field, Object val) {
+            Conditions conditions = new Conditions();
+            conditions.andEqual(field, val);
+            return conditions;
         }
 
-        public Conditions and(String field, Object val) {
-            conditions.add(new And(field, val));
+        public Conditions andEqual(String field, Object val) {
+            conditions.add(new Condition(field, Operator.eq, val));
             return this;
         }
 
-        public Iterator<And> iterator() {
+        public Conditions andGte(String field, Object val) {
+            conditions.add(new Condition(field, Operator.gte, val));
+            return this;
+        }
+
+        public Conditions andLte(String field, Object val) {
+            conditions.add(new Condition(field, Operator.lte, val));
+            return this;
+        }
+
+        public Iterator<Condition> iterator() {
             return conditions.iterator();
         }
 
         @Override
         public String toString() {
-            StringBuilder conditionStr = new StringBuilder("{");
-            for (And condition : conditions) {
+            StringBuilder conditionStr = new StringBuilder();
+            for (Condition condition : conditions) {
                 conditionStr.append(condition.field)
-                        .append(":")
-                        .append(condition.val)
+                        .append(" ").append(condition.op)
+                        .append(" ").append(condition.val)
                         .append(",");
             }
             return new StringBuilder("{")
@@ -385,22 +408,28 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
                     .append("}").toString();
         }
 
-        private static class And {
+        private static class Condition {
             private String field;
+            private Operator op;
             private Object val;
 
-            private And(String field, Object val) {
-                Assert.hasText(field, "The given field must not be blank");
+            private Condition(String field, Operator op, Object val) {
+                Assert.hasText(field, "field must not be blank");
+                Assert.notNull(op, "op must not be null");
                 if (val instanceof String) {
-                    Assert.hasText((String) val, "The given val must not be blank");
+                    Assert.hasText((String) val, "val must not be blank");
                 } else {
-                    Assert.notNull(val, "The given val must not be null");
+                    Assert.notNull(val, "val must not be null");
                 }
                 this.field = field;
+                this.op = op;
                 this.val = val;
             }
         }
 
+        private enum Operator {
+            eq, gte, lt, lte, gt
+        }
     }
 
     public static class Fields {

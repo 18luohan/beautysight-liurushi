@@ -20,7 +20,7 @@ import java.util.List;
 public class ProductRepository extends AbstractMongoRepository<Product> {
 
     public List<Product> findProductsBy(Category category) {
-        return findBy(Conditions.of("category_id", category.id()));
+        return findBy(Conditions.newWithEqual("category_id", category.id()));
     }
 
     @Override

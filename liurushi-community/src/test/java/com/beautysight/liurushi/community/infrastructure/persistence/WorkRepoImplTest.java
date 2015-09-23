@@ -4,8 +4,8 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
-import com.beautysight.liurushi.community.domain.model.work.Work;
-import com.beautysight.liurushi.community.domain.model.work.WorkRepo;
+import com.beautysight.liurushi.community.domain.work.Work;
+import com.beautysight.liurushi.community.domain.work.WorkRepo;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import org.junit.Assert;
 import org.junit.Test;
