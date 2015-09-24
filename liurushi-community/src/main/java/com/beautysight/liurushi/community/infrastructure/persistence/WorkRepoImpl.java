@@ -93,10 +93,27 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
 
     @Override
     public Work getWorkOnlyWithPictureStory(String workId) {
-        Query<Work> query = newQuery();
-        query.retrievedFields(true, pictureStoryFields)
-                .field("id").equal(new ObjectId(workId));
-        return query.get();
+        Work work = newQuery().retrievedFields(true, pictureStoryFields)
+                .field("id").equal(new ObjectId(workId)).get();
+
+        // TODO 这里的逻辑跟getFullWork重复
+        List<Shot> shots = work.pictureStory().controls();
+        List<ObjectId> sectionIds = new ArrayList<>(shots.size());
+        for (Shot shot : shots) {
+            sectionIds.add(shot.sectionId());
+        }
+
+        Iterable<ContentSection> sections = contentSectionRepo.findAll(sectionIds);
+        Map<ObjectId, ContentSection> sectionsMap = new HashMap<>(sectionIds.size());
+        for (ContentSection section : sections) {
+            sectionsMap.put(section.id(), section);
+        }
+
+        for (Shot shot : work.pictureStory().controls()) {
+            shot.setContentSection(sectionsMap.get(shot.sectionId()));
+        }
+
+        return work;
     }
 
     @Override
