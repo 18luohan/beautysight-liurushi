@@ -10,6 +10,7 @@ import com.beautysight.liurushi.community.app.WorkApp;
 import com.beautysight.liurushi.community.app.WorkProfileVM;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
+import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
 import com.beautysight.liurushi.community.app.presentation.WorkVM;
@@ -56,34 +57,42 @@ public class WorkRest {
 
     @RequestMapping(value = "/{workId}/profile", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfileVM getWorkProfileBy(@PathVariable("workId") String workId) {
+    public WorkProfileVM getWorkProfileBy(@PathVariable("workId") String workId,
+                                          @RequestParam(required = false) Integer thumbnailSpec) {
         PreconditionUtils.checkRequired("url path variable workId", workId);
-        return workApp.getWorkProfileBy(workId, RequestContext.optionalCurrentUserId());
+        return workApp.getWorkProfileBy(workId, RequestContext.optionalCurrentUserId(), Optional.fromNullable(thumbnailSpec));
     }
 
     @RequestMapping(value = "/pgc/latest", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfileList getPgcLatestWorkProfiles(@RequestParam("count") int count) {
-        PreconditionUtils.checkGreaterThanZero("request param count", count);
-        return workApp.getPgcLatestWorkProfiles(count, RequestContext.optionalCurrentUserId());
+    public WorkProfileList getPgcLatestWorkProfiles(@RequestParam("count") int count,
+                                                    @RequestParam(required = false) Integer thumbnailSpec) {
+        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
+                new Range(count, Range.OffsetDirection.before),
+                RequestContext.optionalCurrentUserId(), thumbnailSpec);
+        return workApp.findPgcWorkProfilesIn(command);
     }
 
     @RequestMapping(value = "/pgc", method = RequestMethod.GET)
     @VisitorApiPermission
     public WorkProfileList getPgcWorkProfilesInRange(@RequestParam(required = false) String referencePoint,
                                                      @RequestParam Integer offset,
-                                                     @RequestParam(required = false) Range.OffsetDirection direction) {
-        return workApp.findPgcWorkProfilesIn(new Range(referencePoint, offset, direction), RequestContext.optionalCurrentUserId());
+                                                     @RequestParam(required = false) Range.OffsetDirection direction,
+                                                     @RequestParam(required = false) Integer thumbnailSpec) {
+        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
+                new Range(referencePoint, offset, direction),
+                RequestContext.optionalCurrentUserId(), thumbnailSpec);
+        return workApp.findPgcWorkProfilesIn(command);
     }
 
     @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
     @VisitorApiPermission
     public WorkProfileList getUgcLatestWorkProfiles(@RequestParam("count") int count,
                                                     @RequestParam(required = false) Integer thumbnailSpec) {
-        PreconditionUtils.checkGreaterThanZero("request param count", count);
-        return workApp.getUgcLatestWorkProfiles(count,
-                RequestContext.optionalCurrentUserId(),
-                Optional.fromNullable(thumbnailSpec));
+        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
+                new Range(count, Range.OffsetDirection.before),
+                RequestContext.optionalCurrentUserId(), thumbnailSpec);
+        return workApp.findUgcWorkProfilesIn(command);
     }
 
     @RequestMapping(value = "/ugc", method = RequestMethod.GET)
@@ -92,9 +101,10 @@ public class WorkRest {
                                                      @RequestParam Integer offset,
                                                      @RequestParam(required = false) Range.OffsetDirection direction,
                                                      @RequestParam(required = false) Integer thumbnailSpec) {
-        return workApp.findUgcWorkProfilesIn(new Range(referencePoint, offset, direction),
-                RequestContext.optionalCurrentUserId(),
-                Optional.fromNullable(thumbnailSpec));
+        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
+                new Range(referencePoint, offset, direction),
+                RequestContext.optionalCurrentUserId(), thumbnailSpec);
+        return workApp.findUgcWorkProfilesIn(command);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)

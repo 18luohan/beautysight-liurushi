@@ -11,7 +11,6 @@ import com.beautysight.liurushi.community.domain.model.like.Like;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.community.domain.service.LikeService;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
-import com.beautysight.liurushi.community.domain.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
@@ -108,21 +107,13 @@ public class WorkService {
         for (Author author : authors) {
             List<Work> authorWorks = authorToWorksMap.get(author.id);
             for (Work work : authorWorks) {
-                String coverPictureUrl = pictureUrl(work.cover().pictureKey(), intThumbnailSpec);
+                String coverPictureUrl = storageService.imgDownloadUrl(work.cover().pictureKey(), intThumbnailSpec);
                 WorkProfileVM workProfile = new WorkProfileVM(work, coverPictureUrl, author);
                 workIdToWorkProfileVMMap.put(work.idStr(), workProfile);
             }
         }
 
         return workIdToWorkProfileVMMap;
-    }
-
-    public String pictureUrl(String key, Optional<Integer> intThumbnailSpec) {
-        String url = storageService.downloadUrl(key);
-        if (intThumbnailSpec.isPresent()) {
-            url = url + "/" + Picture.ThumbnailSpec.of(intThumbnailSpec.get()).toString();
-        }
-        return url;
     }
 
 }

@@ -22,6 +22,7 @@ public class PersonalCenterVM implements ViewModel {
     private Gender gender;
     private String mobile;
     private String email;
+    private String commonAvatarUrl;
     private String maxAvatarUrl;
     private String headerPhotoUrl;
     private Boolean isFollowed;
@@ -35,6 +36,7 @@ public class PersonalCenterVM implements ViewModel {
         this.gender = wholeUser.getGender();
         this.mobile = wholeUser.getMobile();
         this.email = wholeUser.getEmail();
+        this.commonAvatarUrl = wholeUser.getCommonAvatarUrl();
         this.maxAvatarUrl = wholeUser.getMaxAvatarUrl();
         this.headerPhotoUrl = wholeUser.getHeaderPhotoUrl();
         this.isFollowed = isFollowedByCurrentUser;

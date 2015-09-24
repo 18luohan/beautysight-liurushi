@@ -4,8 +4,8 @@
 
 package com.beautysight.liurushi.community.infrastructure.service;
 
-import com.beautysight.liurushi.community.domain.work.Author;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
+import com.beautysight.liurushi.community.domain.work.Author;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.UserFacade;
 import com.beautysight.liurushi.interfaces.identityaccess.facade.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
         return new Author(userDTO.id,
                 userDTO.nickname,
                 userDTO.group.toString(),
+                userDTO.commonAvatarUrl,
                 userDTO.maxAvatarUrl);
     }
 }

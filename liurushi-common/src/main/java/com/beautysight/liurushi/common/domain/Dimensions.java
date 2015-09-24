@@ -18,6 +18,14 @@ public class Dimensions extends ValueObject {
     private Integer width;
     private Integer height;
 
+    public Integer width() {
+        return this.width;
+    }
+
+    public Integer height() {
+        return this.height;
+    }
+
     public void validate() {
         PreconditionUtils.checkGreaterThanZero(format("%s.width"), width);
         PreconditionUtils.checkGreaterThanZero(format("%s.height"), height);

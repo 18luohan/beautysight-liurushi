@@ -30,6 +30,7 @@ public class AppConfigService {
         configItemToValModelMapping.put(AppConfig.ItemName.sms_android_credential, AppCredentialInThirdParty.class);
         configItemToValModelMapping.put(AppConfig.ItemName.sms_ios_credential, AppCredentialInThirdParty.class);
         configItemToValModelMapping.put(AppConfig.ItemName.sharing_h5_shots_num, IntegerVal.class);
+        configItemToValModelMapping.put(AppConfig.ItemName.image_fit_device_strategy, ImageFitDeviceStrategy.class);
     }
 
     public <T> T getItemValue(AppConfig.ItemName itemName) {
@@ -40,4 +41,7 @@ public class AppConfigService {
         throw new EntityNotFoundException(Expected.of(itemName.toString()));
     }
 
+    public ImageFitDeviceStrategy imageFitDeviceStrategy() {
+        return getItemValue(AppConfig.ItemName.image_fit_device_strategy);
+    }
 }

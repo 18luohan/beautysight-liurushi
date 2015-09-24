@@ -47,11 +47,6 @@ public class FileMetadata extends AbstractEntity {
                 Arrays.toString(Type.values()), type);
     }
 
-    // TODO can remove
-    public static FileMetadata newImageFile(BizCategory bizCategory) {
-        return newFile(Type.image, bizCategory);
-    }
-
     public boolean isImage() {
         return (this.type == Type.image);
     }

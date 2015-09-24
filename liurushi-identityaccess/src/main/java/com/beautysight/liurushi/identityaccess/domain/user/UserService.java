@@ -8,7 +8,10 @@ import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.utils.AsyncTasks;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.fundamental.domain.storage.*;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
+import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
@@ -114,10 +117,10 @@ public class UserService {
         return theNewFile;
     }
 
-    public UserView.Whole getUserWithoutPwd(String userId) {
+    public UserView.Whole getUserWithoutPwd(String userId, Optional<Integer> headerPhotoThumbnailSpec) {
         PreconditionUtils.checkRequired("userId", userId);
         User theUser = userRepo.getUserWithoutPwd(userId);
-        return buildViewOf(theUser).whole();
+        return buildViewOf(theUser, headerPhotoThumbnailSpec).whole();
     }
 
     public UserView.Lite getLiteUser(String userId) {
@@ -142,14 +145,22 @@ public class UserService {
     }
 
     public UserView buildViewOf(User user) {
+        return buildViewOf(user, Optional.<Integer>absent());
+    }
+
+    public UserView buildViewOf(User user, Optional<Integer> headerPhotoThumbnailSpec) {
         UserView.Builder builder = UserView.builder();
         builder.copyFrom(user);
 
         if (user.headerPhoto().isPresent()) {
-            builder.setHeaderPhotoUrl(storageService.downloadUrl(user.headerPhoto().get().key()));
+            builder.setHeaderPhotoUrl(storageService.imgDownloadUrl(user.headerPhoto().get().key(), headerPhotoThumbnailSpec));
         }
         if (user.maxAvatar().isPresent()) {
             builder.setMaxAvatarUrl(storageService.downloadUrl(user.maxAvatar().get().key()));
+        }
+        if (user.maxAvatar().isPresent()) {
+            builder.setCommonAvatarUrl(storageService.imgDownloadUrl(
+                    user.maxAvatar().get().key(), Optional.of(Integer.valueOf(90))));
         }
         return builder.build();
     }
@@ -189,10 +200,6 @@ public class UserService {
                 logger.debug("Asynchronously produced {} px avatar for user: {}", maxAvatar.spec(), user.mobile());
                 theLogicFile.setHash(zoomedFile.hash());
                 fileMetadataRepo.merge(theLogicFile);
-//                int radius = 30, segma = 20;
-//                FileMetadata blurredAvatar = storageService.blurImageAccordingTo(radius, segma, savedUser.originalAvatarKey());
-//                logger.debug("Asynchronously produced blurred avatar background for user: {}", savedUser.mobile());
-//                savedUser.setBlurredAvatar(blurredAvatar);
             }
         });
     }

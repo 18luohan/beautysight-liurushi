@@ -51,6 +51,7 @@ public class UserFacadeImpl implements UserFacade {
         userDTO.id = liteUser.getId();
         userDTO.nickname = liteUser.getNickname();
         userDTO.group = UserDTO.Group.valueOf(liteUser.getGroup().val());
+        userDTO.commonAvatarUrl = liteUser.getCommonAvatarUrl();
         userDTO.maxAvatarUrl = liteUser.getMaxAvatarUrl();
         return userDTO;
     }

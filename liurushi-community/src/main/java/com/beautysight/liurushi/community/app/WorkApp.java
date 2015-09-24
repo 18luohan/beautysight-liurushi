@@ -8,6 +8,7 @@ import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
+import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
 import com.beautysight.liurushi.community.app.dpo.ControlPayload;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
@@ -148,10 +149,10 @@ public class WorkApp {
         return WorkVM.from(work, keyToDownloadUrlMapping, isLikedByLoginUser, isFavoredByLoginUser, author);
     }
 
-    public WorkProfileVM getWorkProfileBy(String workId, Optional<String> loginUserId) {
+    public WorkProfileVM getWorkProfileBy(String workId, Optional<String> loginUserId, Optional<Integer> intThumbnailSpec) {
         Work workProfile = workRepo.getWorkProfile(workId);
         String coverPictureKey = workProfile.pictureStory().cover().pictureKey();
-        String coverPictureUrl = storageService.downloadUrl(coverPictureKey);
+        String coverPictureUrl = storageService.imgDownloadUrl(coverPictureKey, intThumbnailSpec);
         Author author = authorService.getAuthorBy(workProfile.authorId());
         WorkProfileVM result = new WorkProfileVM(workProfile, coverPictureUrl, author);
 
@@ -188,22 +189,12 @@ public class WorkApp {
         return WorkVM.from(workOnlyWithPictureStory, keyToDownloadUrlMapping);
     }
 
-    public WorkProfileList getPgcLatestWorkProfiles(int count, Optional<String> loginUserId) {
-        Range range = new Range(count, Range.OffsetDirection.before);
-        return workService.findWorkProfilesInRange(Work.Source.pgc, range, loginUserId, Optional.<Integer>absent());
+    public WorkProfileList findPgcWorkProfilesIn(WorkQueryInRangeCommand command) {
+        return workService.findWorkProfilesInRange(Work.Source.pgc, command.range, command.loginUserId, command.thumbnailSpec);
     }
 
-    public WorkProfileList findPgcWorkProfilesIn(Range range, Optional<String> loginUserId) {
-        return workService.findWorkProfilesInRange(Work.Source.pgc, range, loginUserId, Optional.<Integer>absent());
-    }
-
-    public WorkProfileList getUgcLatestWorkProfiles(int count, Optional<String> loginUserId, Optional<Integer> intThumbnailSpec) {
-        Range range = new Range(count, Range.OffsetDirection.before);
-        return workService.findWorkProfilesInRange(Work.Source.ugc, range, loginUserId, intThumbnailSpec);
-    }
-
-    public WorkProfileList findUgcWorkProfilesIn(Range range, Optional<String> loginUserId, Optional<Integer> intThumbnailSpec) {
-        return workService.findWorkProfilesInRange(Work.Source.ugc, range, loginUserId, intThumbnailSpec);
+    public WorkProfileList findUgcWorkProfilesIn(WorkQueryInRangeCommand command) {
+        return workService.findWorkProfilesInRange(Work.Source.ugc, command.range, command.loginUserId, command.thumbnailSpec);
     }
 
     public WorkProfileList findAuthorWorksIn(AuthorWorksRange range) {
@@ -215,7 +206,7 @@ public class WorkApp {
         }
 
         for (Work work : theWorks) {
-            String coverPictureUrl = workService.pictureUrl(
+            String coverPictureUrl = storageService.imgDownloadUrl(
                     work.cover().pictureKey(),
                     Optional.of(Integer.valueOf(300)));
             workProfiles.add(new WorkProfileVM(work, coverPictureUrl));

@@ -119,8 +119,9 @@ public class UserApp {
         return DownloadUrl.from(storageService.downloadUrl(headerPhoto.key()));
     }
 
-    public PersonalCenterVM getUserPersonalCenter(String aUserId, Optional<String> loginUserId) {
-        UserView.Whole wholeUser = userService.getUserWithoutPwd(aUserId);
+    public PersonalCenterVM getUserPersonalCenter(String aUserId, Optional<String> loginUserId,
+                                                  Optional<Integer> headerPhotoThumbnailSpec) {
+        UserView.Whole wholeUser = userService.getUserWithoutPwd(aUserId, headerPhotoThumbnailSpec);
         Boolean isFollowedByLoginUser = Boolean.FALSE;
         if (loginUserId.isPresent()) {
             isFollowedByLoginUser = followRepo.getBy(loginUserId.get(), aUserId).isPresent();

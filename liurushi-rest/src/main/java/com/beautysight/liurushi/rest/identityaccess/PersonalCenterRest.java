@@ -13,6 +13,7 @@ import com.beautysight.liurushi.identityaccess.domain.user.pl.UserPayload;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,11 @@ public class PersonalCenterRest {
 
     @RequestMapping(value = "/{userId}/personal_center", method = RequestMethod.GET)
     @VisitorApiPermission
-    public PersonalCenterVM getUserPersonalCenter(@PathVariable("userId") String userId) {
-        return userApp.getUserPersonalCenter(userId, RequestContext.optionalCurrentUserId());
+    public PersonalCenterVM getUserPersonalCenter(@PathVariable("userId") String userId,
+                                                  @RequestParam(required = false) Integer headerPhotoThumbnailSpec) {
+        return userApp.getUserPersonalCenter(userId,
+                RequestContext.optionalCurrentUserId(),
+                Optional.fromNullable(headerPhotoThumbnailSpec));
     }
 
     @RequestMapping(value = "/{userId}/header_photo", method = RequestMethod.PUT)

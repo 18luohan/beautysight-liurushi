@@ -240,6 +240,7 @@ public class User extends AbstractEntity {
         public Integer getFavoritesNum() {
             return favoritesNum;
         }
+
     }
 
 }

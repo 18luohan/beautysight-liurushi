@@ -27,6 +27,7 @@ public class UserView extends ValueObject {
 
     private String originalAvatarUrl;
     private String maxAvatarUrl;
+    private String commonAvatarUrl;
     private String headerPhotoUrl;
 
     private User.Stats stats;
@@ -61,11 +62,15 @@ public class UserView extends ValueObject {
         }
 
         public User.Group getGroup() {
-            return group;
+            return UserView.this.group;
         }
 
         public String getMaxAvatarUrl() {
             return UserView.this.maxAvatarUrl;
+        }
+
+        public String getCommonAvatarUrl() {
+            return UserView.this.commonAvatarUrl;
         }
 
         @Override
@@ -87,7 +92,7 @@ public class UserView extends ValueObject {
 
     }
 
-    @JsonPropertyOrder({"id", "globalId", "nickname", "group", "origin", "gender", "mobile", "email", "maxAvatarUrl", "headerPhotoUrl", "isFollowed", "stats"})
+    @JsonPropertyOrder({"id", "globalId", "nickname", "group", "origin", "gender", "mobile", "email", "maxAvatarUrl", "commonAvatarUrl", "headerPhotoUrl", "isFollowed", "stats"})
     public class Whole extends LiteAndStats {
 
         public String getGlobalId() {
@@ -112,10 +117,6 @@ public class UserView extends ValueObject {
 
         public String getOriginalAvatarUrl() {
             return originalAvatarUrl;
-        }
-
-        public String getMaxAvatarUrl() {
-            return maxAvatarUrl;
         }
 
         public String getHeaderPhotoUrl() {
@@ -143,6 +144,12 @@ public class UserView extends ValueObject {
         public Builder setMaxAvatarUrl(String url) {
             checkState();
             this.userView.maxAvatarUrl = url;
+            return this;
+        }
+
+        public Builder setCommonAvatarUrl(String url) {
+            checkState();
+            this.userView.commonAvatarUrl = url;
             return this;
         }
 

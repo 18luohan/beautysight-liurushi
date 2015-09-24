@@ -6,10 +6,9 @@ package com.beautysight.liurushi.fundamental.infrastructure.storage;
 
 import com.beautysight.liurushi.common.ex.StorageException;
 import com.beautysight.liurushi.common.utils.Https;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
-import com.beautysight.liurushi.fundamental.domain.storage.QiniuConfig;
-import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
-import com.beautysight.liurushi.fundamental.domain.storage.UploadOptions;
+import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
+import com.beautysight.liurushi.fundamental.domain.storage.*;
+import com.google.common.base.Optional;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Client;
 import com.qiniu.http.Response;
@@ -36,6 +35,8 @@ public class QiniuStorageService implements StorageService {
 
     @Autowired
     private QiniuConfig qiniuConfig;
+    @Autowired
+    private AppConfigService appConfigService;
 
     private final UploadManager uploadManager = new UploadManager();
     private final Client client = new Client();
@@ -108,6 +109,23 @@ public class QiniuStorageService implements StorageService {
     @Override
     public String downloadUrl(String key) {
         return qiniuConfig.bucketUrl + "/" + key;
+    }
+
+    @Override
+    public String imgDownloadUrl(String key, Optional<Integer> intThumbnailSpec) {
+        String url = downloadUrl(key);
+        if (intThumbnailSpec.isPresent()) {
+            url = url + "/" + ImgThumbnailSpec.of(intThumbnailSpec.get()).toString();
+        }
+        return url;
+    }
+
+    @Override
+    public String imgDownloadUrl(String key, Integer deviceResolutionWidth, String restApiUri) {
+        String originalImgUrl = downloadUrl(key);
+        Integer bestWidth = appConfigService.imageFitDeviceStrategy()
+                .bestImageWidthFor(deviceResolutionWidth, restApiUri);
+        return originalImgUrl + "/" + ImgThumbnailSpec.of(bestWidth).toString();
     }
 
     public FileMetadata upload(final byte[] fileBytes, final String key, final String uploadToken) {

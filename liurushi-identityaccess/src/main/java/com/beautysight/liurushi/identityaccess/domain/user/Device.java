@@ -12,10 +12,6 @@ import org.mongodb.morphia.annotations.Reference;
 import java.util.List;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-08.
- *
  * @author chenlong
  * @since 1.0
  */
@@ -34,7 +30,7 @@ public class Device extends AbstractEntity {
     @Reference(value = "userIds", lazy = true, idOnly = true)
     private List<User> users;
 
-    private Device(){
+    private Device() {
     }
 
     public Device(Type type, String model, String os, String rom, int ppi, String imei, String imsi, Resolution resolution) {
@@ -60,6 +56,10 @@ public class Device extends AbstractEntity {
 
     public String imei() {
         return this.imei;
+    }
+
+    public Resolution resolution() {
+        return this.resolution;
     }
 
     public enum Type {

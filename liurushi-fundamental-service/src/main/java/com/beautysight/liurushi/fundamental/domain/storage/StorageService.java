@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.fundamental.domain.storage;
 
+import com.google.common.base.Optional;
+
 /**
  * @author chenlong
  * @since 1.0
@@ -15,6 +17,10 @@ public interface StorageService {
     String issueUploadToken(UploadOptions options);
 
     String downloadUrl(String key);
+
+    String imgDownloadUrl(String key, Optional<Integer> intThumbnailSpec);
+
+    String imgDownloadUrl(String key, Integer deviceResolutionWidth, String restApiUri);
 
     FileMetadata zoomImageTo(int expectedWidth, String originImageKey, String zoomedImageKey);
 

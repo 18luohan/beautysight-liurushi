@@ -13,6 +13,7 @@ import com.beautysight.liurushi.identityaccess.domain.user.User;
 import com.google.common.base.Preconditions;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
 import java.util.UUID;
@@ -38,7 +39,9 @@ public class AccessToken extends AbstractEntity {
     private Boolean isValid = true;
 
     private ObjectId userId;
-    private ObjectId deviceId;
+
+    @Reference(value = "deviceId", idOnly = true)
+    private Device device;
 
     public AccessToken() {
     }
@@ -47,7 +50,7 @@ public class AccessToken extends AbstractEntity {
         this.accessToken = generateToken();
         this.type = tokenType;
         this.userId = user.id();
-        this.deviceId = device.id();
+        this.device = device;
         this.expiresIn = this.determineExpiry();
 
         if (type == Type.Bearer) {
@@ -124,12 +127,12 @@ public class AccessToken extends AbstractEntity {
         return this.userId.toHexString();
     }
 
-    public void setDeviceId(String deviceIdStr) {
-        this.deviceId = new ObjectId(deviceIdStr);
+    public Device device() {
+        return this.device;
     }
 
     public String deviceId() {
-        return this.deviceId.toHexString();
+        return this.device.idStr();
     }
 
     private String generateToken() {

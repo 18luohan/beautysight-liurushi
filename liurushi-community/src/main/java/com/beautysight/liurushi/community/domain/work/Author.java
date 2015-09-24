@@ -14,13 +14,15 @@ public class Author extends ValueObject {
 
     public String id;
     public String nickname;
+    public String commonAvatarUrl;
     public String maxAvatarUrl;
     public Group group;
 
-    public Author(String id, String nickname, String groupAsStr, String maxAvatarUrl) {
+    public Author(String id, String nickname, String groupAsStr, String commonAvatarUrl, String maxAvatarUrl) {
         this.id = id;
         this.nickname = nickname;
         this.group = Group.valueOf(groupAsStr);
+        this.commonAvatarUrl = commonAvatarUrl;
         this.maxAvatarUrl = maxAvatarUrl;
     }
 
