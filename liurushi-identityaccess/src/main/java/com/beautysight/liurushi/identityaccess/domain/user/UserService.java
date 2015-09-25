@@ -8,10 +8,7 @@ import com.beautysight.liurushi.common.ex.DuplicateEntityException;
 import com.beautysight.liurushi.common.ex.EntityNotFoundException;
 import com.beautysight.liurushi.common.utils.AsyncTasks;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
-import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
+import com.beautysight.liurushi.fundamental.domain.storage.*;
 import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
@@ -160,7 +157,7 @@ public class UserService {
         }
         if (user.maxAvatar().isPresent()) {
             builder.setCommonAvatarUrl(storageService.imgDownloadUrl(
-                    user.maxAvatar().get().key(), Optional.of(Integer.valueOf(90))));
+                    user.maxAvatar().get().key(), ImgThumbnailSpec.av90x));
         }
         return builder.build();
     }

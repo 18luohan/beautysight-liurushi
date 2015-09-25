@@ -38,6 +38,14 @@ public class ImageFitDeviceStrategy {
                     AppConfig.ItemName.image_fit_device_strategy, restApiUri);
         }
 
+        return calculateBestImgWidthBy(deviceResolutionWidth, specs);
+    }
+
+    public static Integer calculateBestImgWidthBy(Integer deviceResolutionWidth, List<Integer> specs) {
+        if (CollectionUtils.isEmpty(specs)) {
+            throw new ApplicationException("Image thumbnail spec is blank");
+        }
+
         Collections.sort(specs);
 
         Integer smaller = specs.get(0), bigger = specs.get(specs.size() - 1);
@@ -58,6 +66,7 @@ public class ImageFitDeviceStrategy {
         if (diffWithSmaller <= diffWithBigger) {
             return smaller;
         }
+
         return bigger;
     }
 

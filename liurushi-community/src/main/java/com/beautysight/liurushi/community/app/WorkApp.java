@@ -21,18 +21,12 @@ import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
 import com.beautysight.liurushi.community.domain.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWork;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
-import com.beautysight.liurushi.community.domain.work.layout.BlockLocator;
 import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.work.picstory.Shot;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
-import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfig;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
-import com.beautysight.liurushi.fundamental.domain.appconfig.IntegerVal;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
-import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
+import com.beautysight.liurushi.fundamental.domain.storage.*;
 import com.google.common.base.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -163,7 +157,7 @@ public class WorkApp {
     }
 
     public WorkVM shareWork(String workId) {
-        Work workOnlyWithPictureStory = workRepo.getWorkOnlyWithPictureStory(workId);
+        /*Work workOnlyWithPictureStory = workRepo.getWorkOnlyWithPictureStory(workId);
         PictureStory pictureStory = workOnlyWithPictureStory.pictureStory();
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
@@ -186,7 +180,8 @@ public class WorkApp {
         }
         pictureStory.sliceShots(0, count);
 
-        return WorkVM.from(workOnlyWithPictureStory, keyToDownloadUrlMapping);
+        return WorkVM.from(workOnlyWithPictureStory, keyToDownloadUrlMapping);*/
+        return this.getFullWorkBy(workId, Optional.<String>absent());
     }
 
     public WorkProfileList findPgcWorkProfilesIn(WorkQueryInRangeCommand command) {
@@ -208,7 +203,7 @@ public class WorkApp {
         for (Work work : theWorks) {
             String coverPictureUrl = storageService.imgDownloadUrl(
                     work.cover().pictureKey(),
-                    Optional.of(Integer.valueOf(300)));
+                    ImgThumbnailSpec.wk300x);
             workProfiles.add(new WorkProfileVM(work, coverPictureUrl));
         }
 

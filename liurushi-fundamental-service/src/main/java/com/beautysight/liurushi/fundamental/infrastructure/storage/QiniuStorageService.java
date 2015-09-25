@@ -112,10 +112,15 @@ public class QiniuStorageService implements StorageService {
     }
 
     @Override
+    public String imgDownloadUrl(String key, ImgThumbnailSpec thumbnailSpec) {
+        return downloadUrl(key) + "/" + thumbnailSpec.toString();
+    }
+
+    @Override
     public String imgDownloadUrl(String key, Optional<Integer> intThumbnailSpec) {
         String url = downloadUrl(key);
         if (intThumbnailSpec.isPresent()) {
-            url = url + "/" + ImgThumbnailSpec.of(intThumbnailSpec.get()).toString();
+            url = url + "/" + ImgThumbnailSpec.bestImageSpecFor(intThumbnailSpec.get()).toString();
         }
         return url;
     }
@@ -125,7 +130,7 @@ public class QiniuStorageService implements StorageService {
         String originalImgUrl = downloadUrl(key);
         Integer bestWidth = appConfigService.imageFitDeviceStrategy()
                 .bestImageWidthFor(deviceResolutionWidth, restApiUri);
-        return originalImgUrl + "/" + ImgThumbnailSpec.of(bestWidth).toString();
+        return originalImgUrl + "/" + ImgThumbnailSpec.bestImageSpecFor(bestWidth).toString();
     }
 
     public FileMetadata upload(final byte[] fileBytes, final String key, final String uploadToken) {

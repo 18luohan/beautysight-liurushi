@@ -18,6 +18,8 @@ public interface StorageService {
 
     String downloadUrl(String key);
 
+    String imgDownloadUrl(String key, ImgThumbnailSpec thumbnailSpec);
+
     String imgDownloadUrl(String key, Optional<Integer> intThumbnailSpec);
 
     String imgDownloadUrl(String key, Integer deviceResolutionWidth, String restApiUri);
