@@ -21,6 +21,7 @@ import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
 import com.beautysight.liurushi.community.domain.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWork;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
+import com.beautysight.liurushi.community.domain.work.layout.BlockLocator;
 import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.work.picstory.Shot;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
@@ -157,6 +158,29 @@ public class WorkApp {
     }
 
     public WorkVM shareWork(String workId) {
+        Work work = workRepo.getFullWork(workId);
+
+        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
+        String coverPictureKey = work.pictureStory().cover().pictureKey();
+        String downloadUrl = storageService.downloadUrl(coverPictureKey);
+        keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
+        for (Shot shot : work.pictureStory().controls()) {
+            if (shot.content() instanceof Picture) {
+                Picture picture = (Picture) shot.content();
+                downloadUrl = storageService.downloadUrl(picture.key());
+                keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
+            }
+        }
+
+        PictureStory pictureStory = work.pictureStory();
+        BlockLocator locator = pictureStory.layout().generateBlockLocator();
+        for (int i = 0; i < pictureStory.controls().size(); i++) {
+            Shot shot = pictureStory.controls().get(i);
+            shot.calculatePosition(locator);
+        }
+
+        return WorkVM.from(work, keyToDownloadUrlMapping);
+
         /*Work workOnlyWithPictureStory = workRepo.getWorkOnlyWithPictureStory(workId);
         PictureStory pictureStory = workOnlyWithPictureStory.pictureStory();
 
@@ -181,7 +205,6 @@ public class WorkApp {
         pictureStory.sliceShots(0, count);
 
         return WorkVM.from(workOnlyWithPictureStory, keyToDownloadUrlMapping);*/
-        return this.getFullWorkBy(workId, Optional.<String>absent());
     }
 
     public WorkProfileList findPgcWorkProfilesIn(WorkQueryInRangeCommand command) {
