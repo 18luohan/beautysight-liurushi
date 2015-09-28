@@ -93,7 +93,7 @@ public class FileMetadata extends AbstractEntity {
     }
 
     public enum BizCategory {
-        avatar("av"), work("wk"), unknown("unk");
+        avatar("av"), work("wk"), headerPhoto("hp"), unknown("unk");
 
         private final String val;
 
