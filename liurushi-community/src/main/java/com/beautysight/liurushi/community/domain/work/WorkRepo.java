@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.work;
 
+import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
@@ -34,7 +35,9 @@ public interface WorkRepo extends MongoRepository<Work> {
 
     List<Work> findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority);
 
-    void selectOrCancel(String workId, Work.PresentPriority presentPriority);
+    void setPresentPriorityOf(String workId, Work.PresentPriority presentPriority);
+
+    CountResult countWorksByPresentPriority(Work.PresentPriority presentPriority);
 
     AbstractMongoRepository.Fields workBasicFields = AbstractMongoRepository.Fields.newInstance().append("id", "title", "subtitle", "authorId", "source", "presentPriority", "publishedAt");
     String[] workBasicFieldsArray = workBasicFields.toArray();

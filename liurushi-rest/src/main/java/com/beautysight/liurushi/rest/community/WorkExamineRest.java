@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.rest.community;
 
+import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.WorkApp;
@@ -58,6 +59,16 @@ public class WorkExamineRest {
         workApp.cancelSelectWork(workId);
     }
 
+    @RequestMapping(value = "/{workId}/actions/ordinary", method = RequestMethod.PUT)
+    public void ordinary(@PathVariable("workId") String workId) {
+        workApp.ordinaryWork(workId);
+    }
+
+    @RequestMapping(value = "/{workId}/actions/cancel_ordinary", method = RequestMethod.PUT)
+    public void cancelOrdinary(@PathVariable("workId") String workId) {
+        workApp.cancelOrdinaryWork(workId);
+    }
+
     @RequestMapping(value = "/{workId}/actions/discard", method = RequestMethod.PUT)
     public void discard(@PathVariable("workId") String workId) {
         workApp.discardWork(workId);
@@ -72,6 +83,11 @@ public class WorkExamineRest {
     public WorkVM getFullWorkForExamine(@PathVariable("workId") String workId) {
         PreconditionUtils.checkRequired("url path variable workId", workId);
         return workApp.getFullWorkForExamine(workId);
+    }
+
+    @RequestMapping(value = "/ugc/{presentPriority}/actions/count", method = RequestMethod.GET)
+    public CountResult countUgcWorksByPresentPriority(@PathVariable("presentPriority") String presentPriority) {
+        return workApp.countUgcWorksByPresentPriority(Work.PresentPriority.of(presentPriority));
     }
 
 }

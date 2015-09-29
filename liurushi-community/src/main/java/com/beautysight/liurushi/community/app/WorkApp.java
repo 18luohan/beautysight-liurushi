@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.app;
 
+import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
@@ -267,11 +268,19 @@ public class WorkApp {
     }
 
     public void selectWork(String workId) {
-        workRepo.selectOrCancel(workId, Work.PresentPriority.selected);
+        workService.select(workId);
     }
 
     public void cancelSelectWork(String workId) {
-        workRepo.selectOrCancel(workId, Work.PresentPriority.ordinary);
+        workService.cancelSelect(workId);
+    }
+
+    public void ordinaryWork(String workId) {
+        workService.ordinary(workId);
+    }
+
+    public void cancelOrdinaryWork(String workId) {
+        workService.cancelOrdinary(workId);
     }
 
     public void discardWork(String workId) {
@@ -312,6 +321,10 @@ public class WorkApp {
 
         Author author = authorService.getAuthorBy(work.authorId());
         return WorkVM.from(work, keyToDownloadUrlMapping, author);
+    }
+
+    public CountResult countUgcWorksByPresentPriority(Work.PresentPriority presentPriority) {
+        return workRepo.countWorksByPresentPriority(presentPriority);
     }
 
     private Map<String, ContentSection> saveContentSections(Map<String, ContentSection> newSections) {

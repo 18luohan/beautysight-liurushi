@@ -116,4 +116,20 @@ public class WorkService {
         return workIdToWorkProfileVMMap;
     }
 
+    public void select(String workId) {
+        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.selected);
+    }
+
+    public void cancelSelect(String workId) {
+        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
+    }
+
+    public void ordinary(String workId) {
+        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.ordinary);
+    }
+
+    public void cancelOrdinary(String workId) {
+        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
+    }
+
 }

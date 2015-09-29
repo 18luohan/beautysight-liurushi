@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
+import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.domain.work.Work;
@@ -15,15 +16,14 @@ import com.beautysight.liurushi.community.domain.work.present.Slide;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.aggregation.Accumulator;
+import org.mongodb.morphia.aggregation.Group;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author chenlong
@@ -131,10 +131,22 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     @Override
-    public void selectOrCancel(String workId, Work.PresentPriority presentPriority) {
+    public void setPresentPriorityOf(String workId, Work.PresentPriority presentPriority) {
         UpdateOperations<Work> updateOps = newUpdateOps().set("presentPriority", presentPriority.val());
         Query<Work> query = newQuery().field("id").equal(toMongoId(workId));
         datastore.update(query, updateOps);
+    }
+
+    @Override
+    public CountResult countWorksByPresentPriority(Work.PresentPriority presentPriority) {
+        Iterator<CountResult> aggregation = datastore.createAggregation(Work.class)
+                .match(newQuery().field("presentPriority").equal(presentPriority.val()))
+                .group((String) null, Group.grouping("count", new Accumulator("$sum", 1)))
+                .aggregate(CountResult.class);
+        if (aggregation.hasNext()) {
+            return aggregation.next();
+        }
+        return new CountResult(0);
     }
 
     @Override

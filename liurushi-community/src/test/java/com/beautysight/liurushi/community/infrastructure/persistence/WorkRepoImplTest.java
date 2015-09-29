@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
+import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.community.domain.work.Work;
 import com.beautysight.liurushi.community.domain.work.WorkRepo;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
@@ -25,6 +26,12 @@ public class WorkRepoImplTest extends SpringBasedAppTest {
         Work work = workRepo.getWorkOnlyWithPictureStory("55e431175e76a9cdbb532ed1");
         Assert.assertNotNull(work.pictureStory().layout());
         Assert.assertNotNull(work.pictureStory().layout().generateBlockLocator());
+    }
+
+    @Test
+    public void countWorksByPriority() {
+        CountResult countResult = workRepo.countWorksByPresentPriority(Work.PresentPriority.raw);
+        System.out.println(countResult.getCount());
     }
 
 }
