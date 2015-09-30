@@ -14,19 +14,30 @@ package com.beautysight.liurushi.common.ex;
  */
 public enum CommonErrorId implements Error.Id {
 
-    bad_request,
-    invalid_params,
-    no_permission_for_this_api,
-    business_constraint_violated,
+    internal_server_error(10001),
+    service_unavailable(10002),
 
-    internal_server_error,
-    service_unavailable,
+    bad_request(10003),
+    no_permission_for_this_api(10007),
 
-    server_data_stale;
+    invalid_params(10008),
+    business_constraint_violated(10009),
+    server_data_stale(10010);
+
+    private Integer code;
+
+    CommonErrorId(Integer code) {
+        this.code = code;
+    }
 
     @Override
     public String get() {
         return this.toString();
+    }
+
+    @Override
+    public Integer code() {
+        return this.code;
     }
 
 }

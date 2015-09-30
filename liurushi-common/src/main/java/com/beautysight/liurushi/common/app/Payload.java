@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.common.app;
 
-import com.beautysight.liurushi.common.domain.JsonAnyFieldVisible;
+import com.beautysight.liurushi.common.JsonAnyFieldVisible;
 
 import java.io.Serializable;
 

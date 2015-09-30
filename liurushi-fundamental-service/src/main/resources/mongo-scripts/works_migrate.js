@@ -36,3 +36,7 @@ print("Migrate picture_stories and presentations into works: OK!");
 db.works.find().forEach(function(workDoc) {
     db.works.update({ _id: workDoc._id }, {$set: {"title": workDoc.pictureStory.title, "subtitle": workDoc.pictureStory.subtitle}, $unset: {"pictureStory.title": "", "pictureStory.subtitle": "" }}, {multi:true});
 });
+
+db.discarded_works.find().forEach(function(workDoc) {
+    db.users.update({ _id: workDoc.authorId }, {$inc: { "stats.worksNum": -1}}, {multi:true});
+});

@@ -8,6 +8,7 @@ import com.beautysight.liurushi.common.domain.Range;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.mongodb.WriteResult;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
@@ -106,6 +107,13 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         Assert.notNull(id, "The given id must not be null!");
         WriteResult result = datastore.delete(entityClass(), id);
         checkWriteResult(Op.DELETE, result, 1);
+    }
+
+    @Override
+    public int remove(String id) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(id), "The given id must not be blank!");
+        WriteResult result = datastore.delete(entityClass(), toMongoId(id));
+        return result.getN();
     }
 
     /**

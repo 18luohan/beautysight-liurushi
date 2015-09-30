@@ -86,7 +86,7 @@ public class Work extends AbstractWork {
     }
 
     public enum PresentPriority {
-        selected(10), ordinary(1), raw(0);
+        selected(10), ordinary(1), raw(0), bad(-1);
 
         private int val;
 

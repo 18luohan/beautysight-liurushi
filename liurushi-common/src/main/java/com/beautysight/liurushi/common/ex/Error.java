@@ -17,6 +17,7 @@ import com.beautysight.liurushi.common.app.ViewModel;
 public class Error implements ViewModel {
 
     private Id id;
+    private Integer code;
     private String message;
     private String url;
 
@@ -25,6 +26,7 @@ public class Error implements ViewModel {
 
     private Error(Error.Id errorId, String message) {
         this.id = errorId;
+        this.code = errorId.code();
         this.message = message;
     }
 
@@ -58,6 +60,8 @@ public class Error implements ViewModel {
 
     public interface Id {
         String get();
+
+        Integer code();
     }
 
 }

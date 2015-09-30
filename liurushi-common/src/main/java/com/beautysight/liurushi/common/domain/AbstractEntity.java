@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.common.domain;
 
+import com.beautysight.liurushi.common.JsonAnyFieldVisible;
 import com.beautysight.liurushi.common.shared.DomainModel;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Id;

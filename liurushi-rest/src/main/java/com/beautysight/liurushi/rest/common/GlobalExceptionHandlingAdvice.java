@@ -63,8 +63,9 @@ public class GlobalExceptionHandlingAdvice {
     private ModelAndView modelAndView(Throwable ex, Error.Id errorId) {
         Error error = Error.of(errorId, ex.getMessage());
 
-        Map<String, Object> attributes = new HashMap<String, Object>();
+        Map<String, Object> attributes = new HashMap<>();
         attributes.put("id", error.getId());
+        attributes.put("code", error.getId().code());
         attributes.put("message", error.getMessage());
 
         MappingJackson2JsonView view = new MappingJackson2JsonView();

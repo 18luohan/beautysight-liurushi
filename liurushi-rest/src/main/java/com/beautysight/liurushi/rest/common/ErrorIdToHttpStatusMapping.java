@@ -27,7 +27,7 @@ public class ErrorIdToHttpStatusMapping {
 
     private static final Logger logger = LoggerFactory.getLogger(ErrorIdToHttpStatusMapping.class);
 
-    private static final Map<Error.Id, HttpStatus> MAPPING = new HashMap<Error.Id, HttpStatus>();
+    private static final Map<Error.Id, HttpStatus> MAPPING = new HashMap<>();
 
     static {
 

@@ -2,7 +2,7 @@
  * Copyright (C) 2014, BeautySight Inc. All rights reserved.
  */
 
-package com.beautysight.liurushi.common.domain;
+package com.beautysight.liurushi.common;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 

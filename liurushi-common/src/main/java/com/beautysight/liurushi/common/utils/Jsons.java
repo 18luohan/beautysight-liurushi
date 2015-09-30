@@ -6,12 +6,16 @@ package com.beautysight.liurushi.common.utils;
 
 import com.beautysight.liurushi.common.ex.JsonHandlingException;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.File;
 import java.io.IOException;
@@ -112,4 +116,15 @@ public class Jsons {
 
     }
 
+    public static class CustomDateSerializer extends JsonSerializer<Date> {
+
+        private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+        @Override
+        public void serialize(Date value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            // 统一转换为UTC时间
+            gen.writeString(fmt.print(new DateTime(value, DateTimeZone.UTC)));
+        }
+
+    }
 }
