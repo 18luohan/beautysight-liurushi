@@ -17,4 +17,6 @@ public interface MongoRepository<T> extends PagingAndSortingRepository<T, Object
 
     void merge(T entity);
 
+    int remove(String id);
+
 }

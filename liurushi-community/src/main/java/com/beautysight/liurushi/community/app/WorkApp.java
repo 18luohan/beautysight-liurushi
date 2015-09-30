@@ -288,6 +288,7 @@ public class WorkApp {
         if (work.isPresent()) {
             discardedWorkRepo.save(new DiscardedWork(work.get()));
             workRepo.delete(work.get().id());
+            authorService.increaseWorkNumBy(-1, work.get().authorId());
         }
     }
 
@@ -296,6 +297,7 @@ public class WorkApp {
         if (discardedWork.isPresent()) {
             workRepo.save(discardedWork.get().transformToWork());
             discardedWorkRepo.delete(discardedWork.get().id());
+            authorService.increaseWorkNumBy(1, discardedWork.get().authorId());
         }
     }
 
