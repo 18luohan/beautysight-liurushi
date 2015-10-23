@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.FOLLOWS_V1)
+@RequestMapping(APIs.FOLLOWS_V10)
 public class FollowRest {
 
     @Autowired

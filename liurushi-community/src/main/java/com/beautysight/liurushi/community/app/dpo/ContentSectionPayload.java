@@ -8,10 +8,7 @@ import com.beautysight.liurushi.common.app.Payload;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
-import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.work.cs.Picture;
-import com.beautysight.liurushi.community.domain.work.cs.TextBlock;
-import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import com.beautysight.liurushi.community.domain.work.cs.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -26,10 +23,12 @@ public abstract class ContentSectionPayload extends Payload {
 
     @JsonCreator
     public static ContentSectionPayload newInstance(@JsonProperty("type") ContentSection.Type type) {
-        if (type == ContentSection.Type.image) {
-            return new PicturePayload();
-        } else if (type == ContentSection.Type.text) {
+        if (type == ContentSection.Type.text) {
             return new TextBlockPayload();
+        } else if (type == ContentSection.Type.image) {
+            return new PicturePayload();
+        } else if (type == ContentSection.Type.video) {
+            return new VideoPayload();
         }
         throw new IllegalParamException("Invalid content section type, expected %s, but actual %s",
                 ContentSection.Type.values(), type);
@@ -41,25 +40,6 @@ public abstract class ContentSectionPayload extends Payload {
     }
 
     public abstract ContentSection toDomainModel();
-
-    public static class PicturePayload extends ContentSectionPayload {
-        public Picture.Format format;
-
-        //下面的字段在展现时使用
-        private FileMetadata resource;
-        public String pictureUrl;
-
-        public PicturePayload() {
-            this.type = ContentSection.Type.image;
-        }
-
-        @Override
-        public Picture toDomainModel() {
-            Picture target = new Picture();
-            Beans.copyProperties(this, target);
-            return target;
-        }
-    }
 
     public static class TextBlockPayload extends ContentSectionPayload {
         public String text;
@@ -80,6 +60,52 @@ public abstract class ContentSectionPayload extends Payload {
         @Override
         public TextBlock toDomainModel() {
             TextBlock target = new TextBlock();
+            Beans.copyProperties(this, target);
+            return target;
+        }
+    }
+
+    public static class RichPayload extends ContentSectionPayload {
+
+        public String fileUrl;
+
+        // for api 1.0 presentation
+        public String pictureUrl;
+
+        public RichPayload() {
+            super();
+        }
+
+        @Override
+        public Rich toDomainModel() {
+            throw new UnsupportedOperationException("Should not invoke toDomainModel method on RichContentSectionPayload");
+        }
+
+    }
+
+    public static class PicturePayload extends RichPayload {
+
+        public PicturePayload() {
+            this.type = ContentSection.Type.image;
+        }
+
+        @Override
+        public Picture toDomainModel() {
+            Picture target = new Picture();
+            Beans.copyProperties(this, target);
+            return target;
+        }
+    }
+
+    public static class VideoPayload extends RichPayload {
+
+        public VideoPayload() {
+            this.type = ContentSection.Type.video;
+        }
+
+        @Override
+        public Video toDomainModel() {
+            Video target = new Video();
             Beans.copyProperties(this, target);
             return target;
         }

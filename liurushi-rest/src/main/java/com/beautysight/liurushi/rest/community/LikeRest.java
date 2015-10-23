@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.LIKES_V1)
+@RequestMapping(APIs.LIKES_V10)
 public class LikeRest {
 
     @Autowired

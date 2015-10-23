@@ -5,11 +5,9 @@
 package com.beautysight.liurushi.identityaccess.app.user;
 
 import com.beautysight.liurushi.common.app.Command;
-import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.identityaccess.domain.user.pl.DevicePayload;
 import com.beautysight.liurushi.identityaccess.domain.user.pl.UserPayload;
-import com.beautysight.liurushi.identityaccess.common.UserErrorId;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -33,11 +31,6 @@ public class SignUpCommand implements Command {
         if (user.origin == null || user.origin.isSelf()) {
             PreconditionUtils.checkRequiredMobile("user.mobile", user.mobile);
             PreconditionUtils.checkRequired("user.password", user.password);
-            PreconditionUtils.checkRequired("user.confirmPassword", user.confirmPassword);
-            if (!user.password.equals(user.confirmPassword)) {
-                throw new IllegalParamException(UserErrorId.password_confirmpwd_not_equal,
-                        "user password not equal to confirmPassword");
-            }
         } else {
             PreconditionUtils.checkRequired("user.unionId", user.unionId);
         }

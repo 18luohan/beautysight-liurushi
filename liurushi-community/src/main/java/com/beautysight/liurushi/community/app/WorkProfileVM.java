@@ -5,8 +5,10 @@
 package com.beautysight.liurushi.community.app;
 
 import com.beautysight.liurushi.common.app.ViewModel;
+import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
 import com.beautysight.liurushi.community.domain.work.Author;
 import com.beautysight.liurushi.community.domain.work.Work;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 
 import java.util.Date;
 
@@ -24,17 +26,19 @@ public class WorkProfileVM implements ViewModel {
     public Work.Stats stats = new Work.Stats();
 
     private String coverPictureUrl;
+    private ContentSectionPayload.RichPayload cover;
+
     private Author author;
     private Date publishedAt;
 
     private Boolean isLiked = Boolean.FALSE;
     private Boolean isFavored = Boolean.FALSE;
 
-    public WorkProfileVM(Work work, String coverPictureUrl) {
-        this(work, coverPictureUrl, null);
+    public WorkProfileVM(Work work, ContentSectionPayload.RichPayload coverContent) {
+        this(work, coverContent, null);
     }
 
-    public WorkProfileVM(Work work, String coverPictureUrl, Author author) {
+    public WorkProfileVM(Work work, ContentSectionPayload.RichPayload coverContent, Author author) {
         this.id = work.idStr();
         this.title = work.title();
         this.subtitle = work.subtitle();
@@ -44,7 +48,15 @@ public class WorkProfileVM implements ViewModel {
             this.stats = work.stats();
         }
 
-        this.coverPictureUrl = coverPictureUrl;
+        if (coverContent != null) {
+            this.cover = coverContent;
+
+            // for api 1.0 presentation
+            if (coverContent.type == ContentSection.Type.image) {
+                this.coverPictureUrl = coverContent.fileUrl;
+            }
+        }
+
         this.author = author;
     }
 

@@ -5,19 +5,17 @@
 package com.beautysight.liurushi.community.domain.work.cs;
 
 /**
- * 图片
- *
  * @author chenlong
  * @since 1.0
  */
-public class Picture extends Rich {
+public class Video extends Rich {
 
-    public Picture() {
-        this.type = Type.image;
+    public Video() {
+        this.type = Type.video;
     }
 
     public enum Format {
-        jpg, jpeg, png, bmp, webp
+        mp4, mov
     }
 
 }

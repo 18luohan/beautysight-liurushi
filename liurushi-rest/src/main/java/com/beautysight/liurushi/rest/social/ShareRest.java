@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.SHARES_V1)
+@RequestMapping(APIs.SHARES_V10)
 public class ShareRest {
 
     private static final Logger logger = LoggerFactory.getLogger(ShareRest.class);

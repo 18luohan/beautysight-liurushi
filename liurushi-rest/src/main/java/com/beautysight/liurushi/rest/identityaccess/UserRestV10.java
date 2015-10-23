@@ -22,10 +22,10 @@ import java.util.List;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.USERS_V1)
-public class UserRest {
+@RequestMapping(APIs.USERS_V10)
+public class UserRestV10 {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserRest.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserRestV10.class);
 
     @Autowired
     private UserApp userApp;

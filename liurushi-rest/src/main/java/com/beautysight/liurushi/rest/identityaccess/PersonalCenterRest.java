@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.*;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.USERS_V1)
+@RequestMapping(APIs.USERS_V10)
 public class PersonalCenterRest {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserRest.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserRestV10.class);
 
     @Autowired
     private UserApp userApp;

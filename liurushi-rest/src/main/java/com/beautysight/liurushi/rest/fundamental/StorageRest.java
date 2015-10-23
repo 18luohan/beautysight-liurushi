@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.STORAGE_V1)
+@RequestMapping(APIs.STORAGE_V10)
 public class StorageRest {
 
     @Autowired

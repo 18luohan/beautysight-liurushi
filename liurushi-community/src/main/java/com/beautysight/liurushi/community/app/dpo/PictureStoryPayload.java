@@ -9,6 +9,7 @@ import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.cs.TextBlock;
 import com.beautysight.liurushi.community.domain.work.layout.Block;
 import com.beautysight.liurushi.community.domain.work.layout.Layout;
@@ -53,7 +54,12 @@ public class PictureStoryPayload extends Payload {
         // translate cover
         CoverDPO targetCoverDPO = new CoverDPO();
         Beans.copyProperties(source.cover(), targetCoverDPO);
-        targetCoverDPO.pictureUrl = keyToDownloadUrlMapping.get(source.cover().pictureKey());
+        targetCoverDPO.content = transformRichContentSection(
+                source.cover().getContent(), keyToDownloadUrlMapping);
+        // for api 1.0 presentation
+        if (source.cover().getContent() instanceof Picture) {
+            targetCoverDPO.pictureUrl = keyToDownloadUrlMapping.get(source.cover().contentFileKey());
+        }
 
         // translate shot list
         List<ShotPayload> shotDTOs = new ArrayList<>();
@@ -65,13 +71,17 @@ public class PictureStoryPayload extends Payload {
 
             // translate content section
             ContentSection section = shot.content();
-            if (section instanceof Picture) {
-                Picture sourcePicture = (Picture) section;
-                ContentSectionPayload.PicturePayload targetPictureDTO = new ContentSectionPayload.PicturePayload();
-                Beans.copyProperties(sourcePicture, targetPictureDTO);
-                targetPictureDTO.pictureUrl = keyToDownloadUrlMapping.get(sourcePicture.key());
+            if (section instanceof Rich) {
+                ContentSectionPayload.RichPayload targetDTO = transformRichContentSection(
+                        (Rich) section, keyToDownloadUrlMapping);
 
-                targetShotDTO.content = targetPictureDTO;
+                // for api 1.0 presentation
+                if (section instanceof Picture) {
+                    targetDTO.pictureUrl = keyToDownloadUrlMapping.get(((Picture) section).fileKey());
+                }
+
+                targetShotDTO.content = targetDTO;
+
             } else if (section instanceof TextBlock) {
                 TextBlock sourceTextBlock = (TextBlock) section;
                 ContentSectionPayload.TextBlockPayload targetTextBlockDTO = new ContentSectionPayload.TextBlockPayload();
@@ -90,11 +100,23 @@ public class PictureStoryPayload extends Payload {
         return target;
     }
 
+    private static ContentSectionPayload.RichPayload transformRichContentSection(Rich richContent, Map<String, String> keyToDownloadUrlMapping) {
+        ContentSectionPayload.RichPayload targetDTO = new ContentSectionPayload.RichPayload();
+        Beans.copyProperties(richContent, targetDTO);
+
+        // for api 1.1 presentation
+        targetDTO.fileUrl = keyToDownloadUrlMapping.get(richContent.fileKey());
+        return targetDTO;
+    }
+
     public static class CoverDPO {
         public String sectionId;
         public PictureArea picArea;
 
+        // for api 1.0 presentation
         public String pictureUrl;
+        // for api 1.1 presentation
+        public ContentSectionPayload.RichPayload content;
 
         public void validate() {
             PreconditionUtils.checkRequired("cover.sectionId", sectionId);

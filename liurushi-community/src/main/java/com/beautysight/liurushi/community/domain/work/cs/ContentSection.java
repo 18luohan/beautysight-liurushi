@@ -29,10 +29,12 @@ public abstract class ContentSection extends AbstractEntity {
 
         try {
             Type actualType = Type.valueOf(typeValue);
-            if (actualType == Type.image) {
-                return new Picture();
-            } else if (actualType == Type.text) {
+            if (actualType == Type.text) {
                 return new TextBlock();
+            } else if (actualType == Type.image) {
+                return new Picture();
+            } else if (actualType == Type.video) {
+                return new Video();
             } else {
                 throw new MappingException("Can't mapping dbObject to specific entity by type filed:" + typeValue);
             }
@@ -44,7 +46,7 @@ public abstract class ContentSection extends AbstractEntity {
     }
 
     public enum Type {
-        image, text
+        image, text, video
     }
 
 }

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping(APIs.OAUTH_V1)
+@RequestMapping(APIs.OAUTH_V10)
 public class OAuthRest {
 
     @Autowired

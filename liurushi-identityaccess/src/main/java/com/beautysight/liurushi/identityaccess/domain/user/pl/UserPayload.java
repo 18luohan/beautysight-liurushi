@@ -27,7 +27,6 @@ public class UserPayload extends Payload {
 
     // 注册时使用
     public String password;
-    public String confirmPassword;
     public FileMetadataPayload avatar;
 
     public User toUser() {

@@ -10,6 +10,7 @@ import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
+import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
 import com.beautysight.liurushi.community.app.dpo.ControlPayload;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
@@ -20,6 +21,7 @@ import com.beautysight.liurushi.community.domain.work.*;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
 import com.beautysight.liurushi.community.domain.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWork;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
 import com.beautysight.liurushi.community.domain.work.layout.BlockLocator;
@@ -28,7 +30,10 @@ import com.beautysight.liurushi.community.domain.work.picstory.Shot;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
 import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
-import com.beautysight.liurushi.fundamental.domain.storage.*;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
+import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
+import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import com.google.common.base.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -124,14 +129,14 @@ public class WorkApp {
         Work work = workRepo.getFullWork(workId);
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = work.pictureStory().cover().pictureKey();
+        String coverPictureKey = work.pictureStory().cover().contentFileKey();
         String downloadUrl = storageService.downloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
         for (Shot shot : work.pictureStory().controls()) {
-            if (shot.content() instanceof Picture) {
-                Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.downloadUrl(picture.key());
-                keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
+            if (shot.content() instanceof Rich) {
+                Rich rich = (Rich) shot.content();
+                downloadUrl = storageService.downloadUrl(rich.fileKey());
+                keyToDownloadUrlMapping.put(rich.fileKey(), downloadUrl);
             }
         }
 
@@ -147,10 +152,10 @@ public class WorkApp {
 
     public WorkProfileVM getWorkProfileBy(String workId, Optional<String> loginUserId, Optional<Integer> intThumbnailSpec) {
         Work workProfile = workRepo.getWorkProfile(workId);
-        String coverPictureKey = workProfile.pictureStory().cover().pictureKey();
-        String coverPictureUrl = storageService.imgDownloadUrl(coverPictureKey, intThumbnailSpec);
+        ContentSectionPayload.RichPayload coverContentPayload =
+                workService.toCoverContentPayload(workProfile.cover().getContent(), intThumbnailSpec);
         Author author = authorService.getAuthorBy(workProfile.authorId());
-        WorkProfileVM result = new WorkProfileVM(workProfile, coverPictureUrl, author);
+        WorkProfileVM result = new WorkProfileVM(workProfile, coverContentPayload, author);
 
         if (loginUserId.isPresent()) {
             result.setIsLiked(likeService.isWorkLikedByUser(workId, loginUserId.get()));
@@ -162,14 +167,14 @@ public class WorkApp {
         Work work = workRepo.getFullWork(workId);
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = work.pictureStory().cover().pictureKey();
+        String coverPictureKey = work.pictureStory().cover().contentFileKey();
         String downloadUrl = storageService.downloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
         for (Shot shot : work.pictureStory().controls()) {
             if (shot.content() instanceof Picture) {
                 Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.downloadUrl(picture.key());
-                keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
+                downloadUrl = storageService.downloadUrl(picture.fileKey());
+                keyToDownloadUrlMapping.put(picture.fileKey(), downloadUrl);
             }
         }
 
@@ -186,7 +191,7 @@ public class WorkApp {
         PictureStory pictureStory = workOnlyWithPictureStory.pictureStory();
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = pictureStory.cover().pictureKey();
+        String coverPictureKey = pictureStory.cover().contentFileKey();
         String downloadUrl = storageService.downloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
 
@@ -199,8 +204,9 @@ public class WorkApp {
             shot.calculatePosition(locator);
             if (shot.content() instanceof Picture) {
                 Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.downloadUrl(picture.key());
-                keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
+
+                downloadUrl = storageService.downloadUrl(picture.fileKey());
+                keyToDownloadUrlMapping.put(picture.fileKey(), downloadUrl);
             }
         }
         pictureStory.sliceShots(0, count);
@@ -225,10 +231,9 @@ public class WorkApp {
         }
 
         for (Work work : theWorks) {
-            String coverPictureUrl = storageService.imgDownloadUrl(
-                    work.cover().pictureKey(),
-                    ImgThumbnailSpec.wk300x);
-            workProfiles.add(new WorkProfileVM(work, coverPictureUrl));
+            ContentSectionPayload.RichPayload coverContentPayload =
+                    workService.toCoverContentPayload(work.cover().getContent(), Optional.of(Integer.valueOf(300)));
+            workProfiles.add(new WorkProfileVM(work, coverContentPayload));
         }
 
         return new WorkProfileList(workProfiles);
@@ -310,14 +315,14 @@ public class WorkApp {
         }
 
         Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = work.pictureStory().cover().pictureKey();
+        String coverPictureKey = work.pictureStory().cover().contentFileKey();
         String downloadUrl = storageService.downloadUrl(coverPictureKey);
         keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
         for (Shot shot : work.pictureStory().controls()) {
             if (shot.content() instanceof Picture) {
                 Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.downloadUrl(picture.key());
-                keyToDownloadUrlMapping.put(picture.key(), downloadUrl);
+                downloadUrl = storageService.downloadUrl(picture.fileKey());
+                keyToDownloadUrlMapping.put(picture.fileKey(), downloadUrl);
             }
         }
 
@@ -331,9 +336,10 @@ public class WorkApp {
 
     private Map<String, ContentSection> saveContentSections(Map<String, ContentSection> newSections) {
         for (Map.Entry<String, ContentSection> entry : newSections.entrySet()) {
-            if (entry.getValue() instanceof Picture) {
-                Picture pic = (Picture) entry.getValue();
-                pic.setFile(fileMetadataService.createOneLogicFile(FileMetadata.Type.image, FileMetadata.BizCategory.work));
+            if (entry.getValue() instanceof Rich) {
+                Rich richContent = (Rich) entry.getValue();
+                richContent.setFile(fileMetadataService.createOneLogicFile(
+                        richContent.type().toString(), FileMetadata.BizCategory.work));
             }
             ContentSection section = contentSectionRepo.save(entry.getValue());
             entry.setValue(section);
@@ -363,7 +369,7 @@ public class WorkApp {
 
     private void setPictureStoryCover(PictureStory pictureStory, Map<String, ContentSection> contentSections, PublishWorkCommand command) {
         ContentSection coverSection = contentSections.get(command.pictureStory.cover.sectionId);
-        pictureStory.cover().setPicture((Picture) coverSection);
+        pictureStory.cover().setContent((Picture) coverSection);
     }
 
     private void setContentSections(WorkPart<? extends Control> workPart, Map<String, ContentSection> contentSections,

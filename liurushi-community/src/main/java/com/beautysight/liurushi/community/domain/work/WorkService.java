@@ -5,12 +5,15 @@
 package com.beautysight.liurushi.community.domain.work;
 
 import com.beautysight.liurushi.common.domain.Range;
+import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.community.app.WorkProfileVM;
+import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
 import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
 import com.beautysight.liurushi.community.domain.model.like.Like;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.community.domain.service.LikeService;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
@@ -107,8 +110,11 @@ public class WorkService {
         for (Author author : authors) {
             List<Work> authorWorks = authorToWorksMap.get(author.id);
             for (Work work : authorWorks) {
-                String coverPictureUrl = storageService.imgDownloadUrl(work.cover().pictureKey(), intThumbnailSpec);
-                WorkProfileVM workProfile = new WorkProfileVM(work, coverPictureUrl, author);
+                ContentSectionPayload.RichPayload coverContentPayload =
+                        toCoverContentPayload(work.cover().getContent(), intThumbnailSpec);
+                WorkProfileVM workProfile = new WorkProfileVM(work, coverContentPayload, author);
+
+
                 workIdToWorkProfileVMMap.put(work.idStr(), workProfile);
             }
         }
@@ -130,6 +136,14 @@ public class WorkService {
 
     public void cancelOrdinary(String workId) {
         workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
+    }
+
+    public ContentSectionPayload.RichPayload toCoverContentPayload(
+            Rich coverContent, Optional<Integer> intThumbnailSpec) {
+        ContentSectionPayload.RichPayload targetDTO = new ContentSectionPayload.RichPayload();
+        Beans.copyProperties(coverContent, targetDTO);
+        targetDTO.fileUrl = storageService.imgDownloadUrl(coverContent.fileKey(), intThumbnailSpec);
+        return targetDTO;
     }
 
 }

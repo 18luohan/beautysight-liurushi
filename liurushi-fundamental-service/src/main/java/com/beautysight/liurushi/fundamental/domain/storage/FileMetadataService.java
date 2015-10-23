@@ -20,6 +20,10 @@ public class FileMetadataService {
     @Autowired
     private FileMetadataRepo fileMetadataRepo;
 
+    public FileMetadata createOneLogicFile(String fileType, FileMetadata.BizCategory bizCategory) {
+        return createOneLogicFile(FileMetadata.Type.valueOf(fileType), bizCategory);
+    }
+
     public FileMetadata createOneLogicFile(FileMetadata.Type type, FileMetadata.BizCategory bizCategory) {
         FileMetadata aNewFile = FileMetadata.newFile(type, bizCategory);
         fileMetadataRepo.save(aNewFile);

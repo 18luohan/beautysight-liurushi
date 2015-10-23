@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.work.picstory;
 
-import com.beautysight.liurushi.community.domain.work.cs.Picture;
+import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import org.mongodb.morphia.annotations.Reference;
 
 /**
@@ -14,15 +14,19 @@ import org.mongodb.morphia.annotations.Reference;
 public class Cover {
 
     @Reference(value = "sectionId", idOnly = true)
-    private Picture picture;
+    private Rich content;
     private PictureArea picArea;
 
-    public void setPicture(Picture picture) {
-        this.picture = picture;
+    public void setContent(Rich content) {
+        this.content = content;
     }
 
-    public String pictureKey() {
-        return this.picture.key();
+    public Rich getContent() {
+        return this.content;
+    }
+
+    public String contentFileKey() {
+        return this.content.fileKey();
     }
 
 }
