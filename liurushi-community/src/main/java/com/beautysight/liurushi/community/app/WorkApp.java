@@ -369,7 +369,7 @@ public class WorkApp {
 
     private void setPictureStoryCover(PictureStory pictureStory, Map<String, ContentSection> contentSections, PublishWorkCommand command) {
         ContentSection coverSection = contentSections.get(command.pictureStory.cover.sectionId);
-        pictureStory.cover().setContent((Picture) coverSection);
+        pictureStory.cover().setContent((Rich) coverSection);
     }
 
     private void setContentSections(WorkPart<? extends Control> workPart, Map<String, ContentSection> contentSections,
