@@ -39,7 +39,7 @@ public class AppIdentityAuthenticator extends HandlerInterceptorAdapter {
         }
 
         if (!appId.get().equals(mobileAppId)) {
-            Responses.setStatusAndWriteTo(response, AuthErrorId.illegal_app_id,
+            Responses.setStatusAndWriteTo(response, AuthErrorId.illegal_app_client,
                     String.format("Illegal %s header value", Requests.APP_ID_HEADER));
             return false;
         }
