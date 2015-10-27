@@ -7,10 +7,6 @@ package com.beautysight.liurushi.common.ex;
 import com.beautysight.liurushi.common.app.ViewModel;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-08.
- *
  * @author chenlong
  * @since 1.0
  */

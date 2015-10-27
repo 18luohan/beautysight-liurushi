@@ -7,18 +7,15 @@ package com.beautysight.liurushi.identityaccess.common;
 import com.beautysight.liurushi.common.ex.Error;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-30.
- *
  * @author chenlong
  * @since 1.0
  */
 public enum AuthErrorId implements Error.Id {
 
-    illegal_app_id(10004),
-    illegal_access_token(10005),
-    invalid_access_token(10006);
+    illegal_app_id(10101),
+    illegal_access_token(10102),
+    invalid_access_token(10103),
+    no_permission_for_this_api(10104);
 
     private Integer code;
 

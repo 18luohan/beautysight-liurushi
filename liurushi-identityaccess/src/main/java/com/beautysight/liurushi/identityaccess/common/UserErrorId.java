@@ -7,19 +7,15 @@ package com.beautysight.liurushi.identityaccess.common;
 import com.beautysight.liurushi.common.ex.Error;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-08.
- *
  * @author chenlong
  * @since 1.0
  */
 public enum UserErrorId implements Error.Id {
 
-    user_already_exist(20101),
-    password_confirmpwd_not_equal(20102),
-    user_not_exist_or_pwd_incorrect(20103),
-    user_not_exist(20104);
+    user_already_exist(21001),
+    password_confirmpwd_not_equal(21002),
+    user_not_exist_or_pwd_incorrect(21003),
+    user_not_exist(21004);
 
     private Integer code;
 
@@ -34,7 +30,7 @@ public enum UserErrorId implements Error.Id {
 
     @Override
     public Integer code() {
-        return null;
+        return this.code;
     }
 
 }

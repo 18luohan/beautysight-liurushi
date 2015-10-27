@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.rest.permission;
 
-import com.beautysight.liurushi.common.ex.CommonErrorId;
+import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.common.Requests;
 import com.beautysight.liurushi.rest.common.Responses;
@@ -37,7 +37,7 @@ public class ApiPermissionInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        Responses.setStatusAndWriteTo(response, CommonErrorId.no_permission_for_this_api,
+        Responses.setStatusAndWriteTo(response, AuthErrorId.no_permission_for_this_api,
                 "You have no permission for this api");
 
         if (logger.isInfoEnabled()) {

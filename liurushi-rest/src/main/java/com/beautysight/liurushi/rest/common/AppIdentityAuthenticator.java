@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.rest.common;
 
+import com.beautysight.liurushi.common.ex.CommonErrorId;
 import com.beautysight.liurushi.identityaccess.common.AuthErrorId;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class AppIdentityAuthenticator extends HandlerInterceptorAdapter {
         }
 
         if (!appId.isPresent()) {
-            Responses.setStatusAndWriteTo(response, AuthErrorId.illegal_app_id,
+            Responses.setStatusAndWriteTo(response, CommonErrorId.bad_request,
                     String.format("%s header required", Requests.APP_ID_HEADER));
             return false;
         }
