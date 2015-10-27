@@ -18,6 +18,10 @@ public class IllegalParamException extends ApplicationException {
         super(CommonErrorId.invalid_params, msgFormat, msgArgs);
     }
 
+    public IllegalParamException(Throwable cause, String msgFormat, Object... msgArgs) {
+        super(CommonErrorId.invalid_params, cause, msgFormat, msgArgs);
+    }
+
     public IllegalParamException(Error.Id errorId, String message) {
         super(errorId, message);
     }

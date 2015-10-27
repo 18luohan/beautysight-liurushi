@@ -34,7 +34,21 @@ public class JsonsTest {
         Jsons.toObject(jsonString, Post.class);
     }
 
+    @Test
+    public void aa() {
+        Post post = new Post();
+        post.threadId = 1;
+        post.author = "mini";
+        post.user = new User("cooper");
+        System.out.println(Jsons.toJsonString(post));
+    }
 
+    @Test
+    public void bb() {
+        String json = "{\"threadId\":1,\"author\":\"mini\",\"poster\":{\"name\":\"cooper\"}}";
+        Post post = Jsons.toObject(json, Post.class);
+        System.out.println(post.user.name);
+    }
     private Date newDate(int year,
                          int monthOfYear,
                          int dayOfMonth,
@@ -53,6 +67,16 @@ public class JsonsTest {
         //@JsonSerialize(using = CustomDateSerializer.class)
         private Date committedAt;
 
+        private User user;
+
+        public User getPoster() {
+            return this.user;
+        }
+
+        public void setPoster(User user) {
+            this.user = user;
+        }
+
         private Post() {
         }
 
@@ -60,6 +84,16 @@ public class JsonsTest {
             this.threadId = threadId;
             this.author = author;
             this.committedAt = aDate;
+        }
+    }
+
+    private static class User implements ViewModel {
+        private String name;
+
+        public User() {}
+
+        public User(String name) {
+            this.name = name;
         }
     }
 

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping(APIs.WORKS_V10)
-public class WorkExamineRest {
+public class WorkExamineRestV10 {
 
     @Autowired
     private WorkApp workApp;

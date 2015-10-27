@@ -23,10 +23,6 @@ import java.io.Reader;
 import java.util.Date;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-11.
- *
  * @author chenlong
  * @since 1.0
  */

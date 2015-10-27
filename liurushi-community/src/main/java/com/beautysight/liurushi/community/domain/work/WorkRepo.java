@@ -7,6 +7,8 @@ package com.beautysight.liurushi.community.domain.work;
 import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
+import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MongoRepository;
 import com.google.common.base.Optional;
@@ -25,9 +27,9 @@ public interface WorkRepo extends MongoRepository<Work> {
 
     Work getWorkProfile(String workId);
 
-    List<Work> findWorkProfilesInRange(Work.Source source, Range range);
+    List<Work> findWorkProfilesInRange(Work.Source source, Range range, List<ContentSection.Type> supportedContentTypes);
 
-    List<Work> findAuthorWorkProfilesIn(AuthorWorksRange range);
+    List<Work> findAuthorWorkProfilesIn(WorkQueryInRangeCommand command);
 
     Work getWorkOnlyWithPictureStory(String workId);
 
@@ -41,8 +43,8 @@ public interface WorkRepo extends MongoRepository<Work> {
 
     AbstractMongoRepository.Fields workBasicFields = AbstractMongoRepository.Fields.newInstance().append("id", "title", "subtitle", "authorId", "source", "presentPriority", "publishedAt");
     String[] workBasicFieldsArray = workBasicFields.toArray();
-    String[] workProfileFields = workBasicFields.copyThenAppend("stats", "pictureStory.cover.sectionId").toArray();
-    String[] pictureStoryFields = workBasicFields.copyThenAppend("pictureStory").toArray();
+    String[] workProfileFields = workBasicFields.copyThenAppend("stats", "story.cover.sectionId").toArray();
+    String[] pictureStoryFields = workBasicFields.copyThenAppend("story").toArray();
     Optional<AbstractMongoRepository.FieldsFilter> workBasicFieldsFilter = Optional.of(new AbstractMongoRepository.FieldsFilter(true, workProfileFields));
 
 }

@@ -8,7 +8,6 @@ import com.beautysight.liurushi.common.app.Payload;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.cs.TextBlock;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
@@ -55,18 +54,12 @@ public class PresentationPayload extends Payload {
             ContentSection section = slide.content();
 
             if (section instanceof Rich) {
+
                 Rich richContent = (Rich) section;
                 ContentSectionPayload.RichPayload targetDTO = new ContentSectionPayload.RichPayload();
                 Beans.copyProperties(richContent, targetDTO);
-                targetSlideDTO.content = targetDTO;
-
-                // for api 1.0 presentation
-                if (richContent instanceof Picture) {
-                    targetDTO.pictureUrl = keyToDownloadUrlMapping.get(richContent.fileKey());
-                }
-
-                // for api 1.1 presentation
                 targetDTO.fileUrl = keyToDownloadUrlMapping.get(richContent.fileKey());
+                targetSlideDTO.content = targetDTO;
 
             } else if (section instanceof TextBlock) {
                 TextBlock sourceTextBlock = (TextBlock) section;

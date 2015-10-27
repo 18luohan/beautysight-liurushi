@@ -11,7 +11,7 @@ import com.beautysight.liurushi.common.utils.PreconditionUtils;
  * @author chenlong
  * @since 1.0
  */
-public class NotifyPicUploadedCommand implements Command {
+public class NotifyRichContentUploadedCommand implements Command {
 
     public String hash;
 

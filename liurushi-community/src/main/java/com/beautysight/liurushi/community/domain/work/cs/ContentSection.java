@@ -46,7 +46,7 @@ public abstract class ContentSection extends AbstractEntity {
     }
 
     public enum Type {
-        image, text, video
+        text, image, gif, video
     }
 
 }

@@ -23,7 +23,7 @@ public class DiscardedWork extends Work {
 
         this.title = work.title;
         this.subtitle = work.subtitle;
-        this.pictureStory = work.pictureStory;
+        this.story = work.story;
         this.presentation = work.presentation;
         this.authorId = work.authorId;
         this.source = work.source;
@@ -31,6 +31,7 @@ public class DiscardedWork extends Work {
         this.publishedAt = work.publishedAt;
         this.presentPriority = work.presentPriority;
         this.stats = work.stats;
+        this.contentTypes = work.contentTypes;
     }
 
     public Work transformToWork() {
@@ -42,7 +43,7 @@ public class DiscardedWork extends Work {
 
         work.title = this.title;
         work.subtitle = this.subtitle;
-        work.pictureStory = this.pictureStory;
+        work.story = this.story;
         work.presentation = this.presentation;
         work.authorId = this.authorId;
         work.source = this.source;
@@ -50,6 +51,7 @@ public class DiscardedWork extends Work {
         work.publishedAt = this.publishedAt;
         work.presentPriority = this.presentPriority;
         work.stats = this.stats;
+        work.contentTypes = this.contentTypes;
         return work;
     }
 

@@ -5,8 +5,8 @@
 package com.beautysight.liurushi.community.app.presentation;
 
 import com.beautysight.liurushi.common.app.ViewModel;
-import com.beautysight.liurushi.community.app.dpo.PictureStoryPayload;
 import com.beautysight.liurushi.community.app.dpo.PresentationPayload;
+import com.beautysight.liurushi.community.app.dpo.StoryPayload;
 import com.beautysight.liurushi.community.domain.work.Author;
 import com.beautysight.liurushi.community.domain.work.Work;
 
@@ -24,9 +24,9 @@ public class WorkVM implements ViewModel {
     public Boolean isLiked = Boolean.FALSE;
     public Boolean isFavored = Boolean.FALSE;
     public Work.Stats stats = new Work.Stats();
-    private PictureStoryPayload pictureStory;
-    private PresentationPayload presentation;
-    private Author author;
+    public StoryPayload story;
+    public PresentationPayload presentation;
+    public Author author;
 
     public static WorkVM from(Work work, Map<String, String> keyToDownloadUrlMapping) {
         return from(work, keyToDownloadUrlMapping, null, null, null);
@@ -47,8 +47,8 @@ public class WorkVM implements ViewModel {
             workVM.stats = work.stats();
         }
 
-        if (work.pictureStory() != null) {
-            workVM.pictureStory = PictureStoryPayload.from(work.pictureStory(), keyToDownloadUrlMapping);
+        if (work.story() != null) {
+            workVM.story = StoryPayload.from(work.story(), keyToDownloadUrlMapping);
         }
 
         if (work.presentation() != null) {

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * @author chenlong
  * @since 1.0
@@ -31,7 +29,7 @@ public class ShareRest {
     private WorkApp workApp;
 
     @RequestMapping(value = "/works/{workId}", method = RequestMethod.GET)
-    public WorkVM shareWork(@PathVariable("workId") String workId, HttpServletResponse response) {
+    public WorkVM shareWork(@PathVariable("workId") String workId) {
         return workApp.shareWork(workId);
     }
 

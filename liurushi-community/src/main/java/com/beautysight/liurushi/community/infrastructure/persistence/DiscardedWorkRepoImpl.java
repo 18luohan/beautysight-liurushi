@@ -58,7 +58,7 @@ public class DiscardedWorkRepoImpl extends AbstractMongoRepository<DiscardedWork
             slide.setContentSection(sectionsMap.get(slide.sectionId()));
         }
 
-        for (Shot shot : work.pictureStory().controls()) {
+        for (Shot shot : work.story().controls()) {
             shot.setContentSection(sectionsMap.get(shot.sectionId()));
         }
 

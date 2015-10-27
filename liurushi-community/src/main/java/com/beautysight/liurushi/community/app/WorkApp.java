@@ -6,8 +6,8 @@ package com.beautysight.liurushi.community.app;
 
 import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
+import com.beautysight.liurushi.common.ex.BusinessException;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
-import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
 import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
@@ -20,16 +20,14 @@ import com.beautysight.liurushi.community.domain.service.LikeService;
 import com.beautysight.liurushi.community.domain.work.*;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
-import com.beautysight.liurushi.community.domain.work.cs.Picture;
 import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWork;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
 import com.beautysight.liurushi.community.domain.work.layout.BlockLocator;
-import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
 import com.beautysight.liurushi.community.domain.work.picstory.Shot;
+import com.beautysight.liurushi.community.domain.work.picstory.Story;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
-import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
-import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigService;
+import com.beautysight.liurushi.fundamental.app.NotifyRichContentUploadedCommand;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataService;
@@ -41,10 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 与内容相关的应用逻辑
@@ -75,8 +70,6 @@ public class WorkApp {
     @Autowired
     private FileMetadataRepo fileMetadataRepo;
     @Autowired
-    private AppConfigService appConfigService;
-    @Autowired
     private LikeService likeService;
     @Autowired
     private WorkService workService;
@@ -89,7 +82,7 @@ public class WorkApp {
         return new PublishWorkPresentation(publishingWork.idStr(), uploadToken, savedContentSections);
     }
 
-    public void onPicSectionUploaded(String publishingWorkId, String fileId, NotifyPicUploadedCommand command) {
+    public void notifyRichContentUploaded(String publishingWorkId, String fileId, NotifyRichContentUploadedCommand command) {
         FileMetadata theFile = fileMetadataRepo.findOne(fileId);
 
         if (theFile.isUploaded()) {
@@ -127,18 +120,7 @@ public class WorkApp {
 
     public WorkVM getFullWorkBy(String workId, Optional<String> loginUserId) {
         Work work = workRepo.getFullWork(workId);
-
-        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = work.pictureStory().cover().contentFileKey();
-        String downloadUrl = storageService.downloadUrl(coverPictureKey);
-        keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
-        for (Shot shot : work.pictureStory().controls()) {
-            if (shot.content() instanceof Rich) {
-                Rich rich = (Rich) shot.content();
-                downloadUrl = storageService.downloadUrl(rich.fileKey());
-                keyToDownloadUrlMapping.put(rich.fileKey(), downloadUrl);
-            }
-        }
+        Map<String, String> keyToDownloadUrlMapping = mapFileKeyToUrl(work);
 
         Boolean isLikedByLoginUser = Boolean.FALSE;
         Boolean isFavoredByLoginUser = Boolean.FALSE;
@@ -165,66 +147,29 @@ public class WorkApp {
 
     public WorkVM shareWork(String workId) {
         Work work = workRepo.getFullWork(workId);
+        Map<String, String> keyToDownloadUrlMapping = mapFileKeyToUrl(work);
 
-        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = work.pictureStory().cover().contentFileKey();
-        String downloadUrl = storageService.downloadUrl(coverPictureKey);
-        keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
-        for (Shot shot : work.pictureStory().controls()) {
-            if (shot.content() instanceof Picture) {
-                Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.downloadUrl(picture.fileKey());
-                keyToDownloadUrlMapping.put(picture.fileKey(), downloadUrl);
-            }
-        }
-
-        PictureStory pictureStory = work.pictureStory();
-        BlockLocator locator = pictureStory.layout().generateBlockLocator();
-        for (int i = 0; i < pictureStory.controls().size(); i++) {
-            Shot shot = pictureStory.controls().get(i);
+        Story Story = work.story();
+        BlockLocator locator = Story.layout().generateBlockLocator();
+        for (int i = 0; i < Story.controls().size(); i++) {
+            Shot shot = Story.controls().get(i);
             shot.calculatePosition(locator);
         }
 
         return WorkVM.from(work, keyToDownloadUrlMapping);
-
-        /*Work workOnlyWithPictureStory = workRepo.getWorkOnlyWithPictureStory(workId);
-        PictureStory pictureStory = workOnlyWithPictureStory.pictureStory();
-
-        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = pictureStory.cover().contentFileKey();
-        String downloadUrl = storageService.downloadUrl(coverPictureKey);
-        keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
-
-        IntegerVal shotsNum = appConfigService.getItemValue(AppConfig.ItemName.sharing_h5_shots_num);
-        BlockLocator locator = pictureStory.layout().generateBlockLocator();
-
-        int count = 0;
-        for (int i = 0; i < pictureStory.controls().size() && count < shotsNum.val(); i++, count++) {
-            Shot shot = pictureStory.controls().get(i);
-            shot.calculatePosition(locator);
-            if (shot.content() instanceof Picture) {
-                Picture picture = (Picture) shot.content();
-
-                downloadUrl = storageService.downloadUrl(picture.fileKey());
-                keyToDownloadUrlMapping.put(picture.fileKey(), downloadUrl);
-            }
-        }
-        pictureStory.sliceShots(0, count);
-
-        return WorkVM.from(workOnlyWithPictureStory, keyToDownloadUrlMapping);*/
     }
 
     public WorkProfileList findPgcWorkProfilesIn(WorkQueryInRangeCommand command) {
-        return workService.findWorkProfilesInRange(Work.Source.pgc, command.range, command.loginUserId, command.thumbnailSpec);
+        return workService.findWorkProfilesInRange(Work.Source.pgc, command.range, command.loginUserId, command.thumbnailSpec, command.supportedContentTypes);
     }
 
     public WorkProfileList findUgcWorkProfilesIn(WorkQueryInRangeCommand command) {
-        return workService.findWorkProfilesInRange(Work.Source.ugc, command.range, command.loginUserId, command.thumbnailSpec);
+        return workService.findWorkProfilesInRange(Work.Source.ugc, command.range, command.loginUserId, command.thumbnailSpec, command.supportedContentTypes);
     }
 
-    public WorkProfileList findAuthorWorksIn(AuthorWorksRange range) {
+    public WorkProfileList findAuthorWorksIn(WorkQueryInRangeCommand command) {
         List<WorkProfileVM> workProfiles = new ArrayList<>();
-        List<Work> theWorks = workRepo.findAuthorWorkProfilesIn(range);
+        List<Work> theWorks = workRepo.findAuthorWorkProfilesIn(command);
 
         if (CollectionUtils.isEmpty(theWorks)) {
             return new WorkProfileList(workProfiles);
@@ -232,7 +177,7 @@ public class WorkApp {
 
         for (Work work : theWorks) {
             ContentSectionPayload.RichPayload coverContentPayload =
-                    workService.toCoverContentPayload(work.cover().getContent(), Optional.of(Integer.valueOf(300)));
+                    workService.toCoverContentPayload(work.cover().getContent(), command.thumbnailSpec);
             workProfiles.add(new WorkProfileVM(work, coverContentPayload));
         }
 
@@ -289,8 +234,18 @@ public class WorkApp {
     }
 
     public void discardWork(String workId) {
+        discardWork(workId, Optional.<String>absent());
+    }
+
+    public void discardWork(String workId, Optional<String> loginUserId) {
         Optional<Work> work = workRepo.get(workId);
         if (work.isPresent()) {
+            // 检查是否是当前用户的作品
+            if (loginUserId.isPresent() && !work.get().authorId().equals(loginUserId.get())) {
+                throw new BusinessException("current user(%s) has no privilege to delete work(%s) of author(%s)",
+                        loginUserId.get(), workId, work.get().authorId());
+            }
+
             discardedWorkRepo.save(new DiscardedWork(work.get()));
             workRepo.delete(work.get().id());
             authorService.increaseWorkNumBy(-1, work.get().authorId());
@@ -314,17 +269,7 @@ public class WorkApp {
             work = workRepo.getFullWork(workId);
         }
 
-        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
-        String coverPictureKey = work.pictureStory().cover().contentFileKey();
-        String downloadUrl = storageService.downloadUrl(coverPictureKey);
-        keyToDownloadUrlMapping.put(coverPictureKey, downloadUrl);
-        for (Shot shot : work.pictureStory().controls()) {
-            if (shot.content() instanceof Picture) {
-                Picture picture = (Picture) shot.content();
-                downloadUrl = storageService.downloadUrl(picture.fileKey());
-                keyToDownloadUrlMapping.put(picture.fileKey(), downloadUrl);
-            }
-        }
+        Map<String, String> keyToDownloadUrlMapping = mapFileKeyToUrl(work);
 
         Author author = authorService.getAuthorBy(work.authorId());
         return WorkVM.from(work, keyToDownloadUrlMapping, author);
@@ -348,28 +293,34 @@ public class WorkApp {
     }
 
     private PublishingWork translateToPublishingWork(PublishWorkCommand command, Map<String, ContentSection> contentSections) {
-        PictureStory pictureStory = command.pictureStory.toPictureStory();
+        Story Story = command.story.toPictureStory();
         Presentation presentation = command.presentation.toPresentation();
 
-        setPictureStoryCover(pictureStory, contentSections, command);
-        setContentSections(pictureStory, contentSections, command.pictureStory.shots);
+        setWorkCover(Story, contentSections, command);
+        setContentSections(Story, contentSections, command.story.shots);
         setContentSections(presentation, contentSections, command.presentation.slides);
 
         List<FileMetadata> files = new ArrayList<>(contentSections.size());
+        List<ContentSection.Type> contentTypes = new ArrayList<>(5);
         for (ContentSection section : contentSections.values()) {
-            if (section instanceof Picture) {
-                Picture pic = (Picture) section;
-                files.add(pic.file());
+            if (!contentTypes.contains(section.type())) {
+                contentTypes.add(section.type());
+            }
+            if (section instanceof Rich) {
+                Rich rich = (Rich) section;
+                files.add(rich.file());
             }
         }
 
         Author author = authorService.getAuthorBy(command.authorId);
-        return new PublishingWork(command.title, command.subtitle, pictureStory, presentation, author, files);
+        PublishingWork result = new PublishingWork(command.title, command.subtitle, Story, presentation, author, files);
+        result.setContentTypes(contentTypes);
+        return result;
     }
 
-    private void setPictureStoryCover(PictureStory pictureStory, Map<String, ContentSection> contentSections, PublishWorkCommand command) {
-        ContentSection coverSection = contentSections.get(command.pictureStory.cover.sectionId);
-        pictureStory.cover().setContent((Rich) coverSection);
+    private void setWorkCover(Story Story, Map<String, ContentSection> contentSections, PublishWorkCommand command) {
+        ContentSection coverSection = contentSections.get(command.story.cover.sectionId);
+        Story.cover().setContent((Rich) coverSection);
     }
 
     private void setContentSections(WorkPart<? extends Control> workPart, Map<String, ContentSection> contentSections,
@@ -378,6 +329,24 @@ public class WorkApp {
             String key = controlDTOs.get(i).sectionId;
             workPart.controls().get(i).setContentSection(contentSections.get(key));
         }
+    }
+
+    private Map<String, String> mapFileKeyToUrl(Work work) {
+        Map<String, String> keyToDownloadUrlMapping = new HashMap<>();
+        String coverKey = work.cover().contentFileKey();
+        String coverUrl = storageService.downloadUrl(coverKey);
+        keyToDownloadUrlMapping.put(coverKey, coverUrl);
+
+        String fileUrl;
+        for (Shot shot : work.story().controls()) {
+            if (shot.content() instanceof Rich) {
+                Rich rich = (Rich) shot.content();
+                fileUrl = storageService.downloadUrl(rich.fileKey());
+                keyToDownloadUrlMapping.put(rich.fileKey(), fileUrl);
+            }
+        }
+
+        return keyToDownloadUrlMapping;
     }
 
 }

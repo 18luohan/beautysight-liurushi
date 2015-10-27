@@ -10,21 +10,21 @@ import com.beautysight.liurushi.community.domain.work.layout.Layout;
 import java.util.List;
 
 /**
- * 以图文混排方式讲述的故事。
+ * 以文字、图片、视频混排方式讲述的故事。
  *
  * @author chenlong
  * @since 1.0
  */
-public class PictureStory extends WorkPart<Shot> {
+public class Story extends WorkPart<Shot> {
 
     private Layout layout;
     private Cover cover;
     private List<Shot> shots;
 
-    public PictureStory() {
+    public Story() {
     }
 
-    public PictureStory(Layout layout, Cover cover, List<Shot> shots) {
+    public Story(Layout layout, Cover cover, List<Shot> shots) {
         this.layout = layout;
         this.cover = cover;
         this.shots = shots;

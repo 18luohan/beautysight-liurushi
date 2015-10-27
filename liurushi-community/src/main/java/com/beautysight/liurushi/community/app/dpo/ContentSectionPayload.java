@@ -69,11 +69,21 @@ public abstract class ContentSectionPayload extends Payload {
 
         public String fileUrl;
 
-        // for api 1.0 presentation
-        public String pictureUrl;
-
         public RichPayload() {
             super();
+        }
+
+        /**
+         * Only for view full work 1.0 api.
+         * Jackson Json will invoke this method.
+         *
+         * @return
+         */
+        public String getPictureUrl() {
+            if (this.type == ContentSection.Type.image) {
+                return this.fileUrl;
+            }
+            return null;
         }
 
         @Override

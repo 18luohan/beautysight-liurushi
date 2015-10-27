@@ -7,7 +7,7 @@ package com.beautysight.liurushi.community.domain.work.draft;
 import com.beautysight.liurushi.community.domain.work.AbstractWork;
 import com.beautysight.liurushi.community.domain.work.Author;
 import com.beautysight.liurushi.community.domain.work.Work;
-import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.work.picstory.Story;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import org.mongodb.morphia.annotations.Entity;
@@ -30,8 +30,8 @@ public class PublishingWork extends AbstractWork {
         this.initialize();
     }
 
-    public PublishingWork(String title, String subtitle, PictureStory pictureStory, Presentation presentation, Author author, List<FileMetadata> files) {
-        super(title, subtitle, pictureStory, presentation, author);
+    public PublishingWork(String title, String subtitle, Story Story, Presentation presentation, Author author, List<FileMetadata> files) {
+        super(title, subtitle, Story, presentation, author);
         this.initialize();
         this.files = files;
     }
@@ -42,8 +42,9 @@ public class PublishingWork extends AbstractWork {
 
     public Work transformToWork() {
         Work theWork = new Work(this.id, this.title, this.subtitle,
-                this.pictureStory, this.presentation, this.authorId, this.source);
+                this.story, this.presentation, this.authorId, this.source);
         theWork.setPublishedAt(this.createdAt);
+        theWork.setContentTypes(this.contentTypes);
         return theWork;
     }
 

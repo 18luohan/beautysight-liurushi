@@ -5,7 +5,7 @@
 package com.beautysight.liurushi.community.infrastructure.persistence;
 
 import com.beautysight.liurushi.common.domain.Range;
-import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.work.picstory.Story;
 import com.beautysight.liurushi.community.domain.work.picstory.PictureStoryRepo;
 import com.beautysight.liurushi.community.domain.work.Work;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
@@ -24,10 +24,10 @@ import java.util.List;
  * @since 1.0
  */
 @Repository
-public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> implements PictureStoryRepo {
+public class PictureStoryRepoImpl extends AbstractMongoRepository<Story> implements PictureStoryRepo {
 
-    public List<PictureStory> getLatestPictureStories(Work.Source source, int count) {
-        Query<PictureStory> query = newQuery();
+    public List<Story> getLatestPictureStories(Work.Source source, int count) {
+        Query<Story> query = newQuery();
         query.retrievedFields(true, "id", "title", "cover.picture", "authorId", "publishedAt")
                 .field("source").equal(source)
                 // 目前morphia组件还不支持$natural查询修饰符
@@ -35,15 +35,15 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
         return query.asList();
     }
 
-    public List<PictureStory> findPictureStoriesInRange(
+    public List<Story> findPictureStoriesInRange(
             Work.Source source, Optional<String> referenceWorkId, int offset, Range.OffsetDirection direction) {
-        List<PictureStory> result = new ArrayList<>();
+        List<Story> result = new ArrayList<>();
 
         if (!referenceWorkId.isPresent()) {
             return getLatestPictureStories(source, offset);
         }
 
-        Query<PictureStory> query;
+        Query<Story> query;
         boolean isReferenceWorkAdded = false;
         if (offset > 0 && (direction == Range.OffsetDirection.both || direction == Range.OffsetDirection.after)) {
             query = newQuery();
@@ -52,7 +52,7 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
                     .field("id").greaterThanOrEq(new ObjectId(referenceWorkId.get()))
                     // 目前morphia组件还不支持$natural查询修饰符
                     .order("id").limit(offset);
-            List<PictureStory> ascendingList = query.asList();
+            List<Story> ascendingList = query.asList();
             if (CollectionUtils.isNotEmpty(ascendingList)) {
                 // 倒序排列
                 Collections.reverse(ascendingList);
@@ -68,7 +68,7 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
                     .field("id").lessThanOrEq(new ObjectId(referenceWorkId.get()))
                     // 目前morphia组件还不支持$natural查询修饰符
                     .order("-id").limit(offset + 1);
-            List<PictureStory> descendingList = query.asList();
+            List<Story> descendingList = query.asList();
             if (CollectionUtils.isNotEmpty(descendingList)) {
                 if (isReferenceWorkAdded) {
                     result.addAll(descendingList.subList(1, descendingList.size()));
@@ -82,8 +82,8 @@ public class PictureStoryRepoImpl extends AbstractMongoRepository<PictureStory> 
     }
 
     @Override
-    protected Class<PictureStory> entityClass() {
-        return PictureStory.class;
+    protected Class<Story> entityClass() {
+        return Story.class;
     }
 
 }

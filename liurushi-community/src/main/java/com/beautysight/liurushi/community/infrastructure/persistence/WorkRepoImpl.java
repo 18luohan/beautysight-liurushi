@@ -6,7 +6,8 @@ package com.beautysight.liurushi.community.infrastructure.persistence;
 
 import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
-import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
+import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
+import com.beautysight.liurushi.community.domain.work.ContentTypes;
 import com.beautysight.liurushi.community.domain.work.Work;
 import com.beautysight.liurushi.community.domain.work.WorkRepo;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
@@ -60,7 +61,7 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
             slide.setContentSection(sectionsMap.get(slide.sectionId()));
         }
 
-        for (Shot shot : work.pictureStory().controls()) {
+        for (Shot shot : work.story().controls()) {
             shot.setContentSection(sectionsMap.get(shot.sectionId()));
         }
 
@@ -76,19 +77,21 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
 
     @Override
     public List<Work> findWorkProfilesInRange(Work.Source source,
-                                              Range range) {
+                                              Range range,
+                                              List<ContentSection.Type> supportedContentTypes) {
         if (source == Work.Source.pgc) {
-            return findPgcWorkProfilesInRange(range);
+            return findPgcWorkProfilesInRange(range, supportedContentTypes);
         } else if (source == Work.Source.ugc) {
-            return findUgcWorkProfilesInRange(range);
+            return findUgcWorkProfilesInRange(range, supportedContentTypes);
         }
         throw new IllegalArgumentException("Illegal work.source: " + source);
     }
 
     @Override
-    public List<Work> findAuthorWorkProfilesIn(AuthorWorksRange range) {
-        Conditions conditions = Conditions.newWithEqual("authorId", toMongoId(range.authorId()));
-        return find(Optional.of(conditions), range, workBasicFieldsFilter);
+    public List<Work> findAuthorWorkProfilesIn(WorkQueryInRangeCommand command) {
+        Conditions conditions = Conditions.newWithEqual("authorId", toMongoId(command.authorId()))
+                .andLte("contentTypes", ContentTypes.transformToInt(command.supportedContentTypes));
+        return find(Optional.of(conditions), command.range, workBasicFieldsFilter);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
                 .field("id").equal(new ObjectId(workId)).get();
 
         // TODO 这里的逻辑跟getFullWork重复
-        List<Shot> shots = work.pictureStory().controls();
+        List<Shot> shots = work.story().controls();
         List<ObjectId> sectionIds = new ArrayList<>(shots.size());
         for (Shot shot : shots) {
             sectionIds.add(shot.sectionId());
@@ -109,7 +112,7 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
             sectionsMap.put(section.id(), section);
         }
 
-        for (Shot shot : work.pictureStory().controls()) {
+        for (Shot shot : work.story().controls()) {
             shot.setContentSection(sectionsMap.get(shot.sectionId()));
         }
 
@@ -154,9 +157,11 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
         return Work.class;
     }
 
-    private List<Work> findUgcWorkProfilesInRange(Range range) {
-        Conditions afterConditions = Conditions.newWithEqual("source", Work.Source.ugc);
-        Conditions beforeConditions = Conditions.newWithEqual("source", Work.Source.ugc);
+    private List<Work> findUgcWorkProfilesInRange(Range range, List<ContentSection.Type> supportedContentTypes) {
+        Conditions afterConditions = Conditions.newWithEqual("source", Work.Source.ugc)
+                .andLte("contentTypes", ContentTypes.transformToInt(supportedContentTypes));
+        Conditions beforeConditions = Conditions.newWithEqual("source", Work.Source.ugc)
+                .andLte("contentTypes", ContentTypes.transformToInt(supportedContentTypes));
         if (range.referencePoint().isPresent()) {
             Work work = getBasicWork(range.referencePoint().get());
             afterConditions.andGte("presentPriority", work.presentPriority());
@@ -166,8 +171,9 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
         return find(Optional.of(afterConditions), Optional.of(beforeConditions), range, descByFields, workBasicFieldsFilter);
     }
 
-    private List<Work> findPgcWorkProfilesInRange(Range range) {
-        Conditions conditions = Conditions.newWithEqual("source", Work.Source.pgc);
+    private List<Work> findPgcWorkProfilesInRange(Range range, List<ContentSection.Type> supportedContentTypes) {
+        Conditions conditions = Conditions.newWithEqual("source", Work.Source.pgc)
+                .andLte("contentTypes", ContentTypes.transformToInt(supportedContentTypes));
         return find(Optional.of(conditions), range, workBasicFieldsFilter);
     }
 

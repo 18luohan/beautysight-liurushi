@@ -7,14 +7,13 @@ package com.beautysight.liurushi.rest.community;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.WorkApp;
-import com.beautysight.liurushi.community.app.WorkProfileVM;
-import com.beautysight.liurushi.community.app.command.AuthorWorksRange;
+import com.beautysight.liurushi.community.app.WorkProfileVMV10;
 import com.beautysight.liurushi.community.app.command.PublishWorkCommand;
 import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
 import com.beautysight.liurushi.community.app.presentation.PublishWorkPresentation;
 import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
-import com.beautysight.liurushi.community.app.presentation.WorkVM;
-import com.beautysight.liurushi.fundamental.app.NotifyPicUploadedCommand;
+import com.beautysight.liurushi.community.app.presentation.WorkVMV10;
+import com.beautysight.liurushi.fundamental.app.NotifyRichContentUploadedCommand;
 import com.beautysight.liurushi.rest.common.APIs;
 import com.beautysight.liurushi.rest.common.RequestContext;
 import com.beautysight.liurushi.rest.permission.VisitorApiPermission;
@@ -31,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class WorkRestV10 {
 
     @Autowired
-    private WorkApp workApp;
+    protected WorkApp workApp;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public PublishWorkPresentation publishWork(@RequestBody PublishWorkCommand command) {
@@ -41,26 +40,27 @@ public class WorkRestV10 {
     }
 
     @RequestMapping(value = "/{workId}/files/{fileId}", method = RequestMethod.PUT)
-    public void notifyThatPicUploaded(@PathVariable("workId") String workId,
-                                      @PathVariable("fileId") String fileId,
-                                      @RequestBody NotifyPicUploadedCommand command) {
+    public void notifyRichContentUploaded(@PathVariable("workId") String workId,
+                                          @PathVariable("fileId") String fileId,
+                                          @RequestBody NotifyRichContentUploadedCommand command) {
         command.validate();
-        workApp.onPicSectionUploaded(workId, fileId, command);
+        workApp.notifyRichContentUploaded(workId, fileId, command);
     }
 
     @RequestMapping(value = "/{workId}", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkVM getFullWorkBy(@PathVariable("workId") String workId) {
+    public WorkVMV10 getFullWorkBy(@PathVariable("workId") String workId) {
         PreconditionUtils.checkRequired("url path variable workId", workId);
-        return workApp.getFullWorkBy(workId, RequestContext.optionalCurrentUserId());
+        return new WorkVMV10(workApp.getFullWorkBy(workId, RequestContext.optionalCurrentUserId()));
     }
 
     @RequestMapping(value = "/{workId}/profile", method = RequestMethod.GET)
     @VisitorApiPermission
-    public WorkProfileVM getWorkProfileBy(@PathVariable("workId") String workId,
-                                          @RequestParam(required = false) Integer thumbnailSpec) {
+    public WorkProfileVMV10 getWorkProfileBy(@PathVariable("workId") String workId,
+                                             @RequestParam(required = false) Integer thumbnailSpec) {
         PreconditionUtils.checkRequired("url path variable workId", workId);
-        return workApp.getWorkProfileBy(workId, RequestContext.optionalCurrentUserId(), Optional.fromNullable(thumbnailSpec));
+        return new WorkProfileVMV10(workApp.getWorkProfileBy(
+                workId, RequestContext.optionalCurrentUserId(), Optional.fromNullable(thumbnailSpec)));
     }
 
     @RequestMapping(value = "/pgc/latest", method = RequestMethod.GET)
@@ -70,7 +70,7 @@ public class WorkRestV10 {
         WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
                 new Range(count, Range.OffsetDirection.before),
                 RequestContext.optionalCurrentUserId(), thumbnailSpec);
-        return workApp.findPgcWorkProfilesIn(command);
+        return WorkProfileList.toWorkProfileVMV10List(workApp.findPgcWorkProfilesIn(command));
     }
 
     @RequestMapping(value = "/pgc", method = RequestMethod.GET)
@@ -82,7 +82,7 @@ public class WorkRestV10 {
         WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
                 new Range(referencePoint, offset, direction),
                 RequestContext.optionalCurrentUserId(), thumbnailSpec);
-        return workApp.findPgcWorkProfilesIn(command);
+        return WorkProfileList.toWorkProfileVMV10List(workApp.findPgcWorkProfilesIn(command));
     }
 
     @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
@@ -92,7 +92,7 @@ public class WorkRestV10 {
         WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
                 new Range(count, Range.OffsetDirection.before),
                 RequestContext.optionalCurrentUserId(), thumbnailSpec);
-        return workApp.findUgcWorkProfilesIn(command);
+        return WorkProfileList.toWorkProfileVMV10List(workApp.findUgcWorkProfilesIn(command));
     }
 
     @RequestMapping(value = "/ugc", method = RequestMethod.GET)
@@ -104,7 +104,7 @@ public class WorkRestV10 {
         WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
                 new Range(referencePoint, offset, direction),
                 RequestContext.optionalCurrentUserId(), thumbnailSpec);
-        return workApp.findUgcWorkProfilesIn(command);
+        return WorkProfileList.toWorkProfileVMV10List(workApp.findUgcWorkProfilesIn(command));
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -114,8 +114,15 @@ public class WorkRestV10 {
                                           @RequestParam Integer offset,
                                           @RequestParam(required = false) Range.OffsetDirection direction) {
         PreconditionUtils.checkRequired("authorId", authorId);
-        AuthorWorksRange range = new AuthorWorksRange(authorId, referencePoint, offset, direction);
-        return workApp.findAuthorWorksIn(range);
+        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
+                new Range(referencePoint, offset, direction), authorId);
+        return WorkProfileList.toWorkProfileVMV10List(workApp.findAuthorWorksIn(command));
+    }
+
+    @RequestMapping(value = "/{workId}", method = RequestMethod.DELETE)
+    public void deleteWork(@PathVariable String workId) {
+        PreconditionUtils.checkRequired("workId", workId);
+        workApp.discardWork(workId, Optional.of(RequestContext.currentUserId()));
     }
 
 }

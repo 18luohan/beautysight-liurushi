@@ -296,6 +296,8 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
                 query.field(condition.field).lessThanOrEq(condition.val);
             } else if (condition.op == Conditions.Operator.gt) {
                 query.field(condition.field).greaterThan(condition.val);
+            } else if (condition.op == Conditions.Operator.containAll) {
+                query.field(condition.field).hasAllOf((Iterable) condition.val);
             } else {
                 throw new IllegalStateException("Illegal query operator:" + condition.op);
             }
@@ -398,6 +400,11 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
             return this;
         }
 
+        public Conditions andContainAllOf(String field, Iterable<?> values) {
+            conditions.add(new Condition(field, Operator.containAll, values));
+            return this;
+        }
+
         public Iterator<Condition> iterator() {
             return conditions.iterator();
         }
@@ -436,7 +443,7 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         }
 
         private enum Operator {
-            eq, gte, lt, lte, gt
+            eq, gte, lt, lte, gt, containAll
         }
     }
 

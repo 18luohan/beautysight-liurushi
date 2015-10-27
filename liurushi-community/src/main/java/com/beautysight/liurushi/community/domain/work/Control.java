@@ -6,13 +6,13 @@ package com.beautysight.liurushi.community.domain.work;
 
 import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
-import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.work.picstory.Story;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Transient;
 
 /**
- * A key abstraction that is a control of a {@link PictureStory} or {@link Presentation}
+ * A key abstraction that is a control of a {@link Story} or {@link Presentation}
  *
  * @author chenlong
  * @since 1.0

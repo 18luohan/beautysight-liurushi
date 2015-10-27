@@ -24,8 +24,8 @@ public class WorkRepoImplTest extends SpringBasedAppTest {
     @Test
     public void getPictureStoryOf() {
         Work work = workRepo.getWorkOnlyWithPictureStory("55e431175e76a9cdbb532ed1");
-        Assert.assertNotNull(work.pictureStory().layout());
-        Assert.assertNotNull(work.pictureStory().layout().generateBlockLocator());
+        Assert.assertNotNull(work.story().layout());
+        Assert.assertNotNull(work.story().layout().generateBlockLocator());
     }
 
     @Test

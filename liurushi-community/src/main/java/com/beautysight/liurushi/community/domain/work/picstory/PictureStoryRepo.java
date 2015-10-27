@@ -15,11 +15,11 @@ import java.util.List;
  * @author chenlong
  * @since 1.0
  */
-public interface PictureStoryRepo extends MongoRepository<PictureStory> {
+public interface PictureStoryRepo extends MongoRepository<Story> {
 
-    List<PictureStory> getLatestPictureStories(Work.Source source, int count);
+    List<Story> getLatestPictureStories(Work.Source source, int count);
 
-    List<PictureStory> findPictureStoriesInRange(
+    List<Story> findPictureStoriesInRange(
             Work.Source source, Optional<String> referenceWorkId, int offset, Range.OffsetDirection direction);
 
 }

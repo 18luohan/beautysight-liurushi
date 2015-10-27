@@ -7,7 +7,7 @@ package com.beautysight.liurushi.community.app.command;
 import com.beautysight.liurushi.common.app.Command;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
-import com.beautysight.liurushi.community.app.dpo.PictureStoryPayload;
+import com.beautysight.liurushi.community.app.dpo.StoryPayload;
 import com.beautysight.liurushi.community.app.dpo.PresentationPayload;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 
@@ -24,7 +24,7 @@ public class PublishWorkCommand implements Command {
 
     public String title;
     public String subtitle;
-    public PictureStoryPayload pictureStory;
+    public StoryPayload story;
     public PresentationPayload presentation;
     public List<ContentSectionPayload> contentSections;
     public String authorId;
@@ -33,12 +33,22 @@ public class PublishWorkCommand implements Command {
         this.authorId = authorId;
     }
 
+    /**
+     * Only for publish 1.0 api.
+     * Jackson Json will invoke this method.
+     *
+     * @param story
+     */
+    public void setPictureStory(StoryPayload story) {
+        this.story = story;
+    }
+
     public void validate() {
         PreconditionUtils.checkRequired("title", title);
         PreconditionUtils.checkRequired("presentation", presentation);
-        PreconditionUtils.checkRequired("pictureStory", pictureStory);
+        PreconditionUtils.checkRequired("story", story);
         presentation.validate();
-        pictureStory.validate();
+        story.validate();
 
         PreconditionUtils.checkRequired("contentSections", contentSections);
         HashSet<String> sectionIds = new HashSet<>();

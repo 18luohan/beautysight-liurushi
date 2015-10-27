@@ -6,7 +6,7 @@ package com.beautysight.liurushi.community.domain.work;
 
 import com.beautysight.liurushi.common.domain.ValueObject;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
-import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.work.picstory.Story;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
@@ -29,12 +29,12 @@ public class Work extends AbstractWork {
     public Work() {
     }
 
-    public Work(ObjectId id, String title, String subtitle, PictureStory pictureStory, Presentation presentation,
+    public Work(ObjectId id, String title, String subtitle, Story Story, Presentation presentation,
                 ObjectId authorId, Source source) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
-        this.pictureStory = pictureStory;
+        this.story = Story;
         this.presentation = presentation;
         this.authorId = authorId;
         this.source = source;

@@ -6,10 +6,13 @@ package com.beautysight.liurushi.community.domain.work;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
+import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.picstory.Cover;
-import com.beautysight.liurushi.community.domain.work.picstory.PictureStory;
+import com.beautysight.liurushi.community.domain.work.picstory.Story;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
 import org.bson.types.ObjectId;
+
+import java.util.List;
 
 /**
  * Represents a work that produced by typical users, professional and occupational staff,
@@ -22,18 +25,20 @@ public abstract class AbstractWork extends AbstractEntity {
 
     protected String title;
     protected String subtitle;
-    protected PictureStory pictureStory;
+    protected Story story;
     protected Presentation presentation;
     protected ObjectId authorId;
     protected Source source;
 
+    protected Integer contentTypes;
+
     public AbstractWork() {
     }
 
-    public AbstractWork(String title, String subtitle, PictureStory pictureStory, Presentation presentation, Author author) {
+    public AbstractWork(String title, String subtitle, Story Story, Presentation presentation, Author author) {
         this.title = title;
         this.subtitle = subtitle;
-        this.pictureStory = pictureStory;
+        this.story = Story;
         this.presentation = presentation;
         if (author != null) {
             this.authorId = new ObjectId(author.id);
@@ -50,14 +55,14 @@ public abstract class AbstractWork extends AbstractEntity {
     }
 
     public Cover cover() {
-        if (pictureStory == null) {
+        if (story == null) {
             return null;
         }
-        return pictureStory.cover();
+        return story.cover();
     }
 
-    public PictureStory pictureStory() {
-        return this.pictureStory;
+    public Story story() {
+        return this.story;
     }
 
     public Presentation presentation() {
@@ -78,6 +83,14 @@ public abstract class AbstractWork extends AbstractEntity {
             throw new IllegalDomainStateException("Author.group:" + author.group);
         }
         this.source = source;
+    }
+
+    public void setContentTypes(List<ContentSection.Type> contentTypes) {
+        this.contentTypes = ContentTypes.transformToInt(contentTypes);
+    }
+
+    public void setContentTypes(int contentTypes) {
+        this.contentTypes = contentTypes;
     }
 
     /**
