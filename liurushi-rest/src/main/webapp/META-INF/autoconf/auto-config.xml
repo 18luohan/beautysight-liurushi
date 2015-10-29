@@ -2,9 +2,13 @@
 <config>
 
     <group name="mongo.config" description="mongo db config">
+        <!--
         <property name="mongo.host" defaultValue="localhost" />
         <property name="mongo.port" defaultValue="27017" />
         <property name="mongo.db.name" defaultValue="shaimei" />
+        -->
+        <property name="mongo.replset" defaultValue="localhost" />
+        <property name="mongo.credentials" defaultValue="localhost:27017" />
     </group>
 
     <group name="qiniu.config" description="qiniu storage config">
