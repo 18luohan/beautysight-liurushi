@@ -19,12 +19,12 @@
     -->
 
     <bean id="mongoClient" class="org.springframework.data.mongodb.core.MongoClientFactoryBean">
+        <!--
         <property name="host" value="${mongo.host}" />
         <property name="port" value="${mongo.port}" />
-        <!--
+        -->
         <property name="replicaSetSeeds" value="${mongo.replset}" />
         <property name="credentials" value="${mongo.credentials}" />
-        -->
     </bean>
 
     <bean id="objectFactory" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.CustomObjectFactory">
