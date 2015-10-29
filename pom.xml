@@ -29,12 +29,9 @@
         <servlet-api.version>3.1.0</servlet-api.version>
         <spring-framework.version>4.1.6.RELEASE</spring-framework.version>
         <spring-data-mongodb.version>1.7.0.RELEASE</spring-data-mongodb.version>
-        <!--
-        <mongodb-driver.version>2.13.0</mongodb-driver.version>
-        <morphia.version>0.111</morphia.version>
-        -->
+
         <mongodb-driver.version>3.0.2</mongodb-driver.version>
-        <morphia.version>1.0.0</morphia.version>
+        <morphia.version>1.0.1</morphia.version>
         <jackson.version>2.5.3</jackson.version>
 
         <slf4j.version>1.7.12</slf4j.version>

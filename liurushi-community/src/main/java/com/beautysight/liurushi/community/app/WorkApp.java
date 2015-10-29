@@ -20,6 +20,7 @@ import com.beautysight.liurushi.community.domain.service.LikeService;
 import com.beautysight.liurushi.community.domain.work.*;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
+import com.beautysight.liurushi.community.domain.work.ContentType;
 import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWork;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
@@ -301,7 +302,7 @@ public class WorkApp {
         setContentSections(presentation, contentSections, command.presentation.slides);
 
         List<FileMetadata> files = new ArrayList<>(contentSections.size());
-        List<ContentSection.Type> contentTypes = new ArrayList<>(5);
+        List<ContentType> contentTypes = new ArrayList<>(5);
         for (ContentSection section : contentSections.values()) {
             if (!contentTypes.contains(section.type())) {
                 contentTypes.add(section.type());

@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.community.domain.work.cs;
 
+import com.beautysight.liurushi.community.domain.work.ContentType;
+
 /**
  * 图片
  *
@@ -13,7 +15,7 @@ package com.beautysight.liurushi.community.domain.work.cs;
 public class Picture extends Rich {
 
     public Picture() {
-        this.type = Type.image;
+        this.type = ContentType.image;
     }
 
     public enum Format {

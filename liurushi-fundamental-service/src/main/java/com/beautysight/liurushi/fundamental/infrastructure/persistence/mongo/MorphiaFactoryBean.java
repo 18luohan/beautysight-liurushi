@@ -8,15 +8,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.ObjectFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
 /**
- * Here is Javadoc.
- * <p/>
- * Created by chenlong on 2015-05-12.
+ * A factory that creates a Morphia instance.
  *
  * @author chenlong
  * @since 1.0
@@ -27,6 +26,7 @@ public class MorphiaFactoryBean extends AbstractFactoryBean<Morphia> {
     private List<String> mapPackages;
     private boolean ignoreInvalidClasses;
     private boolean useBulkWriteOperations = false;
+    private ObjectFactory objectFactory;
 
     @Override
     public Class<?> getObjectType() {
@@ -47,6 +47,12 @@ public class MorphiaFactoryBean extends AbstractFactoryBean<Morphia> {
                 morphia.mapPackage(packageName, ignoreInvalidClasses);
             }
         }
+
+        // Set custom object factory
+        if (this.objectFactory != null) {
+            morphia.getMapper().getOptions().setObjectFactory(objectFactory);
+        }
+
         return morphia;
     }
 
@@ -70,6 +76,10 @@ public class MorphiaFactoryBean extends AbstractFactoryBean<Morphia> {
 
     public void setUseBulkWriteOperations(boolean useBulkWriteOperations) {
         this.useBulkWriteOperations = useBulkWriteOperations;
+    }
+
+    public void setObjectFactory(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
     }
 
 }

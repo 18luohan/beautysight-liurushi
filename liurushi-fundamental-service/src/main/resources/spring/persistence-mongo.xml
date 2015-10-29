@@ -18,11 +18,21 @@
     <bean id="mongoClientOptions" class="org.springframework.data.mongodb.core.MongoClientOptionsFactoryBean"/>
     -->
 
-
-
     <bean id="mongoClient" class="org.springframework.data.mongodb.core.MongoClientFactoryBean">
         <property name="host" value="${mongo.host}" />
         <property name="port" value="${mongo.port}" />
+        <!--
+        <property name="replicaSetSeeds" value="${mongo.replset}" />
+        <property name="credentials" value="${mongo.credentials}" />
+        -->
+    </bean>
+
+    <bean id="objectFactory" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.CustomObjectFactory">
+        <property name="staticFactoryMethodsForPOJO">
+            <list>
+                <value>com.beautysight.liurushi.community.domain.work.cs.ContentSection.newInstanceByType</value>
+            </list>
+        </property>
     </bean>
 
     <bean id="morphia" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.MorphiaFactoryBean">
@@ -35,6 +45,7 @@
                 <value>com.beautysight.liurushi.fundamental.domain</value>
             </list>
         </property>
+        <property name="objectFactory" ref="objectFactory"/>
     </bean>
 
     <bean id="datastore" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.DataStoreFactoryBean">

@@ -12,7 +12,6 @@ import com.beautysight.liurushi.community.app.presentation.WorkProfileList;
 import com.beautysight.liurushi.community.domain.model.like.Like;
 import com.beautysight.liurushi.community.domain.service.AuthorService;
 import com.beautysight.liurushi.community.domain.service.LikeService;
-import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
 import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
@@ -62,7 +61,7 @@ public class WorkService {
     private LikeService likeService;
 
     public WorkProfileList findWorkProfilesInRange(Work.Source source, Range range, Optional<String> loginUserId,
-                                                   Optional<Integer> intThumbnailSpec, List<ContentSection.Type> supportedContentTypes) {
+                                                   Optional<Integer> intThumbnailSpec, List<ContentType> supportedContentTypes) {
         List<WorkProfileVM> workProfiles = new ArrayList<>();
 
         List<Work> works = workRepo.findWorkProfilesInRange(source, range, supportedContentTypes);

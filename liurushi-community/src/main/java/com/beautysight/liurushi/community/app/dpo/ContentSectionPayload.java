@@ -8,6 +8,7 @@ import com.beautysight.liurushi.common.app.Payload;
 import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
+import com.beautysight.liurushi.community.domain.work.ContentType;
 import com.beautysight.liurushi.community.domain.work.cs.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,19 +20,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public abstract class ContentSectionPayload extends Payload {
 
     public String id;
-    public ContentSection.Type type;
+    public ContentType type;
 
     @JsonCreator
-    public static ContentSectionPayload newInstance(@JsonProperty("type") ContentSection.Type type) {
-        if (type == ContentSection.Type.text) {
+    public static ContentSectionPayload newInstance(@JsonProperty("type") ContentType type) {
+        if (type == ContentType.text) {
             return new TextBlockPayload();
-        } else if (type == ContentSection.Type.image) {
+        } else if (type == ContentType.image) {
             return new PicturePayload();
-        } else if (type == ContentSection.Type.video) {
+        } else if (type == ContentType.video) {
             return new VideoPayload();
         }
         throw new IllegalParamException("Invalid content section type, expected %s, but actual %s",
-                ContentSection.Type.values(), type);
+                ContentType.values(), type);
     }
 
     public void validate() {
@@ -47,7 +48,7 @@ public abstract class ContentSectionPayload extends Payload {
         public TextBlock.Alignment alignment;
 
         public TextBlockPayload() {
-            this.type = ContentSection.Type.text;
+            this.type = ContentType.text;
         }
 
         public void validate() {
@@ -80,7 +81,7 @@ public abstract class ContentSectionPayload extends Payload {
          * @return
          */
         public String getPictureUrl() {
-            if (this.type == ContentSection.Type.image) {
+            if (this.type == ContentType.image) {
                 return this.fileUrl;
             }
             return null;
@@ -96,7 +97,7 @@ public abstract class ContentSectionPayload extends Payload {
     public static class PicturePayload extends RichPayload {
 
         public PicturePayload() {
-            this.type = ContentSection.Type.image;
+            this.type = ContentType.image;
         }
 
         @Override
@@ -110,7 +111,7 @@ public abstract class ContentSectionPayload extends Payload {
     public static class VideoPayload extends RichPayload {
 
         public VideoPayload() {
-            this.type = ContentSection.Type.video;
+            this.type = ContentType.video;
         }
 
         @Override

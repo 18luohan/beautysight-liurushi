@@ -4,7 +4,7 @@
 
 package com.beautysight.liurushi.community.app;
 
-import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.ContentType;
 
 /**
  * @author chenlong
@@ -24,7 +24,7 @@ public class WorkProfileVMV10 extends WorkProfileVM {
         this.isLiked = workProfileVM.isLiked;
         this.isFavored = workProfileVM.isFavored;
 
-        if (workProfileVM.cover.type == ContentSection.Type.image) {
+        if (workProfileVM.cover.type == ContentType.image) {
             this.coverPictureUrl = workProfileVM.cover.fileUrl;
         }
     }

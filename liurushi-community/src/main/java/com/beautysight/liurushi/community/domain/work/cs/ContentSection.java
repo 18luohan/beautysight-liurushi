@@ -5,22 +5,24 @@
 package com.beautysight.liurushi.community.domain.work.cs;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
+import com.beautysight.liurushi.community.domain.work.ContentType;
 import com.mongodb.DBObject;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.StaticFactoryMethod;
 import org.mongodb.morphia.mapping.MappingException;
+
+//import org.mongodb.morphia.annotations.StaticFactoryMethod;
 
 /**
  * @author chenlong
  * @since 1.0
  */
-@StaticFactoryMethod("newInstanceByType")
+//@StaticFactoryMethod("newInstanceByType")
 @Entity(value = "content_sections", noClassnameStored = true)
 public abstract class ContentSection extends AbstractEntity {
 
-    protected Type type;
+    protected ContentType type;
 
-    public Type type() {
+    public ContentType type() {
         return this.type;
     }
 
@@ -28,12 +30,12 @@ public abstract class ContentSection extends AbstractEntity {
         String typeValue = (String) dbObject.get("type");
 
         try {
-            Type actualType = Type.valueOf(typeValue);
-            if (actualType == Type.text) {
+            ContentType actualType = ContentType.valueOf(typeValue);
+            if (actualType == ContentType.text) {
                 return new TextBlock();
-            } else if (actualType == Type.image) {
+            } else if (actualType == ContentType.image) {
                 return new Picture();
-            } else if (actualType == Type.video) {
+            } else if (actualType == ContentType.video) {
                 return new Video();
             } else {
                 throw new MappingException("Can't mapping dbObject to specific entity by type filed:" + typeValue);
@@ -45,8 +47,13 @@ public abstract class ContentSection extends AbstractEntity {
         }
     }
 
-    public enum Type {
-        text, image, gif, video
+    public static Class[] subclasses() {
+        return new Class[]{
+                Rich.class,
+                Picture.class,
+                Video.class,
+                TextBlock.class
+        };
     }
 
 }

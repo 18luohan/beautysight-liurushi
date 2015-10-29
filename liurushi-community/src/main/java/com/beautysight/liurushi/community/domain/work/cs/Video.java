@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.community.domain.work.cs;
 
+import com.beautysight.liurushi.community.domain.work.ContentType;
+
 /**
  * @author chenlong
  * @since 1.0
@@ -11,7 +13,7 @@ package com.beautysight.liurushi.community.domain.work.cs;
 public class Video extends Rich {
 
     public Video() {
-        this.type = Type.video;
+        this.type = ContentType.video;
     }
 
     public enum Format {

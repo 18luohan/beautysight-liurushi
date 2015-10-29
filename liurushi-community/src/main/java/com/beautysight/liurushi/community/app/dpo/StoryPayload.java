@@ -8,6 +8,7 @@ import com.beautysight.liurushi.common.app.Payload;
 import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
+import com.beautysight.liurushi.community.domain.work.ContentType;
 import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.cs.TextBlock;
 import com.beautysight.liurushi.community.domain.work.layout.Block;
@@ -110,7 +111,7 @@ public class StoryPayload extends Payload {
          * @return
          */
         public String getPictureUrl() {
-            if (content.type == ContentSection.Type.image) {
+            if (content.type == ContentType.image) {
                 return this.content.fileUrl;
             }
             return null;

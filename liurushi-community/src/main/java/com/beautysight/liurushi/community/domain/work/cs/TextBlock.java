@@ -4,6 +4,8 @@
 
 package com.beautysight.liurushi.community.domain.work.cs;
 
+import com.beautysight.liurushi.community.domain.work.ContentType;
+
 /**
  * 文本块
  *
@@ -21,7 +23,7 @@ public class TextBlock extends ContentSection {
     }
 
     private void initialize() {
-        this.type = Type.text;
+        this.type = ContentType.text;
     }
 
     /**

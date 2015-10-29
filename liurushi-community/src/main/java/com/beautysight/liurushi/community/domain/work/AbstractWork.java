@@ -6,7 +6,6 @@ package com.beautysight.liurushi.community.domain.work;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
 import com.beautysight.liurushi.common.ex.IllegalDomainStateException;
-import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.picstory.Cover;
 import com.beautysight.liurushi.community.domain.work.picstory.Story;
 import com.beautysight.liurushi.community.domain.work.present.Presentation;
@@ -85,8 +84,8 @@ public abstract class AbstractWork extends AbstractEntity {
         this.source = source;
     }
 
-    public void setContentTypes(List<ContentSection.Type> contentTypes) {
-        this.contentTypes = ContentTypes.transformToInt(contentTypes);
+    public void setContentTypes(List<ContentType> contentTypes) {
+        this.contentTypes = ContentType.transformToInt(contentTypes);
     }
 
     public void setContentTypes(int contentTypes) {
