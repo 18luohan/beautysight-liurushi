@@ -5,7 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-
     <!--
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <property name="customEditors">
@@ -20,15 +19,23 @@
         </property>
     </bean>
 
-    <bean id="mongoClientOptions" class="org.springframework.data.mongodb.core.MongoClientOptionsFactoryBean"/>
+    <mongo:mongo>
+        <mongo:options auto-connect-retry="true" />
+    </mongo:mongo>
     -->
 
-    <!--
-        <property name="host" value="${mongo.host}" />
-        <property name="port" value="${mongo.port}" />
-        -->
+    <bean id="mongoClientOptions" class="org.springframework.data.mongodb.core.MongoClientOptionsFactoryBean"/>
 
-    <mongo:mongo-client id="mongoClient" credentials="${mongo.credentials}" replica-set="${mongo.replset}" />
+    <mongo:mongo-client id="mongoClient" credentials="${mongo.credentials}" replica-set="${mongo.replset}">
+        <mongo:client-options description="playplus_mongo_client" connections-per-host="100"
+                              min-connections-per-host="0"
+                              threads-allowed-to-block-for-connection-multiplier="5"
+                              max-wait-time="30000"
+                              connect-timeout="10000"
+                              read-preference="PRIMARY_PREFERRED"
+                              write-concern="JOURNAL_SAFE"
+                />
+    </mongo:mongo-client>
 
     <bean id="objectFactory" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.CustomObjectFactory">
         <property name="staticFactoryMethodsForPOJO">
