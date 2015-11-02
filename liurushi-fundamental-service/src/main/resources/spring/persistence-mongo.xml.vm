@@ -24,20 +24,23 @@
     </mongo:mongo>
     -->
 
-    <bean id="mongoClientOptions" class="org.springframework.data.mongodb.core.MongoClientOptionsFactoryBean"/>
+    #if(${deployment_env} == "dev" || ${deployment_env} == "test")
+        <mongo:mongo-client id="mongoClient" host="${mongo_host}" port="${mongo_port}"/>
+    #else
+        <mongo:mongo-client id="mongoClient" credentials="${mongo_credentials}" replica-set="${mongo_replset}">
+            <mongo:client-options description="playplus_mongo_client" connections-per-host="100"
+                                  min-connections-per-host="0"
+                                  threads-allowed-to-block-for-connection-multiplier="5"
+                                  max-wait-time="30000"
+                                  connect-timeout="10000"
+                                  read-preference="PRIMARY_PREFERRED"
+                                  write-concern="JOURNAL_SAFE"
+                    />
+        </mongo:mongo-client>
+    #end
 
-    <mongo:mongo-client id="mongoClient" credentials="${mongo.credentials}" replica-set="${mongo.replset}">
-        <mongo:client-options description="playplus_mongo_client" connections-per-host="100"
-                              min-connections-per-host="0"
-                              threads-allowed-to-block-for-connection-multiplier="5"
-                              max-wait-time="30000"
-                              connect-timeout="10000"
-                              read-preference="PRIMARY_PREFERRED"
-                              write-concern="JOURNAL_SAFE"
-                />
-    </mongo:mongo-client>
-
-    <bean id="objectFactory" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.CustomObjectFactory">
+    <bean id="objectFactory"
+          class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.CustomObjectFactory">
         <property name="staticFactoryMethodsForPOJO">
             <list>
                 <value>com.beautysight.liurushi.community.domain.work.cs.ContentSection.newInstanceByType</value>
@@ -58,11 +61,12 @@
         <property name="objectFactory" ref="objectFactory"/>
     </bean>
 
-    <bean id="datastore" class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.DataStoreFactoryBean">
+    <bean id="datastore"
+          class="com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.DataStoreFactoryBean">
         <property name="singleton" value="true"/>
         <property name="morphia" ref="morphia"/>
         <property name="mongo" ref="mongoClient"/>
-        <property name="dbName" value="${mongo.db.name}"/>
+        <property name="dbName" value="${mongo_db_name}"/>
     </bean>
 
 </beans>

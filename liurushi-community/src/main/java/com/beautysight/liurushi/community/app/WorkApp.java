@@ -20,7 +20,6 @@ import com.beautysight.liurushi.community.domain.service.LikeService;
 import com.beautysight.liurushi.community.domain.work.*;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
-import com.beautysight.liurushi.community.domain.work.ContentType;
 import com.beautysight.liurushi.community.domain.work.cs.Rich;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWork;
 import com.beautysight.liurushi.community.domain.work.draft.PublishingWorkRepo;
@@ -40,7 +39,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 与内容相关的应用逻辑
@@ -232,6 +234,14 @@ public class WorkApp {
 
     public void cancelOrdinaryWork(String workId) {
         workService.cancelOrdinary(workId);
+    }
+
+    public void badWork(String workId) {
+        workService.bad(workId);
+    }
+
+    public void cancelBadWork(String workId) {
+        workService.cancelBad(workId);
     }
 
     public void discardWork(String workId) {

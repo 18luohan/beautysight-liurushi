@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+
+    <property name="deployment.env" defaultValue="dev" />
+
+    <script>
+        <generate template="spring/persistence-mongo.xml.vm" destfile="spring/persistence-mongo.xml" charset="UTF-8" />
+    </script>
+
+</config>

@@ -2,13 +2,11 @@
 <config>
 
     <group name="mongo.config" description="mongo db config">
-        <!--
-        <property name="mongo.host" defaultValue="localhost" />
-        <property name="mongo.port" defaultValue="27017" />
-        -->
-        <property name="mongo.db.name" defaultValue="play-plus" />
-        <property name="mongo.replset" defaultValue="localhost" />
-        <property name="mongo.credentials" defaultValue="localhost:27017" />
+        <property name="mongo.host" defaultValue="localhost" required="false" />
+        <property name="mongo.port" defaultValue="27017" required="false" />
+        <property name="mongo.db.name" defaultValue="play-plus" required="false"  />
+        <property name="mongo.replset" defaultValue="localhost" required="false"  />
+        <property name="mongo.credentials" defaultValue="localhost:27017" required="false" />
     </group>
 
     <group name="qiniu.config" description="qiniu storage config">
@@ -34,7 +32,7 @@
             此处的目标是对src/main/resources目录下的资源文件进行过滤处理，由于src/main/resources目录下资源文件
             构建后会输出到WEB-INF/classes/目录下，所以template属性值以WEB-INF/classes/为前缀
         -->
-        <generate template="WEB-INF/classes/liurushi.properties" destfile="WEB-INF/classes/liurushi.properties"
+        <generate template="WEB-INF/classes/liurushi.properties.vm" destfile="WEB-INF/classes/liurushi.properties"
                   charset="UTF-8"/>
         <generate template="WEB-INF/classes/logback.xml" destfile="WEB-INF/classes/logback.xml" charset="UTF-8"/>
     </script>

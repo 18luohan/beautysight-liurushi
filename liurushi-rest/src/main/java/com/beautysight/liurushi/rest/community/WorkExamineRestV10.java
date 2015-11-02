@@ -69,6 +69,16 @@ public class WorkExamineRestV10 {
         workApp.cancelOrdinaryWork(workId);
     }
 
+    @RequestMapping(value = "/{workId}/actions/bad", method = RequestMethod.PUT)
+    public void bad(@PathVariable("workId") String workId) {
+        workApp.badWork(workId);
+    }
+
+    @RequestMapping(value = "/{workId}/actions/cancel_bad", method = RequestMethod.PUT)
+    public void cancelBadWork(@PathVariable("workId") String workId) {
+        workApp.cancelBadWork(workId);
+    }
+
     @RequestMapping(value = "/{workId}/actions/discard", method = RequestMethod.PUT)
     public void discard(@PathVariable("workId") String workId) {
         workApp.discardWork(workId);

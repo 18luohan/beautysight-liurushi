@@ -1,15 +1,21 @@
-# mongo config
-mongo.db.name=${mongo_db_name}
-# for test mongo replset
+## mongo config
+
+#if(${deployment_env} == "dev" || ${deployment_env} == "test")
+mongo.host=${mongo_host}
+mongo.port=${mongo_port}
+#else
 mongo.replset=${mongo_replset}
 mongo.credentials=${mongo_credentials}
+#end
 
-# qiniu storage config
+mongo.db.name=${mongo_db_name}
+
+## qiniu storage config
 qiniu.storage.bucket=${qiniu_storage_bucket}
 qiniu.storage.bucket.domain=${qiniu_storage_bucket_domain}
 qiniu.storage.bucket.url.scheme=${qiniu_storage_bucket_url_scheme}
 qiniu.storage.access.key=${qiniu_storage_access_key}
 qiniu.storage.secret.key=${qiniu_storage_secret_key}
 
-# mobile app id
+## mobile app id
 mobile.app.id=${mobile_app_id}

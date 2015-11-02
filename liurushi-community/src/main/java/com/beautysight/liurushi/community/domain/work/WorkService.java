@@ -139,6 +139,14 @@ public class WorkService {
         workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
     }
 
+    public void bad(String workId) {
+        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.bad);
+    }
+
+    public void cancelBad(String workId) {
+        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
+    }
+
     public ContentSectionPayload.RichPayload toCoverContentPayload(
             Rich coverContent, Optional<Integer> intThumbnailSpec) {
         ContentSectionPayload.RichPayload targetDTO = new ContentSectionPayload.RichPayload();
