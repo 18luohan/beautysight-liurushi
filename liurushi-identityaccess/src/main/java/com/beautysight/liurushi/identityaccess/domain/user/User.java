@@ -160,7 +160,7 @@ public class User extends AbstractEntity {
     }
 
     public enum Origin {
-        weixin, sina_weibo, self;
+        qq, weixin, sina_weibo, twitter, facebook, google_plus, self;
 
         public boolean isSelf() {
             return (this == self);
