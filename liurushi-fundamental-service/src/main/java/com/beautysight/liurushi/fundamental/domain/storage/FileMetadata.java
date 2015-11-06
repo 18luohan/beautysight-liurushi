@@ -9,6 +9,7 @@ import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Transient;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -26,7 +27,10 @@ public class FileMetadata extends AbstractEntity {
     private Type type;
     private Boolean isDeleted = Boolean.FALSE;
 
+    @Transient
     private String url;
+    @Transient
+    private String uploadToken;
 
     public FileMetadata() {
     }
@@ -80,6 +84,14 @@ public class FileMetadata extends AbstractEntity {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getUploadToken() {
+        return this.uploadToken;
+    }
+
+    public void setUploadToken(String uploadToken) {
+        this.uploadToken = uploadToken;
     }
 
     public void validate() {

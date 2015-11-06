@@ -12,9 +12,7 @@ import com.google.common.base.Optional;
  */
 public interface StorageService {
 
-    String issueUploadToken();
-
-    String issueUploadToken(UploadOptions options);
+    String issueUploadToken(String key);
 
     String downloadUrl(String key);
 

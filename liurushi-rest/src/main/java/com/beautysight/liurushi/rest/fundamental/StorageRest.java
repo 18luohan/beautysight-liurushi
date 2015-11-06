@@ -31,14 +31,10 @@ public class StorageRest {
         return storageApp.prepareForUpload(command);
     }
 
-    @RequestMapping(value = "/upload_token", method = RequestMethod.POST)
-    @VisitorApiPermission
-    public UploadTokenPresentation issueUploadToken(
-            @RequestBody(required = false) IssueUploadTokenCommand command) {
-        if (command == null) {
-            command = new IssueUploadTokenCommand();
-        }
-        return storageApp.issueUploadToken(command);
+    @RequestMapping(value = "/actions/refresh_upload_token", method = RequestMethod.POST)
+    public RefreshUploadTokenVM refreshUploadToken(@RequestBody RefreshUploadTokenCommand command) {
+        command.validate();
+        return storageApp.refreshUploadTokens(command);
     }
 
     @RequestMapping(value = "/download_url", method = RequestMethod.POST)

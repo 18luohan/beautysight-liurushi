@@ -10,7 +10,9 @@ import com.beautysight.liurushi.fundamental.domain.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenlong
@@ -25,13 +27,18 @@ public class StorageApp {
     private FileMetadataService fileMetadataService;
 
     public PrepareForUploadPresentation prepareForUpload(PrepareForUploadCommand command) {
-        String uploadToken = storageService.issueUploadToken();
         List<FileMetadata> files = fileMetadataService.createLogicFiles(command.filesCount, command.type, command.bizCategory);
-        return PrepareForUploadPresentation.from(uploadToken, files);
+        return new PrepareForUploadPresentation(files);
     }
 
-    public UploadTokenPresentation issueUploadToken(IssueUploadTokenCommand command) {
-        return UploadTokenPresentation.from(storageService.issueUploadToken(command.toUploadOptions()));
+    public RefreshUploadTokenVM refreshUploadTokens(RefreshUploadTokenCommand command) {
+        Map<String, String> fileIdToUploadTokenMap = new HashMap<>(command.fileIds.size());
+        for (String fileId : command.fileIds) {
+            FileMetadata file = fileMetadataService.fileWithId(fileId);
+            String uploadToken = storageService.issueUploadToken(file.key());
+            fileIdToUploadTokenMap.put(fileId, uploadToken);
+        }
+        return new RefreshUploadTokenVM(fileIdToUploadTokenMap);
     }
 
     public DownloadUrl downloadUrl(IssueDownloadUrlCommand command) {

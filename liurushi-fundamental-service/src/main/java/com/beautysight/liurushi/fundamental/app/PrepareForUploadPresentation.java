@@ -16,23 +16,14 @@ import java.util.List;
  */
 public class PrepareForUploadPresentation implements ViewModel {
 
-    private String uploadToken;
     private List<FileMetadataPayload> files;
 
-    private PrepareForUploadPresentation() {
-    }
-
-    public static PrepareForUploadPresentation from(String uploadToken, List<FileMetadata> filesMetadata) {
-        PrepareForUploadPresentation instance = new PrepareForUploadPresentation();
-        instance.uploadToken = uploadToken;
-
+    public PrepareForUploadPresentation(List<FileMetadata> filesMetadata) {
         List<FileMetadataPayload> files = new ArrayList<>();
         for (FileMetadata metadata : filesMetadata) {
-            files.add(new FileMetadataPayload(metadata.idStr(), metadata.key()));
+            files.add(new FileMetadataPayload(metadata.idStr(), metadata.key(), metadata.getUploadToken()));
         }
-
-        instance.files = files;
-        return instance;
+        this.files = files;
     }
 
 }

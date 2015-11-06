@@ -20,12 +20,10 @@ import java.util.Map;
 public class PublishWorkPresentation implements ViewModel {
 
     private String workId;
-    private String uploadToken;
     private Map<String, FileMetadataPayload> filesMap;
 
-    public PublishWorkPresentation(String workId, String uploadToken, Map<String, ContentSection> contentSections) {
+    public PublishWorkPresentation(String workId, Map<String, ContentSection> contentSections) {
         this.workId = workId;
-        this.uploadToken = uploadToken;
         this.filesMap = transformToFilesMap(contentSections);
     }
 
@@ -37,7 +35,7 @@ public class PublishWorkPresentation implements ViewModel {
             }
 
             FileMetadata file = ((Rich) entry.getValue()).file();
-            FileMetadataPayload fileDPO = new FileMetadataPayload(file.idStr(), file.key());
+            FileMetadataPayload fileDPO = new FileMetadataPayload(file.idStr(), file.key(), file.getUploadToken());
             filesMap.put(entry.getKey(), fileDPO);
         }
         return filesMap;

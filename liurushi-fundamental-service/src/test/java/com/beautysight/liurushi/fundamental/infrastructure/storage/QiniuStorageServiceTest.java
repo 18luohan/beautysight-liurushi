@@ -6,6 +6,7 @@ package com.beautysight.liurushi.fundamental.infrastructure.storage;
 
 import com.beautysight.liurushi.common.utils.Https;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
+import com.beautysight.liurushi.fundamental.domain.storage.QiniuConfig;
 import com.beautysight.liurushi.fundamental.domain.storage.UploadOptions;
 import com.beautysight.liurushi.test.SpringBasedAppTest;
 import com.beautysight.liurushi.test.utils.Files;
@@ -28,6 +29,8 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 
     @Autowired
     private QiniuStorageService storageService;
+    @Autowired
+    private QiniuConfig qiniuConfig;
 
     private static final String key = "Ftl9KyVXj1OPA_zEFa0Cz9B6KtTR";
 
@@ -64,20 +67,20 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
 
     @Test
     public void uploadAvatar() throws IOException {
-        String key = FileMetadata.generateKey(FileMetadata.BizCategory.avatar);
-        key = "av_7a5d70a297c04078bfa970117489d976";
-        UploadOptions uploadPolicy = uploadPolicyForTest();
-        uploadPolicy.key(key);
-        uploadPolicy.insertOnly(UploadOptions.Switch.disabled);
-        String uploadToken = storageService.issueUploadToken(uploadPolicy);
+        String key = "hp_bee56d462d6e4c52ae75f60ad71caecb";
 
-        System.out.println(uploadToken);
+//        UploadOptions uploadPolicy = uploadPolicyForTest();
+//        uploadPolicy.key(key);
+//        String uploadToken = storageService.issueUploadToken(uploadPolicy);
+//        System.out.println(">>>>>>>" + uploadToken);
+
+        String uploadToken = "9AUEFpoKA-n2AZBWOwDrBvfFLQyqoG99S7-0HzjX:E-V_aZaWQGYI4DXiEDLXM19BYok=:eyJzY29wZSI6ImJlYXV0eXNpZ2h0LXRlc3Q6aHBfYmVlNTZkNDYyZDZlNGM1MmFlNzVmNjBhZDcxY2FlY2IiLCJjYWxsYmFja0ZldGNoS2V5IjowLCJpbnNlcnRPbmx5IjoxLCJkZXRlY3RNaW1lIjowLCJkZWFkbGluZSI6MTQ0NjcxODY2MH0=";
 
         String image = "heben.png"; // fecility heben
         FileMetadata result = storageService.upload(
                 Files.readFileInClassPathAsBytes("images/" + image),
                 key, uploadToken);
-        System.out.println("images/fecility.png:" + result.key() + ", hash:" + result.hash());
+        System.out.println(image + ":" + result.key() + ", hash:" + result.hash());
     }
 
     @Test
@@ -166,7 +169,7 @@ public class QiniuStorageServiceTest extends SpringBasedAppTest {
     }
 
     private UploadOptions uploadPolicyForTest() {
-        return UploadOptions.newInstance();
+        return UploadOptions.newInstance(qiniuConfig);
     }
 
     private String sign(String url) {

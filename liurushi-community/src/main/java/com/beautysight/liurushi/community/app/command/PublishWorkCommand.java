@@ -5,10 +5,11 @@
 package com.beautysight.liurushi.community.app.command;
 
 import com.beautysight.liurushi.common.app.Command;
+import com.beautysight.liurushi.common.ex.IllegalParamException;
 import com.beautysight.liurushi.common.utils.PreconditionUtils;
 import com.beautysight.liurushi.community.app.dpo.ContentSectionPayload;
-import com.beautysight.liurushi.community.app.dpo.StoryPayload;
 import com.beautysight.liurushi.community.app.dpo.PresentationPayload;
+import com.beautysight.liurushi.community.app.dpo.StoryPayload;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 
 import java.util.HashMap;
@@ -55,8 +56,17 @@ public class PublishWorkCommand implements Command {
         for (ContentSectionPayload section : contentSections) {
             section.validate();
             if (sectionIds.contains(section.id)) {
-                throw new IllegalArgumentException("Duplicate id in contentSections: " + section.id);
+                throw new IllegalParamException("Duplicate id in contentSections: " + section.id);
             }
+        }
+
+        if (contentSections.size() != (story.shots.size() + 1)) {
+            throw new IllegalParamException("Content sections size (%s) not equal to shots&cover size (%s)",
+                    contentSections.size(), (story.shots.size() + 1));
+        }
+        if (contentSections.size() != presentation.slides.size()) {
+            throw new IllegalParamException("Content sections size (%s) not equal to slides size (%s)",
+                    contentSections.size(), presentation.slides.size());
         }
 
         PreconditionUtils.checkRequired("authorId", authorId);

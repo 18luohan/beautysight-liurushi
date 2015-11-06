@@ -18,6 +18,7 @@ public class FileMetadataPayload extends Payload {
     public String key;
     public String hash;
     public String url;
+    public String uploadToken;
 
     public FileMetadataPayload() {
     }
@@ -25,6 +26,11 @@ public class FileMetadataPayload extends Payload {
     public FileMetadataPayload(String id, String key) {
         this.id = id;
         this.key = key;
+    }
+
+    public FileMetadataPayload(String id, String key, String uploadToken) {
+        this(id, key);
+        this.uploadToken = uploadToken;
     }
 
     public void validate() {

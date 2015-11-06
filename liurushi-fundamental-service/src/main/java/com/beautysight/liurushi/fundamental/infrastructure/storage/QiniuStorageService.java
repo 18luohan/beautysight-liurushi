@@ -49,16 +49,12 @@ public class QiniuStorageService implements StorageService {
     }
 
     @Override
-    public String issueUploadToken() {
-        return issueUploadToken(UploadOptions.newInstance());
-    }
-
-    @Override
-    public String issueUploadToken(final UploadOptions options) {
-        if (!options.isBucketGiven()) {
-            options.scope(qiniuConfig.bucket);
+    public String issueUploadToken(final String key) {
+        if (StringUtils.isBlank(key)) {
+            throw new IllegalArgumentException("key mustn't be blank");
         }
 
+        final UploadOptions options = UploadOptions.newInstance(qiniuConfig).key(key);
         return QiniuServiceTemplate.executeAuthService("issue upload token", new AuthServiceExecutor<String>() {
             @Override
             String execute() {
@@ -199,6 +195,25 @@ public class QiniuStorageService implements StorageService {
                         return auth.privateDownloadUrl(url);
                     }
                 });
+    }
+
+    /**
+     * 非 API 的一部分，仅仅为了方便测试七牛上传策略
+     *
+     * @param options
+     * @return
+     */
+    String issueUploadToken(final UploadOptions options) {
+        return QiniuServiceTemplate.executeAuthService("issue upload token", new AuthServiceExecutor<String>() {
+            @Override
+            String execute() {
+                return auth.uploadToken(options.scope().bucket(),
+                        options.scope().key(),
+                        options.timeOfValidity(),
+                        options.toStringMap()
+                );
+            }
+        });
     }
 
     private static class QiniuServiceTemplate {

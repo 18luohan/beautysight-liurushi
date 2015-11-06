@@ -6,6 +6,7 @@ package com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo;
 
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadata;
 import com.beautysight.liurushi.fundamental.domain.storage.FileMetadataRepo;
+import com.google.common.base.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class FileMetadataRepoImpl extends AbstractMongoRepository<FileMetadata> implements FileMetadataRepo {
+
+    @Override
+    public Optional<FileMetadata> get(String id) {
+        return Optional.fromNullable(findOne(toMongoId(id)));
+    }
 
     @Override
     protected Class<FileMetadata> entityClass() {

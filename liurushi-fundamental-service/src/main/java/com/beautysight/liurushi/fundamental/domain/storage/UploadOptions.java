@@ -122,8 +122,8 @@ public class UploadOptions {
     private UploadOptions() {
     }
 
-    public static UploadOptions newInstance() {
-        return new UploadOptions();
+    public static UploadOptions newInstance(QiniuConfig qiniuConfig) {
+        return new UploadOptions().scope(qiniuConfig.bucket);
     }
 
     public Scope scope() {

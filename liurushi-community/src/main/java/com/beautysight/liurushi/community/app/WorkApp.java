@@ -81,8 +81,7 @@ public class WorkApp {
         Map<String, ContentSection> savedContentSections = saveContentSections(command.contentSectionsMap());
         PublishingWork publishingWork = translateToPublishingWork(command, savedContentSections);
         publishingWorkRepo.save(publishingWork);
-        String uploadToken = storageService.issueUploadToken();
-        return new PublishWorkPresentation(publishingWork.idStr(), uploadToken, savedContentSections);
+        return new PublishWorkPresentation(publishingWork.idStr(), savedContentSections);
     }
 
     public void notifyRichContentUploaded(String publishingWorkId, String fileId, NotifyRichContentUploadedCommand command) {
