@@ -210,13 +210,9 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         List<T> result = new ArrayList<>();
         if (range.both() || range.after()) {
             Query<T> query = newQuery(afterConditions)
+                    .field("id").greaterThan(toMongoId(range.referencePoint().get()))
                     .order(descByFields.copyThenReverse().orderClause())
                     .limit(range.offset());
-
-            if (descByFields.fields.get(0).equals("id")) {
-                query.field("id").greaterThan(toMongoId(range.referencePoint().get()));
-            }
-
             filterFields(query, fieldsFilter);
             List<T> ascendingList = query.asList();
             if (!CollectionUtils.isEmpty(ascendingList)) {
@@ -228,13 +224,9 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
         if (range.both() || range.before()) {
             Query<T> query = newQuery(beforeConditions)
+                    .field("id").lessThanOrEq(toMongoId(range.referencePoint().get()))
                     .order(descByFields.orderClause())
                     .limit(range.offset() + 1); // 目前morphia组件还不支持$natural查询修饰符
-
-            if (descByFields.fields.get(0).equals("id")) {
-                query.field("id").lessThanOrEq(toMongoId(range.referencePoint().get()));
-            }
-
             filterFields(query, fieldsFilter);
             List<T> descendingList = query.asList();
             if (!CollectionUtils.isEmpty(descendingList)) {
