@@ -25,26 +25,27 @@ public class AccessTokenRepoImpl extends AbstractMongoRepository<AccessToken> im
 
     @Override
     public Optional<AccessToken> bearerTokenIssuedFor(ObjectId userId, ObjectId deviceId) {
-        return findOneBy(Conditions.newWithEqual("type", AccessToken.Type.Bearer.toString())
-                .newWithEqual("userId", userId)
+        return findOneBy(Conditions.newInstance()
+                .andEqual("type", AccessToken.Type.Bearer.toString())
+                .andEqual("userId", userId)
                 .andEqual("deviceId", deviceId));
     }
 
     @Override
     public Optional<AccessToken> basicTokenIssuedFor(Device device) {
-        return findOneBy(Conditions.newWithEqual("type", AccessToken.Type.Basic.toString())
+        return findOneBy(Conditions.newInstance().andEqual("type", AccessToken.Type.Basic.toString())
                 .andEqual("deviceId", device.id()));
     }
 
     @Override
     public Optional<AccessToken> accessTokenOf(String token, AccessToken.Type type) {
-        return findOneBy(Conditions.newWithEqual("type", type)
+        return findOneBy(Conditions.newInstance().andEqual("type", type)
                 .andEqual("accessToken", token));
     }
 
     @Override
     public Optional<AccessToken> lastAccessTokenOf(String token, AccessToken.Type type) {
-        return findOneBy(Conditions.newWithEqual("type", type)
+        return findOneBy(Conditions.newInstance().andEqual("type", type)
                 .andEqual("lastAccessToken", token));
     }
 

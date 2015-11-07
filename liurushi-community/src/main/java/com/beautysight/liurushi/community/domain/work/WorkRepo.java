@@ -33,16 +33,16 @@ public interface WorkRepo extends MongoRepository<Work> {
 
     void increaseLikeTimesBy(int increment, String workId);
 
-    List<Work> findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority);
+    List<Work> findUgcWorkProfilesBy(Work.PresentPriority presentPriority, Range range);
 
-    void setPresentPriorityOf(String workId, Work.PresentPriority presentPriority);
+    void setPresentPriorityAndCalcOrderingVal(Work work);
 
     CountResult countWorksByPresentPriority(Work.PresentPriority presentPriority);
 
-    AbstractMongoRepository.Fields workBasicFields = AbstractMongoRepository.Fields.newInstance().append("id", "title", "subtitle", "authorId", "source", "presentPriority", "publishedAt");
+    AbstractMongoRepository.Fields workBasicFields = AbstractMongoRepository.Fields.newInstance().append("id", "title", "subtitle", "authorId", "source", "presentPriority", "publishedAt", "ordering");
     String[] workBasicFieldsArray = workBasicFields.toArray();
     String[] workProfileFields = workBasicFields.copyThenAppend("stats", "story.cover.sectionId").toArray();
     String[] pictureStoryFields = workBasicFields.copyThenAppend("story").toArray();
-    Optional<AbstractMongoRepository.FieldsFilter> workBasicFieldsFilter = Optional.of(new AbstractMongoRepository.FieldsFilter(true, workProfileFields));
+    Optional<AbstractMongoRepository.FieldsFilter> workProfileFieldsFilter = Optional.of(new AbstractMongoRepository.FieldsFilter(true, workProfileFields));
 
 }

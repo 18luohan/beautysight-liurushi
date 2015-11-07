@@ -30,7 +30,8 @@ import java.util.*;
  */
 public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
-    private static final OrderByFields descById = OrderByFields.descBy("id");
+    private static final String ID_FIELD = "id";
+    private static final OrderClause DESC_BY_ID = new OrderClause().addInvertibleDesc(ID_FIELD);
 
     @Autowired
     protected Datastore datastore;
@@ -61,7 +62,7 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     @Override
     public T findOne(String id) {
-        return findOne(new ObjectId(id));
+        return findOne(toMongoId(id));
     }
 
     @Override
@@ -192,26 +193,31 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return orderBy.toString();
     }
 
-    protected List<T> find(Optional<Conditions> conditions, Range range) {
-        return find(conditions, range, Optional.<FieldsFilter>absent());
+    protected List<T> findInOrderById(Optional<Conditions> conditions, Range range) {
+        return findInOrderById(conditions, range, Optional.<FieldsFilter>absent());
     }
 
-    protected List<T> find(Optional<Conditions> conditions, Range range, Optional<FieldsFilter> fieldsFilter) {
-        return this.find(conditions, conditions, range, descById, fieldsFilter);
+    protected List<T> findInOrderById(Optional<Conditions> conditions, Range range, Optional<FieldsFilter> fieldsFilter) {
+        if (range.referencePoint().isPresent()) {
+            range.setCursor(ID_FIELD, toMongoId(range.referencePoint().get()));
+        }
+        return this.find(conditions, range, DESC_BY_ID, fieldsFilter);
     }
 
-    protected List<T> find(Optional<Conditions> afterConditions, Optional<Conditions> beforeConditions, Range range, OrderByFields descByFields, Optional<FieldsFilter> fieldsFilter) {
+    protected List<T> find(Optional<Conditions> conditions, Range range,
+                           OrderClause orderClauseForBefore, Optional<FieldsFilter> fieldsFilter) {
         Preconditions.checkArgument(range.offset() > 0, "Assert range.offset() > 0");
 
-        if (!range.referencePoint().isPresent()) {
-            return findLatest(beforeConditions, range.offset(), descByFields, fieldsFilter);
+        if (!range.cursor().isPresent()) {
+            return findLatest(conditions, range.offset(), orderClauseForBefore, fieldsFilter);
         }
 
+        Range.Cursor cursor = range.cursor().get();
         List<T> result = new ArrayList<>();
         if (range.both() || range.after()) {
-            Query<T> query = newQuery(afterConditions)
-                    .field("id").greaterThan(toMongoId(range.referencePoint().get()))
-                    .order(descByFields.copyThenReverse().orderClause())
+            Query<T> query = newQuery(conditions)
+                    .field(cursor.primaryOrderField()).greaterThan(cursor.fieldVal())
+                    .order(orderClauseForBefore.inverseOrderClause()) // 升序
                     .limit(range.offset());
             filterFields(query, fieldsFilter);
             List<T> ascendingList = query.asList();
@@ -223,9 +229,9 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         }
 
         if (range.both() || range.before()) {
-            Query<T> query = newQuery(beforeConditions)
-                    .field("id").lessThanOrEq(toMongoId(range.referencePoint().get()))
-                    .order(descByFields.orderClause())
+            Query<T> query = newQuery(conditions)
+                    .field(cursor.primaryOrderField()).lessThanOrEq(cursor.fieldVal())
+                    .order(orderClauseForBefore.orderClause()) // 降序
                     .limit(range.offset() + 1); // 目前morphia组件还不支持$natural查询修饰符
             filterFields(query, fieldsFilter);
             List<T> descendingList = query.asList();
@@ -242,8 +248,8 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         return result;
     }
 
-    private List<T> findLatest(Optional<Conditions> conditions, int count, OrderByFields descByFields, Optional<FieldsFilter> fieldsFilter) {
-        Query<T> query = newQuery(conditions).order(descByFields.orderClause()).limit(count);
+    private List<T> findLatest(Optional<Conditions> conditions, int count, OrderClause orderClauseForBefore, Optional<FieldsFilter> fieldsFilter) {
+        Query<T> query = newQuery(conditions).order(orderClauseForBefore.orderClause()).limit(count);
         filterFields(query, fieldsFilter);
         return query.asList();
     }
@@ -379,10 +385,8 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
             conditions = new ArrayList<>(5);
         }
 
-        public static Conditions newWithEqual(String field, Object val) {
-            Conditions conditions = new Conditions();
-            conditions.andEqual(field, val);
-            return conditions;
+        public static Conditions newInstance() {
+            return new Conditions();
         }
 
         public Conditions andEqual(String field, Object val) {
@@ -400,6 +404,16 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
             return this;
         }
 
+        public Conditions andGt(String field, Object val) {
+            conditions.add(new Condition(field, Operator.gt, val));
+            return this;
+        }
+
+        public Conditions andLt(String field, Object val) {
+            conditions.add(new Condition(field, Operator.lt, val));
+            return this;
+        }
+
         public Conditions andContainAllOf(String field, Iterable<?> values) {
             conditions.add(new Condition(field, Operator.containAll, values));
             return this;
@@ -407,6 +421,14 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
         public Iterator<Condition> iterator() {
             return conditions.iterator();
+        }
+
+        public Conditions clone() {
+            Conditions newOne = new Conditions();
+            for (Condition condition : this.conditions) {
+                newOne.conditions.add(condition);
+            }
+            return newOne;
         }
 
         @Override
@@ -502,66 +524,6 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
             this.include = include;
             this.fields = fields;
         }
-    }
-
-    public static class OrderByFields {
-
-        private static final int capacity = 2;
-
-        private List<String> fields = new ArrayList<>(capacity);
-
-        private OrderByFields() {
-        }
-
-        public static OrderByFields ascBy(String field) {
-            OrderByFields instance = new OrderByFields();
-            instance.addAscField(field);
-            return instance;
-        }
-
-        public static OrderByFields descBy(String field) {
-            OrderByFields instance = new OrderByFields();
-            instance.addDescField(field);
-            return instance;
-        }
-
-        public OrderByFields addAscField(String field) {
-            Preconditions.checkState(fields.size() < capacity, "More than %s order-by-fields", capacity);
-            fields.add(field);
-            return this;
-        }
-
-        public OrderByFields addDescField(String field) {
-            Preconditions.checkState(fields.size() < capacity, "More than %s order-by-fields", capacity);
-            fields.add("-" + field);
-            return this;
-        }
-
-        public String orderClause() {
-            Preconditions.checkState(!fields.isEmpty(), "No order-by-fields");
-            StringBuilder orderClause = new StringBuilder();
-            for (String field : fields) {
-                orderClause.append(",").append(field);
-            }
-            return orderClause.substring(1);
-        }
-
-        public OrderByFields copyThenReverse() {
-            Preconditions.checkState(!fields.isEmpty(), "Can't reverse empty order-by-fields");
-            OrderByFields instance = new OrderByFields();
-            for (String field : fields) {
-                instance.fields.add(reverseField(field));
-            }
-            return instance;
-        }
-
-        private String reverseField(String orderByField) {
-            if (orderByField.startsWith("-")) {
-                return orderByField.substring(1);
-            }
-            return "-" + orderByField;
-        }
-
     }
 
 }

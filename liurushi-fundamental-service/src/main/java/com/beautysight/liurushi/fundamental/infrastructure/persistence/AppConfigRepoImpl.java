@@ -4,14 +4,13 @@
 
 package com.beautysight.liurushi.fundamental.infrastructure.persistence;
 
-import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfig;
 import com.beautysight.liurushi.fundamental.domain.appconfig.AppConfigRepo;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
 import com.google.common.base.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author chenlong
  * @since 1.0
  */
@@ -20,7 +19,7 @@ public class AppConfigRepoImpl extends AbstractMongoRepository<AppConfig> implem
 
     @Override
     public Optional<AppConfig> withName(String configItemName) {
-        return findOneBy(Conditions.newWithEqual("name", configItemName));
+        return findOneBy(Conditions.newInstance().andEqual("name", configItemName));
     }
 
     @Override

@@ -67,7 +67,7 @@ public class DiscardedWorkRepoImpl extends AbstractMongoRepository<DiscardedWork
 
     @Override
     public List<DiscardedWork> findInRange(Range range) {
-        return find(Optional.<Conditions>absent(), range, WorkRepo.workBasicFieldsFilter);
+        return findInOrderById(Optional.<Conditions>absent(), range, WorkRepo.workProfileFieldsFilter);
     }
 
     @Override

@@ -85,9 +85,18 @@ public class Beans {
                 searchType = searchType.getSuperclass();
             }
         } catch (Exception ex) {
-            throw new BeanPropertyCopyingException(ex, "Error while copying properties from {} to {}",
+            throw new BeanOperationException(ex, "Error while copying properties from %s to %s",
                     source.getClass().getName(), target.getClass().getName());
         }
+    }
+
+    public static <T> T fieldValOf(String fieldName, Object targetObj) {
+        Field theField = ReflectionUtils.findField(targetObj.getClass(), fieldName);
+        if (theField == null) {
+            throw new BeanOperationException("Not found %s field on %s",
+                    fieldName, targetObj.getClass().getName());
+        }
+        return (T) ReflectionUtils.getField(theField, targetObj);
     }
 
     private static boolean isStatic(Field field) {
@@ -127,8 +136,13 @@ public class Beans {
         }
     }
 
-    public static class BeanPropertyCopyingException extends ApplicationException {
-        public BeanPropertyCopyingException(Throwable cause, String msgFormat, Object... msgArgs) {
+    public static class BeanOperationException extends ApplicationException {
+
+        public BeanOperationException(String msgFormat, Object... msgArgs) {
+            super(msgFormat, msgArgs);
+        }
+
+        public BeanOperationException(Throwable cause, String msgFormat, Object... msgArgs) {
             super(CommonErrorId.internal_server_error, cause, msgFormat, msgArgs);
         }
     }

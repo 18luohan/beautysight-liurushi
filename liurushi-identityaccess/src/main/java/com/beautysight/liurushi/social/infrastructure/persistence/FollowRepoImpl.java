@@ -54,7 +54,7 @@ public class FollowRepoImpl extends AbstractMongoRepository<Follow> implements F
 
     @Override
     public Optional<Follow> getBy(String followerId, String followingId) {
-        Conditions conditions = Conditions.newWithEqual("followerId", new ObjectId(followerId))
+        Conditions conditions = Conditions.newInstance().andEqual("followerId", new ObjectId(followerId))
                 .andEqual("followingId", new ObjectId(followingId));
         return findOneBy(conditions);
     }
@@ -62,15 +62,15 @@ public class FollowRepoImpl extends AbstractMongoRepository<Follow> implements F
     @Override
     public int deleteBy(String followerId, String followingId) {
         Query<Follow> query = newQuery(
-                Conditions.newWithEqual("followerId", toMongoId(followerId))
+                Conditions.newInstance().andEqual("followerId", toMongoId(followerId))
                         .andEqual("followingId", toMongoId(followingId)));
         return datastore.delete(query).getN();
     }
 
     @Override
     public List<UserInFollow> findUsersInFollowInRange(QueryType type, String involvedUserId, Range range) {
-        Conditions conditions = Conditions.newWithEqual(determineConditionField(type), toMongoId(involvedUserId));
-        List<Follow> follows = find(Optional.of(conditions), range);
+        Conditions conditions = Conditions.newInstance().andEqual(determineConditionField(type), toMongoId(involvedUserId));
+        List<Follow> follows = findInOrderById(Optional.of(conditions), range);
         if (CollectionUtils.isEmpty(follows)) {
             return Collections.EMPTY_LIST;
         }

@@ -33,9 +33,9 @@ public class WorkExamineRestV10 {
                                                      @RequestParam(required = false) Range.OffsetDirection direction,
                                                      @PathVariable("presentPriority") String presentPriority,
                                                      @RequestParam(required = false) Integer thumbnailSpec) {
-        return workApp.findUgcWorkProfilesInRange(
-                new Range(referencePoint, offset, direction),
+        return workApp.findUgcWorkProfilesBy(
                 Work.PresentPriority.of(presentPriority),
+                new Range(referencePoint, offset, direction),
                 Optional.fromNullable(thumbnailSpec));
     }
 

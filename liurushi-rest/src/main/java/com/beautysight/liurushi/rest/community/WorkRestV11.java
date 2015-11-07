@@ -48,23 +48,22 @@ public class WorkRestV11 {
     @RequestMapping(value = "/{workId}/profile", method = RequestMethod.GET)
     @VisitorApiPermission
     public WorkProfileVM getWorkProfileBy(@PathVariable("workId") String workId,
-                                          @RequestParam(required = false) Integer thumbnailSpec,
-                                          @RequestParam(required = false) String supportedContentTypes) {
+                                          @RequestParam(required = false) Integer thumbnailSpec) {
         PreconditionUtils.checkRequired("url path variable workId", workId);
         return workApp.getWorkProfileBy(
                 workId, RequestContext.optionalCurrentUserId(), Optional.fromNullable(thumbnailSpec));
     }
 
-    @RequestMapping(value = "/pgc/latest", method = RequestMethod.GET)
-    @VisitorApiPermission
-    public WorkProfileList getPgcLatestWorkProfiles(@RequestParam("count") int count,
-                                                    @RequestParam(required = false) Integer thumbnailSpec,
-                                                    @RequestParam String supportedContentTypes) {
-        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
-                new Range(count, Range.OffsetDirection.before),
-                RequestContext.optionalCurrentUserId(), thumbnailSpec, supportedContentTypes);
-        return workApp.findPgcWorkProfilesIn(command);
-    }
+//    @RequestMapping(value = "/pgc/latest", method = RequestMethod.GET)
+//    @VisitorApiPermission
+//    public WorkProfileList getPgcLatestWorkProfiles(@RequestParam("count") int count,
+//                                                    @RequestParam(required = false) Integer thumbnailSpec,
+//                                                    @RequestParam String supportedContentTypes) {
+//        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
+//                new Range(count, Range.OffsetDirection.before),
+//                RequestContext.optionalCurrentUserId(), thumbnailSpec, supportedContentTypes);
+//        return workApp.findPgcWorkProfilesIn(command);
+//    }
 
     @RequestMapping(value = "/pgc", method = RequestMethod.GET)
     @VisitorApiPermission
@@ -72,23 +71,23 @@ public class WorkRestV11 {
                                                      @RequestParam Integer offset,
                                                      @RequestParam(required = false) Range.OffsetDirection direction,
                                                      @RequestParam(required = false) Integer thumbnailSpec,
-                                                     @RequestParam String supportedContentTypes) {
+                                                     @RequestParam(required = false) String supportedContentTypes) {
         WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
                 new Range(referencePoint, offset, direction),
                 RequestContext.optionalCurrentUserId(), thumbnailSpec, supportedContentTypes);
         return workApp.findPgcWorkProfilesIn(command);
     }
 
-    @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
-    @VisitorApiPermission
-    public WorkProfileList getUgcLatestWorkProfiles(@RequestParam("count") int count,
-                                                    @RequestParam(required = false) Integer thumbnailSpec,
-                                                    @RequestParam String supportedContentTypes) {
-        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
-                new Range(count, Range.OffsetDirection.before),
-                RequestContext.optionalCurrentUserId(), thumbnailSpec, supportedContentTypes);
-        return workApp.findUgcWorkProfilesIn(command);
-    }
+//    @RequestMapping(value = "/ugc/latest", method = RequestMethod.GET)
+//    @VisitorApiPermission
+//    public WorkProfileList getUgcLatestWorkProfiles(@RequestParam("count") int count,
+//                                                    @RequestParam(required = false) Integer thumbnailSpec,
+//                                                    @RequestParam String supportedContentTypes) {
+//        WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
+//                new Range(count, Range.OffsetDirection.before),
+//                RequestContext.optionalCurrentUserId(), thumbnailSpec, supportedContentTypes);
+//        return workApp.findUgcWorkProfilesIn(command);
+//    }
 
     @RequestMapping(value = "/ugc", method = RequestMethod.GET)
     @VisitorApiPermission
@@ -96,7 +95,7 @@ public class WorkRestV11 {
                                                      @RequestParam Integer offset,
                                                      @RequestParam(required = false) Range.OffsetDirection direction,
                                                      @RequestParam(required = false) Integer thumbnailSpec,
-                                                     @RequestParam String supportedContentTypes) {
+                                                     @RequestParam(required = false) String supportedContentTypes) {
         WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
                 new Range(referencePoint, offset, direction),
                 RequestContext.optionalCurrentUserId(), thumbnailSpec, supportedContentTypes);
@@ -109,7 +108,7 @@ public class WorkRestV11 {
                                           @RequestParam(required = false) String referencePoint,
                                           @RequestParam Integer offset,
                                           @RequestParam(required = false) Range.OffsetDirection direction,
-                                          @RequestParam String supportedContentTypes) {
+                                          @RequestParam(required = false) String supportedContentTypes) {
         PreconditionUtils.checkRequired("authorId", authorId);
         WorkQueryInRangeCommand command = new WorkQueryInRangeCommand(
                 new Range(referencePoint, offset, direction), authorId, supportedContentTypes);

@@ -26,7 +26,7 @@ public class DeviceRepoImpl extends AbstractMongoRepository<Device> implements D
 
     @Override
     public Optional<Device> withImei(String imei) {
-        return findOneBy(Conditions.newWithEqual("imei", imei));
+        return findOneBy(Conditions.newInstance().andEqual("imei", imei));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class DeviceRepoImpl extends AbstractMongoRepository<Device> implements D
 
     @Override
     public void addDeviceUser(String imei, User user) {
-        Query<Device> updateQuery = newQuery(Conditions.newWithEqual("imei", imei));
+        Query<Device> updateQuery = newQuery(Conditions.newInstance().andEqual("imei", imei));
         UpdateOperations<Device> updateOps = newUpdateOps().add("userIds", user.id(), false);
         datastore.update(updateQuery, updateOps);
     }

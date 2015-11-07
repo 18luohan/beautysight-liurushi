@@ -88,10 +88,6 @@ public abstract class AbstractWork extends AbstractEntity {
         this.contentTypes = ContentType.transformToInt(contentTypes);
     }
 
-    public void setContentTypes(int contentTypes) {
-        this.contentTypes = contentTypes;
-    }
-
     /**
      * 作品来源
      */

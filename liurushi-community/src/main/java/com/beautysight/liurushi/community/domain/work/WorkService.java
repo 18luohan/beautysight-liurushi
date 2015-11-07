@@ -124,27 +124,27 @@ public class WorkService {
     }
 
     public void select(String workId) {
-        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.selected);
+        setPresentPriorityAndCalcOrderingVal(workId, Work.PresentPriority.selected);
     }
 
     public void cancelSelect(String workId) {
-        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
+        setPresentPriorityAndCalcOrderingVal(workId, Work.PresentPriority.raw);
     }
 
     public void ordinary(String workId) {
-        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.ordinary);
+        setPresentPriorityAndCalcOrderingVal(workId, Work.PresentPriority.ordinary);
     }
 
     public void cancelOrdinary(String workId) {
-        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
+        setPresentPriorityAndCalcOrderingVal(workId, Work.PresentPriority.raw);
     }
 
     public void bad(String workId) {
-        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.bad);
+        setPresentPriorityAndCalcOrderingVal(workId, Work.PresentPriority.bad);
     }
 
     public void cancelBad(String workId) {
-        workRepo.setPresentPriorityOf(workId, Work.PresentPriority.raw);
+        setPresentPriorityAndCalcOrderingVal(workId, Work.PresentPriority.raw);
     }
 
     public ContentSectionPayload.RichPayload toCoverContentPayload(
@@ -153,6 +153,12 @@ public class WorkService {
         Beans.copyProperties(coverContent, targetDTO);
         targetDTO.fileUrl = storageService.imgDownloadUrl(coverContent.fileKey(), intThumbnailSpec);
         return targetDTO;
+    }
+
+    private void setPresentPriorityAndCalcOrderingVal(String workId, Work.PresentPriority presentPriority) {
+        Work work = workRepo.findOne(workId);
+        work.setPresentPriorityAndCalcOrderingVal(presentPriority);
+        workRepo.setPresentPriorityAndCalcOrderingVal(work);
     }
 
 }

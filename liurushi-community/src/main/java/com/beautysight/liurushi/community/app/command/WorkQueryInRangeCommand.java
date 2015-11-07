@@ -27,40 +27,44 @@ public class WorkQueryInRangeCommand implements Command {
 
     private String authorId;
 
-    private static final List<ContentType> mobile_app_v10_supported_types = Lists.newArrayList(ContentType.text, ContentType.image);
+    private static final List<ContentType> default_supported_content_types = Lists.newArrayList(ContentType.text, ContentType.image);
 
     public WorkQueryInRangeCommand(Range range, Optional<String> loginUserId, Integer thumbnailSpec) {
         this.range = range;
         this.loginUserId = loginUserId;
         this.thumbnailSpec = Optional.fromNullable(thumbnailSpec);
-        this.supportedContentTypes = mobile_app_v10_supported_types;
+        this.setSupportedContentTypes(Optional.<String>absent());
     }
 
     public WorkQueryInRangeCommand(Range range, Optional<String> loginUserId, Integer thumbnailSpec, String supportedContentTypesStr) {
         this.range = range;
         this.loginUserId = loginUserId;
         this.thumbnailSpec = Optional.fromNullable(thumbnailSpec);
-        this.supportedContentTypes = parseSupportedContentTypesStr(supportedContentTypesStr);
+        this.setSupportedContentTypes(Optional.fromNullable(supportedContentTypesStr));
     }
 
     public WorkQueryInRangeCommand(Range range, String authorId) {
-        this(range, authorId, mobile_app_v10_supported_types);
+        this(range, authorId, null);
     }
 
     public WorkQueryInRangeCommand(Range range, String authorId, String supportedContentTypesStr) {
-        this(range, authorId, parseSupportedContentTypesStr(supportedContentTypesStr));
-    }
-
-    private WorkQueryInRangeCommand(Range range, String authorId, List<ContentType> supportedContentTypes) {
         this.range = range;
         this.authorId = authorId;
-        this.supportedContentTypes = supportedContentTypes;
+        this.setSupportedContentTypes(Optional.fromNullable(supportedContentTypesStr));
         // 个人中心/我的作品 图片规格为300
         this.thumbnailSpec = Optional.of(Integer.valueOf(300));
     }
 
     public String authorId() {
         return this.authorId;
+    }
+
+    private void setSupportedContentTypes(Optional<String> supportedContentTypesStr) {
+        if (supportedContentTypesStr.isPresent()) {
+            this.supportedContentTypes = parseSupportedContentTypesStr(supportedContentTypesStr.get());
+        } else {
+            this.supportedContentTypes = default_supported_content_types;
+        }
     }
 
     private static List<ContentType> parseSupportedContentTypesStr(String supportedContentTypesStr) {

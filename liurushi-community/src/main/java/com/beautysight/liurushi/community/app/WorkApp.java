@@ -186,10 +186,10 @@ public class WorkApp {
         return new WorkProfileList(workProfiles);
     }
 
-    public WorkProfileList findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority, Optional<Integer> intThumbnailSpec) {
+    public WorkProfileList findUgcWorkProfilesBy(Work.PresentPriority presentPriority, Range range, Optional<Integer> intThumbnailSpec) {
         List<WorkProfileVM> workProfiles = new ArrayList<>();
 
-        List<Work> works = workRepo.findUgcWorkProfilesInRange(range, presentPriority);
+        List<Work> works = workRepo.findUgcWorkProfilesBy(presentPriority, range);
         if (CollectionUtils.isEmpty(works)) {
             return new WorkProfileList(workProfiles);
         }

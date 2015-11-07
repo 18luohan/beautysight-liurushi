@@ -4,6 +4,7 @@
 
 package com.beautysight.liurushi.community.domain.work.draft;
 
+import com.beautysight.liurushi.common.utils.Beans;
 import com.beautysight.liurushi.community.domain.work.AbstractWork;
 import com.beautysight.liurushi.community.domain.work.Author;
 import com.beautysight.liurushi.community.domain.work.Work;
@@ -41,10 +42,9 @@ public class PublishingWork extends AbstractWork {
     }
 
     public Work transformToWork() {
-        Work theWork = new Work(this.id, this.title, this.subtitle,
-                this.story, this.presentation, this.authorId, this.source);
-        theWork.setPublishedAt(this.createdAt);
-        theWork.setContentTypes(this.contentTypes);
+        Work theWork = new Work();
+        Beans.copyProperties(this, theWork);
+        theWork.initialise();
         return theWork;
     }
 

@@ -7,14 +7,15 @@ package com.beautysight.liurushi.community.infrastructure.persistence;
 import com.beautysight.liurushi.common.domain.CountResult;
 import com.beautysight.liurushi.common.domain.Range;
 import com.beautysight.liurushi.community.app.command.WorkQueryInRangeCommand;
+import com.beautysight.liurushi.community.domain.work.ContentType;
 import com.beautysight.liurushi.community.domain.work.Work;
 import com.beautysight.liurushi.community.domain.work.WorkRepo;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSection;
 import com.beautysight.liurushi.community.domain.work.cs.ContentSectionRepo;
-import com.beautysight.liurushi.community.domain.work.ContentType;
 import com.beautysight.liurushi.community.domain.work.picstory.Shot;
 import com.beautysight.liurushi.community.domain.work.present.Slide;
 import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.AbstractMongoRepository;
+import com.beautysight.liurushi.fundamental.infrastructure.persistence.mongo.OrderClause;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.aggregation.Accumulator;
@@ -89,9 +90,10 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
 
     @Override
     public List<Work> findAuthorWorkProfilesIn(WorkQueryInRangeCommand command) {
-        Conditions conditions = Conditions.newWithEqual("authorId", toMongoId(command.authorId()))
+        Conditions conditions = Conditions.newInstance()
+                .andEqual("authorId", toMongoId(command.authorId()))
                 .andLte("contentTypes", ContentType.transformToInt(command.supportedContentTypes));
-        return find(Optional.of(conditions), command.range, workBasicFieldsFilter);
+        return findInOrderById(Optional.of(conditions), command.range, workProfileFieldsFilter);
     }
 
     @Override
@@ -127,16 +129,18 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     @Override
-    public List<Work> findUgcWorkProfilesInRange(Range range, Work.PresentPriority presentPriority) {
-        Conditions conditions = Conditions.newWithEqual("source", Work.Source.ugc)
+    public List<Work> findUgcWorkProfilesBy(Work.PresentPriority presentPriority, Range range) {
+        Conditions conditions = Conditions.newInstance()
+                .andEqual("source", Work.Source.ugc)
                 .andEqual("presentPriority", presentPriority.val());
-        return find(Optional.of(conditions), range, workBasicFieldsFilter);
+        return findInOrderById(Optional.of(conditions), range, workProfileFieldsFilter);
     }
 
     @Override
-    public void setPresentPriorityOf(String workId, Work.PresentPriority presentPriority) {
-        UpdateOperations<Work> updateOps = newUpdateOps().set("presentPriority", presentPriority.val());
-        Query<Work> query = newQuery().field("id").equal(toMongoId(workId));
+    public void setPresentPriorityAndCalcOrderingVal(Work work) {
+        UpdateOperations<Work> updateOps = newUpdateOps().set("presentPriority", work.presentPriority())
+                .set("ordering", work.ordering());
+        Query<Work> query = newQuery().field("id").equal(work.id());
         datastore.update(query, updateOps);
     }
 
@@ -158,23 +162,24 @@ public class WorkRepoImpl extends AbstractMongoRepository<Work> implements WorkR
     }
 
     private List<Work> findUgcWorkProfilesInRange(Range range, List<ContentType> supportedContentTypes) {
-        Conditions afterConditions = Conditions.newWithEqual("source", Work.Source.ugc)
+        Conditions conditions = Conditions.newInstance()
+                .andEqual("source", Work.Source.ugc)
                 .andLte("contentTypes", ContentType.transformToInt(supportedContentTypes));
-        Conditions beforeConditions = Conditions.newWithEqual("source", Work.Source.ugc)
-                .andLte("contentTypes", ContentType.transformToInt(supportedContentTypes));
+
         if (range.referencePoint().isPresent()) {
             Work work = getBasicWork(range.referencePoint().get());
-            afterConditions.andGte("presentPriority", work.presentPriority());
-            beforeConditions.andLte("presentPriority", work.presentPriority());
+            range.setCursor("ordering", work.ordering());
         }
-        OrderByFields descByFields = OrderByFields.descBy("presentPriority").addDescField("id");
-        return find(Optional.of(afterConditions), Optional.of(beforeConditions), range, descByFields, workBasicFieldsFilter);
+
+        OrderClause orderClauseForBefore = new OrderClause().addInvertibleDesc("ordering").addFixedDesc("id");
+        return find(Optional.of(conditions), range, orderClauseForBefore, workProfileFieldsFilter);
     }
 
     private List<Work> findPgcWorkProfilesInRange(Range range, List<ContentType> supportedContentTypes) {
-        Conditions conditions = Conditions.newWithEqual("source", Work.Source.pgc)
+        Conditions conditions = Conditions.newInstance()
+                .andEqual("source", Work.Source.pgc)
                 .andLte("contentTypes", ContentType.transformToInt(supportedContentTypes));
-        return find(Optional.of(conditions), range, workBasicFieldsFilter);
+        return findInOrderById(Optional.of(conditions), range, workProfileFieldsFilter);
     }
 
     private Work getBasicWork(String workId) {
