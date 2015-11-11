@@ -35,7 +35,6 @@ public class AppInstallation extends ValueObject {
         public void validate() {
             PreconditionUtils.checkRequired("os.type", type);
             PreconditionUtils.checkRequired("os.version", version);
-            PreconditionUtils.checkRequired("os.distribution", distribution);
         }
 
         public enum Type {
