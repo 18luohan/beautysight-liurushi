@@ -6,6 +6,7 @@ package com.beautysight.liurushi.common.domain;
 
 import com.beautysight.liurushi.common.JsonAnyFieldVisible;
 import com.beautysight.liurushi.common.shared.DomainModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Id;
 
@@ -21,6 +22,7 @@ public abstract class AbstractEntity extends DomainModel implements JsonAnyField
     private static final long serialVersionUID = -2361648049519441593L;
 
     @Id
+    @JsonIgnore
     protected ObjectId id;
     protected Date createdAt = new Date();
     protected Date modifiedAt;

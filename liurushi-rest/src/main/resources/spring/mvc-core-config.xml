@@ -36,6 +36,7 @@
             <mvc:exclude-mapping path="/"/>
             <mvc:exclude-mapping path="/*/oauth/basic_token"/>
             <mvc:exclude-mapping path="/*/shares/**"/>
+            <mvc:exclude-mapping path="/*/user_clients/checkin"/>
             <bean class="com.beautysight.liurushi.rest.common.AccessTokenAuthenticator"/>
         </mvc:interceptor>
         <mvc:interceptor>
@@ -43,6 +44,7 @@
             <mvc:exclude-mapping path="/"/>
             <mvc:exclude-mapping path="/*/oauth/basic_token"/>
             <mvc:exclude-mapping path="/*/shares/**"/>
+            <mvc:exclude-mapping path="/*/user_clients/checkin"/>
             <bean class="com.beautysight.liurushi.rest.permission.ApiPermissionInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>

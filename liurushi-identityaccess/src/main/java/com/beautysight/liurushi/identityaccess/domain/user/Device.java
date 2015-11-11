@@ -5,6 +5,8 @@
 package com.beautysight.liurushi.identityaccess.domain.user;
 
 import com.beautysight.liurushi.common.domain.AbstractEntity;
+import com.beautysight.liurushi.common.utils.PreconditionUtils;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -30,6 +32,8 @@ public class Device extends AbstractEntity {
     @Reference(value = "userIds", lazy = true, idOnly = true)
     private List<User> users;
 
+    private AppInstallation appInstall;
+
     private Device() {
     }
 
@@ -42,6 +46,15 @@ public class Device extends AbstractEntity {
         this.imei = imei;
         this.imsi = imsi;
         this.resolution = resolution;
+    }
+
+    public void validateAsPO() {
+        PreconditionUtils.checkRequired("device.type", type);
+        PreconditionUtils.checkRequired("device.model", model);
+        PreconditionUtils.checkGreaterThanZero("device.ppi", ppi);
+        PreconditionUtils.checkRequired("device.imei", imei);
+        PreconditionUtils.checkRequired("device.resolution", resolution);
+        resolution.validate();
     }
 
     /**
@@ -60,6 +73,14 @@ public class Device extends AbstractEntity {
 
     public Resolution resolution() {
         return this.resolution;
+    }
+
+    public void setAppInstall(AppInstallation appInstall) {
+        this.appInstall = appInstall;
+    }
+
+    public Optional<AppInstallation> appInstall() {
+        return Optional.fromNullable(appInstall);
     }
 
     public enum Type {

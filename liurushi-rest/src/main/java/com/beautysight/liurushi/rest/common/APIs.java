@@ -13,6 +13,7 @@ public class APIs {
     public static final String V10 = "v1.0";
     public static final String V11 = "v1.1";
 
+    public static final String USER_CLIENTS = "/user_clients";
     public static final String USERS = "/users";
     public static final String STORAGE = "/storage";
     public static final String OAUTH = "/oauth";
@@ -22,6 +23,7 @@ public class APIs {
     public static final String FOLLOWS = "/follows";
     public static final String LIKES = "/likes";
 
+    public static final String USER_CLIENTS_V10 = V10 + USER_CLIENTS;
     public static final String USERS_V10 = V10 + USERS;
     public static final String STORAGE_V10 = V10 + STORAGE;
     public static final String OAUTH_V10 = V10 + OAUTH;
